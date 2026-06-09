@@ -1,9 +1,11 @@
 import AppKit
+import ServiceManagement
 
 // Headroom — Claude Code usage in the menu bar.
-// Lap 1: the real number. Keychain OAuth token → Anthropic usage endpoint → live %,
-// auto-refreshing. `headroom --print` is the verification harness: it prints the raw
-// usage JSON from the real endpoint and exits.
+// Lap 1 wired the real number (Keychain OAuth token → Anthropic usage endpoint).
+// Lap 2: color-coded title (calm → amber → red), reset countdowns, launch-at-login.
+// `headroom --print` is the verification harness: raw usage JSON + the parsed values
+// + the exact render decisions, from the real endpoint.
 
 // MARK: - --print harness (verify with real output, VISION §0.5)
 
@@ -14,8 +16,10 @@ if CommandLine.arguments.contains("--print") {
         FileHandle.standardOutput.write(data)
         print("")
         let usage = try UsageClient.fetch(token: token)
-        print("parsed: session(5h)=\(usage.fiveHour.utilization)% resets=\(usage.fiveHour.resetsAt.map(String.init(describing:)) ?? "nil")"
-            + " · week(7d)=\(usage.sevenDay.utilization)% resets=\(usage.sevenDay.resetsAt.map(String.init(describing:)) ?? "nil")")
+        print("parsed: session(5h)=\(usage.fiveHour.utilization)% week(7d)=\(usage.sevenDay.utilization)%")
+        print("render: title=\"\(Render.title(usage))\" tone=\(Render.tone(usage).rawValue)")
+        print("render: session=\"\(Render.line(usage.fiveHour))\"")
+        print("render: week=\"\(Render.line(usage.sevenDay))\"")
         exit(0)
     } catch {
         FileHandle.standardError.write("headroom: \(error)\n".data(using: .utf8)!)
@@ -30,7 +34,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let sessionItem = NSMenuItem(title: "Session (5h): —", action: nil, keyEquivalent: "")
     private let weeklyItem = NSMenuItem(title: "Week (7d): —", action: nil, keyEquivalent: "")
     private let statusLine = NSMenuItem(title: "Fetching…", action: nil, keyEquivalent: "")
+    private let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "")
+    private let tokenStore = TokenStore()
     private var timer: Timer?
+
+    private static let titleFont = NSFont.monospacedDigitSystemFont(
+        ofSize: NSFont.systemFontSize, weight: .regular)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -43,6 +52,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: "Refresh Now", action: #selector(refreshNow), keyEquivalent: "r"))
+        // SMAppService only works from a real .app bundle (not a bare swift-build binary).
+        if Bundle.main.bundleIdentifier != nil {
+            loginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
+            menu.addItem(loginItem)
+        }
         menu.addItem(NSMenuItem(title: "Quit Headroom", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         menu.items.forEach { $0.target = self }
         statusItem.menu = menu
@@ -55,10 +69,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func refreshNow() { refresh() }
 
+    @objc private func toggleLaunchAtLogin(_ sender: NSMenuItem) {
+        do {
+            if SMAppService.mainApp.status == .enabled {
+                try SMAppService.mainApp.unregister()
+            } else {
+                try SMAppService.mainApp.register()
+            }
+        } catch {
+            statusLine.title = "Launch at login failed: \(error.localizedDescription)"
+        }
+        sender.state = SMAppService.mainApp.status == .enabled ? .on : .off
+    }
+
     private func refresh() {
         DispatchQueue.global(qos: .utility).async {
             let outcome: Result<Usage, Error> = Result {
-                try UsageClient.fetch(token: KeychainToken.read())
+                try self.tokenStore.fetchUsage()
             }
             DispatchQueue.main.async { self.render(outcome) }
         }
@@ -67,17 +94,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func render(_ outcome: Result<Usage, Error>) {
         switch outcome {
         case .success(let usage):
-            statusItem.button?.title = "CC \(Self.percent(usage.sevenDay.utilization))"
-            sessionItem.title = "Session (5h): \(Self.line(usage.fiveHour))"
-            weeklyItem.title = "Week (7d): \(Self.line(usage.sevenDay))"
+            setTitle(Render.title(usage), color: Render.tone(usage).color)
+            sessionItem.title = "Session (5h): \(Render.line(usage.fiveHour))"
+            weeklyItem.title = "Week (7d): \(Render.line(usage.sevenDay))"
             statusLine.title = "Updated \(Self.clock.string(from: Date()))"
         case .failure(let error):
-            statusItem.button?.title = "CC ?%"
+            setTitle("CC ?%", color: nil)
             statusLine.title = "\(error)"
         }
     }
 
-    // MARK: formatting
+    private func setTitle(_ title: String, color: NSColor?) {
+        guard let button = statusItem.button else { return }
+        var attributes: [NSAttributedString.Key: Any] = [.font: Self.titleFont]
+        if let color { attributes[.foregroundColor] = color }
+        button.attributedTitle = NSAttributedString(string: title, attributes: attributes)
+    }
 
     private static let clock: DateFormatter = {
         let f = DateFormatter()
@@ -85,24 +117,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         f.dateStyle = .none
         return f
     }()
-
-    private static let resetFormat: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "EEE h:mm a"
-        return f
-    }()
-
-    static func percent(_ utilization: Double) -> String {
-        "\(Int(utilization.rounded()))%"
-    }
-
-    static func line(_ window: Usage.Window) -> String {
-        var text = percent(window.utilization)
-        if let resetsAt = window.resetsAt {
-            text += " — resets \(resetFormat.string(from: resetsAt))"
-        }
-        return text
-    }
 }
 
 let app = NSApplication.shared

@@ -27,8 +27,8 @@ Set 2026-06-09. Full autonomy granted to pursue it.
 
 1. [x] **It exists** — the app builds, runs, and shows Pat's REAL weekly utilization % in the
    menu bar (Keychain token → Anthropic usage endpoint → live number, auto-refreshing). *(Lap 1)*
-2. [ ] **It's complete** — session (5h) **and** weekly (7d) utilization, color-coded
-   (calm → amber → red as a limit approaches), reset countdowns in the dropdown, launch-at-login.
+2. [x] **It's complete** — session (5h) **and** weekly (7d) utilization, color-coded
+   (calm → amber → red as a limit approaches), reset countdowns in the dropdown, launch-at-login. *(Lap 2)*
 3. [ ] **It's downloadable** — a signed + notarized build served from `headroom.walls.sh`
    (landing live, `/metrics` counting downloads honestly).
 4. [ ] **First stranger download** — one download Pat didn't cause.
@@ -111,6 +111,21 @@ commit + push. The motor is [`.claude/commands/lap.md`](.claude/commands/lap.md)
 run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
+
+- **Lap 2 — 2026-06-09 · Complete + quiet.**
+  *Shipped:* milestone 2 — color-coded title (calm/amber/red via `Render.tone`, driven by
+  the WORSE of the two windows so an imminent 5h stop reddens the bar even on a calm
+  week), reset countdowns ("resets in 3h 48m (Tue 22:40)"), launch-at-login toggle
+  (SMAppService, shown only when bundled), and — from Pat's first live feedback — a
+  `TokenStore` that caches the token in memory so the Keychain permission dialog fires
+  once per launch instead of once per 60s refresh (re-reads only on 401). Verified:
+  `--print` shows the real render decisions (session 22%, week 5%, tone=calm), bundle
+  relaunched live in Pat's menu bar. *Fact learned:* the Keychain ACL dialog is per
+  code-signature — ad-hoc signatures change every rebuild, so "Always Allow" can't stick
+  until the Developer ID cert exists; until then the in-memory cache is the only real
+  mitigation, and macOS's 24-hour clock preference overrides explicit `h:mm a` format
+  strings (the countdown honors the user's setting for free). *Next lap:* milestone 3 —
+  zip the bundle, deploy the site to Railway, wire headroom.walls.sh, count downloads.
 
 - **Lap 1 — 2026-06-09 · The real number.**
   *Shipped:* milestone 1 — the app now shows live utilization. `KeychainToken` reads the

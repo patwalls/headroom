@@ -65,6 +65,39 @@ enum KeychainToken {
     }
 }
 
+/// Caches the token in memory so the Keychain (and its permission dialog) is touched
+/// once per launch, not once per refresh. Re-reads only after an auth failure — which
+/// also picks up a token Claude Code has refreshed since launch.
+final class TokenStore {
+    private var cached: String?
+    private let lock = NSLock()
+
+    func token() throws -> String {
+        lock.lock()
+        defer { lock.unlock() }
+        if let cached { return cached }
+        let fresh = try KeychainToken.read()
+        cached = fresh
+        return fresh
+    }
+
+    func invalidate() {
+        lock.lock()
+        defer { lock.unlock() }
+        cached = nil
+    }
+
+    /// Fetch usage, re-reading the Keychain once if the cached token was rejected.
+    func fetchUsage() throws -> Usage {
+        do {
+            return try UsageClient.fetch(token: token())
+        } catch HeadroomError.http(401) {
+            invalidate()
+            return try UsageClient.fetch(token: token())
+        }
+    }
+}
+
 enum UsageClient {
     static let endpoint = URL(string: "https://api.anthropic.com/api/oauth/usage")!
 
