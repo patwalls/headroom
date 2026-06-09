@@ -25,8 +25,8 @@ Set 2026-06-09. Full autonomy granted to pursue it.
 
 ### Milestones (the ladder to 100)
 
-1. [ ] **It exists** — the app builds, runs, and shows Pat's REAL weekly utilization % in the
-   menu bar (Keychain token → Anthropic usage endpoint → live number, auto-refreshing).
+1. [x] **It exists** — the app builds, runs, and shows Pat's REAL weekly utilization % in the
+   menu bar (Keychain token → Anthropic usage endpoint → live number, auto-refreshing). *(Lap 1)*
 2. [ ] **It's complete** — session (5h) **and** weekly (7d) utilization, color-coded
    (calm → amber → red as a limit approaches), reset countdowns in the dropdown, launch-at-login.
 3. [ ] **It's downloadable** — a signed + notarized build served from `headroom.walls.sh`
@@ -111,6 +111,22 @@ commit + push. The motor is [`.claude/commands/lap.md`](.claude/commands/lap.md)
 run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
+
+- **Lap 1 — 2026-06-09 · The real number.**
+  *Shipped:* milestone 1 — the app now shows live utilization. `KeychainToken` reads the
+  OAuth token Claude Code keeps in the Keychain (service `Claude Code-credentials`);
+  `UsageClient` GETs `api.anthropic.com/api/oauth/usage` (Bearer + `anthropic-beta:
+  oauth-2025-04-20`); the status item renders the weekly % (`CC 3%`), dropdown shows both
+  windows with reset times + refresh timestamp, auto-refresh every 60s, honest error
+  states (`CC ?%` + reason). `headroom --print` is the standing verification harness — it
+  printed the REAL endpoint response (session 14%, week 3%, reset timestamps) and the
+  parsed values, exit 0; the GUI survived a live refresh cycle. Token goes to
+  api.anthropic.com and nowhere else. *Fact learned:* the usage endpoint is
+  `GET /api/oauth/usage` and returns `five_hour` / `seven_day` objects with `utilization`
+  (a percentage, already 0–100) and ISO `resets_at` — plus per-model windows
+  (`seven_day_sonnet` etc.) we may surface later; the session number moved 13→14% *during
+  the lap*, proving it's live, not cached. *Next lap:* milestone 2 — color-coding
+  (calm/amber/red) + reset countdowns, then the bundle + download.
 
 - **Lap 0 — 2026-06-09 · Incubated.**
   *Shipped:* the venture exists — repo at `~/code/headroom`; this VISION with the North
