@@ -112,6 +112,25 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 3 — 2026-06-09 · It's downloadable, live on the real domain.**
+  *Shipped:* headroom.walls.sh is LIVE — site deployed to Railway (project `headroom`,
+  origin `headroom-production-9217.up.railway.app`), wired through the walls.sh edge
+  proxy (origin + `status: live` in the registry → the Worker routes it; Railway custom
+  domains are plan-gated, the proxy sidesteps that). `/download` serves a real
+  **universal** (arm64+x86_64, lipo'd slices — no Xcode needed) ad-hoc-signed
+  Headroom.zip (79 KB); the landing CTA is live with honest fine print (right-click →
+  Open until notarization; the Keychain prompt explained). Counter made durable: Railway
+  volume at `/data` + `DATA_DIR` so redeploys can't wipe the North Star number. Verified:
+  `https://headroom.walls.sh/metrics?probe=1` → real `downloads: 0`;
+  `/download?probe=1` → 200, 79,204 bytes, valid zip; probe correctly NOT counted.
+  Milestone 3 is downloadable-but-not-yet-notarized: cert pending (Pat enrolled, Team ID
+  V2N8FKLG3G; CSR generated, awaiting the portal cert — the only `owner: you` step).
+  *Fact learned:* two infra gotchas — Railway's container FS is ephemeral (the downloads
+  counter needs a volume or every deploy zeroes the North Star), and the walls routes map
+  only lists `status: live` walls, so a new wall flips live to get routed, then verifies.
+  *Next lap:* notarize when the cert lands; meanwhile start distribution (README that
+  sells, screenshot, launch copy).
+
 - **Lap 2 — 2026-06-09 · Complete + quiet.**
   *Shipped:* milestone 2 — color-coded title (calm/amber/red via `Render.tone`, driven by
   the WORSE of the two windows so an imminent 5h stop reddens the bar even on a calm

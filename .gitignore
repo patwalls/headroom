@@ -1,6 +1,5 @@
 .DS_Store
 app/.build/
 site/data/
-site/public/Headroom.zip
 node_modules/
 app/dist/

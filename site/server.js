@@ -57,8 +57,12 @@ the 5-hour session and the 7-day week — color-coded before a limit stops you m
 <div class="bar"><span>7d week</span><span class="meter"><i style="width:71%;background:var(--warn)"></i></span><span class="pct">71%</span></div>
 <p class="fine">↑ what it looks like. Yours shows your real numbers.</p>
 
-<a class="cta soon" href="/download">Download — coming with the first release</a>
-<p class="fine">macOS 13+, Apple Silicon &amp; Intel. Free.</p>
+<a class="cta" href="/download">Download Headroom — free</a>
+<p class="fine">v0.1.0 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~80 KB zip</p>
+<p class="fine">Honest fine print: this build isn't notarized yet (Apple Developer
+enrollment is in flight), so the first launch needs <strong>right-click → Open</strong>.
+And macOS will ask once to allow reading the Claude Code keychain item — that's the
+zero-config working as intended; click "Always Allow".</p>
 
 <h2>Zero config — really</h2>
 <p>Claude Code already keeps an OAuth token in your macOS Keychain. Headroom reads it the
