@@ -10,7 +10,9 @@ form-only/human-only listings get a paste-ready packet below.
 | [serhii-londar/open-source-mac-os-apps](https://github.com/serhii-londar/open-source-mac-os-apps) | ~49k | PR to applications.json | **PR open** — [#1153](https://github.com/serhii-londar/open-source-mac-os-apps/pull/1153) (2026-06-10) |
 | [jeffreyjackson/mac-apps](https://github.com/jeffreyjackson/mac-apps) | ~1.5k | PR | **PR open** — [#84](https://github.com/jeffreyjackson/mac-apps/pull/84) (2026-06-10) |
 | [iCHAIT/awesome-macOS](https://github.com/iCHAIT/awesome-macOS) | ~19k | PR | **PR open** — [#868](https://github.com/iCHAIT/awesome-macOS/pull/868) (2026-06-10) |
-| GitHub Releases | — | own repo | ✅ [v0.2.5 release](https://github.com/patwalls/headroom/releases/tag/v0.2.5) — notes only, download stays on the counted path |
+| [rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit) | ~2k | PR (Companion Apps & GUIs section) | **PR open** — [#522](https://github.com/rohitg00/awesome-claude-code-toolkit/pull/522) (2026-06-10) |
+| [jqueryscript/awesome-claude-code](https://github.com/jqueryscript/awesome-claude-code) | ~416 | PR (Usage & Observability section) | **PR open** — [#382](https://github.com/jqueryscript/awesome-claude-code/pull/382) (2026-06-10) |
+| GitHub Releases | — | own repo | ✅ [v0.3.2 release](https://github.com/patwalls/headroom/releases/tag/v0.3.2) — notes only, download stays on the counted path |
 | Homebrew (own tap) | — | `patwalls/homebrew-tap` | ✅ Live (Lap 6) |
 
 ---

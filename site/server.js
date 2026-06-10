@@ -42,6 +42,7 @@ const page = `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="twitter:title" content="Headroom — Claude Code usage in your menu bar">
 <meta name="twitter:description" content="Session (5h) + weekly (7d) Claude Code usage as a live %, color-coded before a limit stops you mid-task. Free, zero config, signed &amp; notarized.">
 <meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Headroom","applicationCategory":"DeveloperApplication","operatingSystem":"macOS 13+","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free macOS menu bar app that shows your Claude Code session (5h) and weekly (7d) usage as a live percentage, color-coded before a limit stops you mid-task. Zero config, zero network calls — reads the numbers Claude Code already renders locally.","downloadUrl":"https://headroom.walls.sh/download","url":"https://headroom.walls.sh","screenshot":"https://headroom.walls.sh/dropdown.png","codeRepository":"https://github.com/patwalls/headroom","license":"https://github.com/patwalls/headroom/blob/main/LICENSE","softwareVersion":"0.3.2","softwareRequirements":"Claude Code installed and running","keywords":"Claude Code,usage monitor,menu bar,macOS,session limit,weekly limit,rate limit"}</script>
 <style>
   :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
   body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -144,6 +145,36 @@ createServer((req, res) => {
     }
     res.writeHead(200, { "content-type": "image/png", "content-length": statSync(png).size });
     return createReadStream(png).pipe(res);
+  }
+
+  if (url.pathname === "/llms.txt") {
+    res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
+    return res.end(`# Headroom
+
+> Headroom is a free, native macOS menu bar app that shows your Claude Code session (5-hour) and weekly (7-day) utilization as a live percentage, color-coded as a limit approaches. Zero configuration, zero network calls — it reads the rate-limit numbers Claude Code itself renders in its status line, from a local file in ~/.claude.
+
+## Installation
+
+- Download from https://headroom.walls.sh (signed & notarized by Apple, ~250 KB)
+- Homebrew: brew install --cask patwalls/tap/headroom
+
+## Key facts
+
+- Free, MIT-licensed, ~590 lines of Swift, no dependencies
+- Reads data from ~/.claude/headroom-usage.json written by Claude Code's own statusLine hook
+- Never touches your API token, Keychain, or account
+- Zero network calls — verified with nettop
+- Compatible with macOS 13+, universal binary (Apple Silicon + Intel)
+- Auto-wires itself on first launch, no manual configuration needed
+- Menu bar shows: CC 52% (the worse of the two meters, color-coded)
+- Dropdown shows: session (5h) + weekly (7d) meters with reset countdowns
+
+## Source
+
+- GitHub: https://github.com/patwalls/headroom
+- Download / landing: https://headroom.walls.sh
+- Built in public as Wall #003 on walls.sh
+`);
   }
 
   if (url.pathname === "/") {
