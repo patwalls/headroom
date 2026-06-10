@@ -12,6 +12,8 @@ form-only/human-only listings get a paste-ready packet below.
 | [iCHAIT/awesome-macOS](https://github.com/iCHAIT/awesome-macOS) | ~19k | PR | **PR open** — [#868](https://github.com/iCHAIT/awesome-macOS/pull/868) (2026-06-10) |
 | [rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit) | ~2k | PR (Companion Apps & GUIs section) | **PR open** — [#522](https://github.com/rohitg00/awesome-claude-code-toolkit/pull/522) (2026-06-10) |
 | [jqueryscript/awesome-claude-code](https://github.com/jqueryscript/awesome-claude-code) | ~416 | PR (Usage & Observability section) | **PR open** — [#382](https://github.com/jqueryscript/awesome-claude-code/pull/382) (2026-06-10) |
+| [LangGPT/awesome-claude-code](https://github.com/LangGPT/awesome-claude-code) | ~249 | PR (Monitoring & Analytics section) | **PR open** — [#90](https://github.com/LangGPT/awesome-claude-code/pull/90) (2026-06-10) |
+| [subinium/awesome-claude-code](https://github.com/subinium/awesome-claude-code) | ~85 | PR (Monitoring & Analytics section) | **PR open** — [#25](https://github.com/subinium/awesome-claude-code/pull/25) (2026-06-10) |
 | GitHub Releases | — | own repo | ✅ [v0.3.2 release](https://github.com/patwalls/headroom/releases/tag/v0.3.2) — notes only, download stays on the counted path |
 | Homebrew (own tap) | — | `patwalls/homebrew-tap` | ✅ Live (Lap 6) |
 
