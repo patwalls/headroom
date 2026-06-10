@@ -13,6 +13,9 @@ final class MeterMenuView: NSView {
     init(label: String) {
         self.label = label
         super.init(frame: NSRect(x: 0, y: 0, width: 300, height: 58))
+        // The menu sizes itself to its widest item (often a status-line text item);
+        // stretch with it so the bars always span the menu's full width.
+        autoresizingMask = [.width]
     }
 
     required init?(coder: NSCoder) { fatalError("not used") }

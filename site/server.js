@@ -58,7 +58,7 @@ the 5-hour session and the 7-day week — color-coded before a limit stops you m
 <p class="fine">↑ what it looks like. Yours shows your real numbers.</p>
 
 <a class="cta" href="/download">Download Headroom — free</a>
-<p class="fine">v0.2.0 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~105 KB zip ·
+<p class="fine">v0.2.1 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~105 KB zip ·
 signed &amp; notarized by Apple — double-click and it runs.</p>
 <p class="fine">Homebrew: <code>brew install --cask patwalls/tap/headroom</code></p>
 <p class="fine">macOS will ask once to allow reading the Claude Code keychain item —

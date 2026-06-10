@@ -114,6 +114,21 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 10 — 2026-06-09 · Full-width bars (Pat's second look), v0.2.1 live.**
+  *Shipped:* Pat's immediate feedback on the new dropdown — the meters didn't span the
+  menu — fixed and shipped as v0.2.1 (notarized + stapled + deployed) within the hour.
+  Cause: NSMenu sizes itself to its widest item (the long "Updated … retrying" status
+  line), but a custom NSMenuItem view keeps its fixed frame width unless
+  `autoresizingMask = [.width]` lets it stretch. Pat's screenshot also confirmed Lap
+  9's resilience working live: 89%/17% still showing during an active 429 with the
+  "retrying" note, no ?%. Verified: live /download → 0.2.1, Gatekeeper accepted,
+  counter honest at 1. *Fact learned:* custom menu views need explicit width
+  autoresizing to track the menu's computed width — and a live user screenshot is the
+  fastest QA the loop has; ship-to-feedback distance of minutes is the actual benefit
+  of the user sitting next to the loop. *Next lap:* the screenshot-worthy dropdown
+  exists now — take the real screenshot for README/landing/launch posts, add repo
+  topics, check the awesome-mac PR.
+
 - **Lap 9 — 2026-06-09 · Pat's feedback lap: real meters, no more ?%, no more dialogs — and downloads: 1.**
   *Shipped:* v0.2.0, notarized + stapled + live. (1) The dropdown now looks like the
   landing page: custom NSMenuItem views drawing label + bold %, a color-coded rounded
