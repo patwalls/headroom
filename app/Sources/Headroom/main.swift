@@ -198,7 +198,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             // moment the window clears, so we recover promptly instead of up to 60s late.
             if case HeadroomError.rateLimited(let retryAfter) = error {
                 rateLimitStrikes += 1
-                let wait = retryAfter ?? min(300.0, 60.0 * pow(2.0, Double(rateLimitStrikes - 1)))
+                // Retry-After can come back 0 ("limited, but no specific delay") — taking
+                // that literally means retrying every second and hammering a closed door.
+                // Honor it only when positive; otherwise fall back to exponential (min 60s).
+                let exponential = min(300.0, 60.0 * pow(2.0, Double(rateLimitStrikes - 1)))
+                let wait = retryAfter.flatMap { $0 > 0 ? $0 : nil } ?? exponential
                 backoffUntil = Date().addingTimeInterval(wait)
                 scheduleRetry(after: wait)
             }

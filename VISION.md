@@ -159,7 +159,14 @@ run it is [`LOOP.md`](LOOP.md).
   sign — `security find-identity` shows 0 valid identities, so the build is Gatekeeper-
   *rejected*. The Developer ID cert + `headroom-notary` profile live on Pat's other Mac.
   Held the binary rather than regress the live download: restored the notarized v0.2.2
-  `Headroom.zip` and kept the landing at v0.2.2 until v0.2.3 can be notarized. *Fact learned:* the rate limit
+  `Headroom.zip` and kept the landing at v0.2.2 until v0.2.3 can be notarized. **Follow-up
+  caught live in Pat's menu bar:** the endpoint returns `Retry-After: 0` on this limit type,
+  and `wait = retryAfter ?? exponential` took the 0 literally → retried every second
+  ("retrying in 0m"), hammering a closed door. Fixed to honor Retry-After only when
+  positive, else fall back to exponential (≥60s). Worth naming: the dev loop ITSELF shares
+  the token bucket — a live Claude Code session polling usage while building Headroom is a
+  third drain alongside the user's TUI and the app, so the rate-limit was partly
+  self-inflicted; the real cure is to stop hammering (back off), not to out-retry it. *Fact learned:* the rate limit
   isn't ours to spend alone — it's one bucket shared with every Claude Code session on the
   machine, so the very users Headroom targets (heavy CC users) are the most likely to trip
   it on first launch; a usage meter therefore has to treat rate-limiting as a first-class,
