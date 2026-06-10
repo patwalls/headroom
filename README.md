@@ -52,6 +52,7 @@ An app that sits next to your credentials all day must be auditable. So:
 - The entire network + Keychain surface is one small file:
   [`app/Sources/Headroom/Usage.swift`](app/Sources/Headroom/Usage.swift). Read it.
 - No dependencies. AppKit + Foundation, ~460 lines total.
+- **MIT licensed** — audit it, fork it, build it yourself.
 
 ## Built in public
 
