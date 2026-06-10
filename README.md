@@ -17,7 +17,7 @@ Headroom puts the number where ambient numbers belong:
 ## Install
 
 **[Download from headroom.walls.sh](https://headroom.walls.sh/download)** — free,
-macOS 13+, universal (Apple Silicon & Intel), ~105 KB. Signed & notarized.
+macOS 13+, universal (Apple Silicon & Intel), ~150 KB. Signed & notarized.
 
 Unzip, drag `Headroom.app` to Applications, open it. On first launch Headroom explains
 the one permission it needs, then macOS asks once (its standard Keychain dialog, for the
@@ -51,7 +51,7 @@ An app that sits next to your credentials all day must be auditable. So:
   network calls besides the one.
 - The entire network + Keychain surface is one small file:
   [`app/Sources/Headroom/Usage.swift`](app/Sources/Headroom/Usage.swift). Read it.
-- No dependencies. AppKit + Foundation, ~460 lines total.
+- No dependencies. AppKit + Foundation, ~780 lines total.
 - **MIT licensed** — audit it, fork it, build it yourself.
 
 ## Built in public

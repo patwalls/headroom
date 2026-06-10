@@ -114,6 +114,27 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 16 — 2026-06-10 · v0.2.3 SHIPPED (Lap 15's fix + the "Sign in with Claude" spike) — downloads: 6.**
+  *Shipped:* two threads converged. (1) Lap 15 (a parallel session with Pat) had fixed
+  the cold-start 429 in source but the release never shipped — this lap bundled,
+  notarized, deployed and verified v0.2.3 live (/download → 154,215 B → Gatekeeper
+  accepted 0.2.3; relaunched in Pat's menu bar; all size/line claims re-synced: ~150 KB,
+  ~780 lines, Usage.swift 164). (2) The v0.3 spike: `headroom --signin` implements the
+  full own-OAuth flow — PKCE verifier/challenge (CryptoKit), authorize URL on the same
+  public client Claude Code uses, code#state paste, token exchange against
+  console.anthropic.com, storage in Headroom's OWN Keychain item (service
+  "Headroom-credentials" — created by us, readable forever with zero consent dialogs),
+  then a live usage fetch with the new token. Builds clean; the browser "Authorize"
+  click is the one human step left to prove it E2E (60 seconds of Pat's time, surfaced).
+  Overnight the counter moved 2 → **6** with zero launch posts — the listings are
+  pulling. *Fact learned:* the loop now has a concurrency seam — two sessions shipping
+  "Lap 15" simultaneously collide in VISION numbering and one can leave a release
+  half-shipped (source fixed, zip stale); the fix is what saved it: rebase, read the
+  other lap's log entry as ground truth, and complete its deploy before starting yours.
+  *Next lap:* E2E-verify --signin with Pat's click; if the flow proves out, design v0.3
+  (sign-in as fallback/alternative in the GUI, refresh-token handling, trust-copy
+  update for the second Anthropic endpoint).
+
 - **Lap 15 — 2026-06-10 · Cold-start 429 fix: a fresh install no longer dead-ends on "—%" (v0.2.3).**
   *Shipped:* Pat installed v0.2.2 on a NEW Mac and it stuck on "—%" / "fetching…" with a
   bare "Usage endpoint answered HTTP 429" — the exact thing that would have hit everyone

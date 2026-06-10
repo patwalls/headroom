@@ -72,7 +72,7 @@ the 5-hour session and the 7-day week — color-coded before a limit stops you m
 Yours shows your numbers.</p>
 
 <a class="cta" href="/download">Download Headroom — free</a>
-<p class="fine">v0.2.2 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~105 KB zip ·
+<p class="fine">v0.2.3 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~150 KB zip ·
 signed &amp; notarized by Apple — double-click and it runs.</p>
 <p class="fine">Homebrew: <code>brew install --cask patwalls/tap/headroom</code></p>
 <p class="fine">On first launch Headroom explains the one permission it needs, then macOS
@@ -88,7 +88,7 @@ number is just there.</p>
 <code>api.anthropic.com</code> and nowhere else. It never logs it, never stores a copy,
 never phones home. The source is small enough to read —
 <a href="https://github.com/patwalls/headroom">read it on GitHub</a>: the entire
-network + Keychain surface is one ~150-line file.</div>
+network + Keychain surface is one ~165-line file.</div>
 
 <h2>Why</h2>
 <p>The weekly limit always finds you mid-task, because a meter you have to remember to
