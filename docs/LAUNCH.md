@@ -1,11 +1,11 @@
 # Launch kit — ready to paste
 
-Three posts, one per channel, in posting order. Every claim verified against live
-reality on 2026-06-10, v0.3.1 (zip = 256,346 bytes ≈ 250 KB, app ≈ 590 lines, zero
-network calls by design, landing/download/repo/tap all 200). **The posting itself is
-Pat's** — it goes out under his name. Rules: post honestly, answer every comment, never
-astroturf, and if a number changes, re-verify before pasting. A fresh real screenshot
-lives at `docs/dropdown.png` (the app's own rendering, real data).
+Five channels. Every claim verified against live reality on 2026-06-10, v0.3.2 (zip
+= 265,022 bytes ≈ 259 KB, app ≈ 650 lines, zero network calls by design, landing /
+download / repo / tap all 200). **The posting itself is Pat's** — it goes out under his
+name. Rules: post honestly, answer every comment, never astroturf, and if a number
+changes, re-verify before pasting. A fresh real screenshot lives at `docs/dropdown.png`
+(the app's own rendering, real data — now shows 3 bars: session, weekly, context window).
 
 ---
 
@@ -82,7 +82,42 @@ lives at `docs/dropdown.png` (the app's own rendering, real data).
 
 ---
 
-## 3. X / Twitter
+## 3. r/MacApps (Reddit — different audience from r/ClaudeAI)
+
+**Title:**
+
+> Headroom: shows your Claude Code session + weekly limits as a live % in the menu bar
+> — zero network calls, free, notarized
+
+**Body:**
+
+> If you use Claude Code (Anthropic's CLI coding assistant), it runs under two
+> invisible meters: a 5-hour session window and a 7-day weekly cap. When either
+> fills, it stops cold mid-task. `/usage` shows the numbers, but that's reactive.
+>
+> **Headroom** puts both meters in the menu bar as a color-coded live %, with reset
+> countdowns in the dropdown. It also shows your active model (Sonnet 4.6 / Opus /
+> Fable) and context window fill.
+>
+> **How the data gets there:** Claude Code already gets these numbers and renders
+> them in its terminal status line. Headroom installs a tiny status-line hook that
+> saves that JSON to a local file, and the app reads the file. **Zero network calls
+> — no API key, no token, no Keychain, no analytics.** The token never leaves the
+> machine.
+>
+> Free, signed & notarized, ~259 KB. MIT.
+>
+> - Download: https://headroom.walls.sh
+> - Brew: `brew install --cask patwalls/tap/headroom`
+> - Source: https://github.com/patwalls/headroom
+
+**Attach:** `docs/dropdown.png`.
+**Note:** r/MacApps has 200k+ subscribers who care about Mac apps but may not be in
+Claude Code circles — lead with the Mac menu bar angle, not the Claude Code angle.
+
+---
+
+## 4. X / Twitter
 
 **Post:**
 
@@ -98,12 +133,22 @@ lives at `docs/dropdown.png` (the app's own rendering, real data).
 
 ---
 
+## 5. ProductHunt — see docs/PRODUCTHUNT.md for the full packet
+
+Short summary: submit at https://producthunt.com/posts/new, hunter = Pat's account,
+tagline in that file, topics = Developer Tools + macOS. Best day: Tuesday–Thursday.
+
+---
+
 ## Checklist (in order)
 
 1. [ ] r/ClaudeAI first (friendliest audience, fastest feedback).
-2. [ ] Show HN next weekday morning ET, first comment pasted within a minute.
-3. [ ] X same day as HN.
-4. [ ] Watch `https://headroom.walls.sh/metrics` — milestone 5 is 25 downloads +
+2. [ ] r/MacApps same day or day after (different audience — macOS users).
+3. [ ] Show HN next weekday morning ET, first comment pasted within a minute.
+4. [ ] X same day as HN.
+5. [ ] ProductHunt: see PRODUCTHUNT.md — full packet ready.
+6. [ ] Watch `https://headroom.walls.sh/metrics` — milestone 5 is 25 downloads +
        first external feedback. Reply to everything.
-5. [ ] 2026-06-16+: submit to awesome-claude-code (packet in LISTINGS.md — update its
+7. [ ] 2026-06-16+: submit to awesome-claude-code (packet in LISTINGS.md — update its
        description to the zero-network story before pasting).
+8. [ ] MacMenuBar.com: packet in LISTINGS.md — web form, 5 minutes.
