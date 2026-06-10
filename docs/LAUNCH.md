@@ -33,7 +33,7 @@ a number changes (size, line count), re-verify before pasting.
 > surface is deliberately small: the entire network + Keychain code is one 150-line
 > file (Usage.swift), the whole app is ~340 lines of AppKit with zero dependencies,
 > and the token goes to api.anthropic.com and nowhere else — no analytics, no
-> auto-updater, no other network calls. Signed & notarized; ~88 KB zip; or
+> auto-updater, no other network calls. Signed & notarized; ~90 KB zip; or
 > `brew install --cask patwalls/tap/headroom`. Free.
 >
 > One more thing worth disclosing because it's in the repo anyway: most of this was
@@ -69,7 +69,7 @@ second attempt days later.
 > network/Keychain surface is one 150-line file you can read on GitHub (whole app is
 > ~340 lines, no dependencies). Signed & notarized.
 >
-> Download: https://headroom.walls.sh (~88 KB) · Brew:
+> Download: https://headroom.walls.sh (~90 KB) · Brew:
 > `brew install --cask patwalls/tap/headroom` · Source:
 > https://github.com/patwalls/headroom
 >

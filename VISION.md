@@ -112,6 +112,27 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 8 — 2026-06-09 · First external listing PR + the form-only packet.**
+  *Shipped:* Headroom is in review on the biggest Mac software list —
+  [awesome-mac PR #2175](https://github.com/jaywcjlove/awesome-mac/pull/2175) (~105k
+  stars), entry added under Menu Bar Tools in all four language READMEs per their
+  curation skill's rules (one sentence, alphabetical, Freeware icon only — no OSS icon
+  claimed while the license is undecided); verified OPEN via `gh pr view`. Also shipped
+  `docs/LISTINGS.md`: a listings tracker + a complete paste-ready packet for
+  awesome-claude-code (~46k stars), which **bans programmatic submissions** — web-UI
+  issue form, human-only, and resources must be ≥1 week old, so Pat's window opens
+  2026-06-16. Every form field is pre-filled (category "Tooling: Usage Monitors",
+  validation steps, the mandatory network-call disclosure). Plus the Lap-7 drift fix:
+  ~90 KB and ~340 lines now consistent across README/landing/launch kit. *Fact
+  learned:* the two biggest relevant lists sit at opposite poles of the same spam
+  problem — awesome-mac explicitly welcomes AI-assisted PRs and ships an agent skill
+  with curation rules, while awesome-claude-code auto-closes anything not submitted by
+  a human through the web form and requires resources to be a week old; distribution
+  work has to read each gatekeeper's rules before it ships, not assume PRs everywhere.
+  *Next lap:* more loop-shippable surface — GitHub repo topics + a real screenshot for
+  the README/landing (also unblocks Pat's launch posts), and check the awesome-mac PR
+  for review feedback.
+
 - **Lap 7 — 2026-06-09 · The launch kit — copy for the one human step.**
   *Shipped:* `docs/LAUNCH.md` — ready-to-paste launch copy for the three channels that
   drive downloads, in posting order: r/ClaudeAI first (friendliest, fastest feedback),
