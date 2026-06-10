@@ -114,6 +114,26 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 12 — 2026-06-09 · The screenshot is the app: `--snapshot` + real image everywhere.**
+  *Shipped:* the landing's typed-number mock is gone. New `headroom --snapshot out.png`
+  harness renders the dropdown's actual MeterMenuViews — same drawing code the menu
+  runs — with live endpoint data into a 2x PNG (Snapshot.swift, offscreen
+  NSBitmapImageRep + darkAqua appearance). Real render (session 9%, week 19%, reset
+  countdowns) now serves at /dropdown.png on the landing (caption: "the actual app
+  rendering its own dropdown with real data — not a mock") and replaces the SVG mock
+  in the README. The loop can re-shoot it any lap — no Accessibility permissions, no
+  human with a screenshot tool. Also: 8 GitHub topics on the repo (claude-code, macos,
+  menubar, usage-monitor…) for search surface; awesome-mac PR #2175 still open, no
+  feedback yet. Verified: /dropdown.png → 200 (28,690B), landing caption live, counter
+  honest at 1. *Fact learned:* offscreen AppKit rendering needs three things to match
+  the live menu: an NSApplication context, an explicit `NSAppearance(named: .darkAqua)`
+  on the container (offscreen views otherwise resolve dynamic colors against no
+  appearance), and `NSGraphicsContext(bitmapImageRep:)` with rep.size set to points for
+  a clean 2x — after that, the menu's own draw(_:) code IS the screenshot generator,
+  so the marketing image can never drift from the product. *Next lap:* watch
+  PR #2175 + the counter; candidates: OpenGraph/social meta tags for the landing
+  (link previews when Pat posts), or start the v0.3 "Sign in with Claude" spike.
+
 - **Lap 11 — 2026-06-09 · First-run UX: explain the scary dialog before it appears (v0.2.2).**
   *Shipped:* Pat asked for better UX around the Keychain consent moment. The dialog
   itself is immovable (macOS's consent for reading another app's Keychain item), so

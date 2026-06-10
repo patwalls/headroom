@@ -6,7 +6,7 @@ Everyone on a Claude Pro/Max plan lives with two invisible meters — the 5-hour
 window and the 7-day weekly cap — and discovers them the bad way: a hard stop mid-task.
 Headroom puts the number where ambient numbers belong:
 
-![Headroom in the menu bar](docs/menubar.svg)
+![Headroom's dropdown — the app's own rendering with real data](docs/dropdown.png)
 
 - **Session (5h) and weekly (7d) utilization** as a live %, refreshed every minute
 - **Color-coded before it bites** — calm below 70%, amber at 70%, red at 90%, tracking

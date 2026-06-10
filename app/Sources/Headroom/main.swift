@@ -27,6 +27,22 @@ if CommandLine.arguments.contains("--print") {
     }
 }
 
+// MARK: - --snapshot harness (real rendering, real data — for README/landing)
+
+if let i = CommandLine.arguments.firstIndex(of: "--snapshot"), CommandLine.arguments.count > i + 1 {
+    let path = CommandLine.arguments[i + 1]
+    _ = NSApplication.shared  // AppKit context for offscreen drawing
+    do {
+        let usage = try TokenStore().fetchUsage()
+        try Snapshot.write(usage: usage, to: path)
+        print("wrote \(path) — session \(usage.fiveHour.utilization)% week \(usage.sevenDay.utilization)%")
+        exit(0)
+    } catch {
+        FileHandle.standardError.write("headroom: \(error)\n".data(using: .utf8)!)
+        exit(1)
+    }
+}
+
 // MARK: - Menu bar app
 
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {

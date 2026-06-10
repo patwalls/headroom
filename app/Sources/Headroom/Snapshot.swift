@@ -1,0 +1,64 @@
+import AppKit
+
+// `headroom --snapshot out.png` — render the dropdown's meters with REAL data into a
+// PNG, using the same MeterMenuView code the menu uses. This is how the README/landing
+// get a truthful "what it looks like": the app's own rendering, never a mock.
+
+enum Snapshot {
+    static func write(usage: Usage, to path: String) throws {
+        let width: CGFloat = 320
+        let panel = PanelView(frame: NSRect(x: 0, y: 0, width: width, height: 158))
+        panel.appearance = NSAppearance(named: .darkAqua)
+
+        let session = MeterMenuView(label: "Session (5h)")
+        session.frame = NSRect(x: 0, y: 8, width: width, height: 58)
+        session.update(usage.fiveHour)
+        let week = MeterMenuView(label: "Week (7d)")
+        week.frame = NSRect(x: 0, y: 66, width: width, height: 58)
+        week.update(usage.sevenDay)
+        panel.addSubview(session)
+        panel.addSubview(week)
+
+        let clock = DateFormatter()
+        clock.timeStyle = .short
+        clock.dateStyle = .none
+        panel.statusText = "Updated \(clock.string(from: Date()))"
+
+        guard let rep = NSBitmapImageRep(
+            bitmapDataPlanes: nil, pixelsWide: Int(width * 2), pixelsHigh: 316,
+            bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+            colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0
+        ) else { throw HeadroomError.network("could not create bitmap") }
+        rep.size = panel.bounds.size
+
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
+        panel.displayIgnoringOpacity(panel.bounds, in: NSGraphicsContext.current!)
+        NSGraphicsContext.restoreGraphicsState()
+
+        guard let png = rep.representation(using: .png, properties: [:]) else {
+            throw HeadroomError.network("could not encode png")
+        }
+        try png.write(to: URL(fileURLWithPath: path))
+    }
+}
+
+/// The dark rounded card the meters sit on — visually the menu, minus the chrome.
+final class PanelView: NSView {
+    var statusText = ""
+
+    override var isFlipped: Bool { true }
+
+    override func draw(_ dirtyRect: NSRect) {
+        NSColor(calibratedWhite: 0.13, alpha: 1).setFill()
+        NSBezierPath(roundedRect: bounds, xRadius: 12, yRadius: 12).fill()
+        if !statusText.isEmpty {
+            (statusText as NSString).draw(
+                at: NSPoint(x: 14, y: bounds.height - 26),
+                withAttributes: [
+                    .font: NSFont.systemFont(ofSize: 12),
+                    .foregroundColor: NSColor.secondaryLabelColor,
+                ])
+        }
+    }
+}

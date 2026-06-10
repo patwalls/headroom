@@ -53,9 +53,9 @@ const page = `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <p class="sub">A free macOS menu bar app that shows your Claude Code usage as a live % —
 the 5-hour session and the 7-day week — color-coded before a limit stops you mid-task.</p>
 
-<div class="bar"><span>5h session</span><span class="meter"><i style="width:34%;background:var(--ok)"></i></span><span class="pct">34%</span></div>
-<div class="bar"><span>7d week</span><span class="meter"><i style="width:71%;background:var(--warn)"></i></span><span class="pct">71%</span></div>
-<p class="fine">↑ what it looks like. Yours shows your real numbers.</p>
+<img src="/dropdown.png" width="320" alt="Headroom's dropdown: Session (5h) and Week (7d) meters with color-coded bars and reset countdowns" style="border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.45)">
+<p class="fine">↑ the actual app rendering its own dropdown with real data — not a mock.
+Yours shows your numbers.</p>
 
 <a class="cta" href="/download">Download Headroom — free</a>
 <p class="fine">v0.2.2 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~105 KB zip ·
@@ -118,6 +118,17 @@ createServer((req, res) => {
       "content-length": statSync(BUILD_ZIP).size,
     });
     return createReadStream(BUILD_ZIP).pipe(res);
+  }
+
+  // The dropdown image on the pitch page — the app's own rendering, real data.
+  if (url.pathname === "/dropdown.png") {
+    const png = join(ROOT, "public", "dropdown.png");
+    if (!existsSync(png)) {
+      res.writeHead(404, { "content-type": "application/json" });
+      return res.end(JSON.stringify({ error: "not_found" }));
+    }
+    res.writeHead(200, { "content-type": "image/png", "content-length": statSync(png).size });
+    return createReadStream(png).pipe(res);
   }
 
   if (url.pathname === "/") {
