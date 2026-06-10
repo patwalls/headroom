@@ -27,6 +27,32 @@ if CommandLine.arguments.contains("--print") {
     }
 }
 
+// MARK: - --signin spike (v0.3: own OAuth token, no Keychain consent dialog)
+
+if CommandLine.arguments.contains("--signin") {
+    let verifier = OAuth.base64url(Data((0..<64).map { _ in UInt8.random(in: 0...255) }))
+    let url = OAuth.authorizeURL(verifier: verifier)
+    print("Open this URL, click Authorize, then paste the code shown (looks like code#state):\n\n\(url.absoluteString)\n")
+    NSWorkspace.shared.open(url)
+    print("Code: ", terminator: "")
+    guard let pasted = readLine(), !pasted.isEmpty else {
+        FileHandle.standardError.write("headroom: no code entered\n".data(using: .utf8)!)
+        exit(1)
+    }
+    do {
+        let tokens = try OAuth.exchange(pasted: pasted, verifier: verifier)
+        try OAuth.store(tokens)
+        print("Token stored in Headroom's own Keychain item (service \"\(OAuth.keychainService)\").")
+        guard let access = tokens["access_token"] as? String else { exit(1) }
+        let usage = try UsageClient.fetch(token: access)
+        print("usage via signed-in token: session(5h)=\(usage.fiveHour.utilization)% week(7d)=\(usage.sevenDay.utilization)%")
+        exit(0)
+    } catch {
+        FileHandle.standardError.write("headroom: \(error)\n".data(using: .utf8)!)
+        exit(1)
+    }
+}
+
 // MARK: - --snapshot harness (real rendering, real data — for README/landing)
 
 if let i = CommandLine.arguments.firstIndex(of: "--snapshot"), CommandLine.arguments.count > i + 1 {
