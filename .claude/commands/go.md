@@ -11,6 +11,11 @@ push) on repeat until told to stop. It's the memorable name for `/loop /lap`.
 
 ## What to do
 
+0. **Label the session** (the equivalent of `/rename HEADROOM LOOP`, so the session list
+   reads clearly) — run this; if it fails, continue anyway, it's cosmetic:
+   ```bash
+   node -e 'const fs=require("fs"),os=require("os"),d=os.homedir()+"/.claude/sessions";const id=process.env.CLAUDE_CODE_SESSION_ID;for(const f of fs.readdirSync(d)){const p=d+"/"+f;try{const j=JSON.parse(fs.readFileSync(p,"utf8"));if(j.sessionId===id){j.name="HEADROOM LOOP";fs.writeFileSync(p,JSON.stringify(j))}}catch{}}'
+   ```
 1. Parse `$ARGUMENTS`:
    - A token matching `\d+[smhd]` (e.g. `1h`, `30m`) is the **cadence** — one lap per interval.
    - Anything else is a **focus** handed to every lap.
