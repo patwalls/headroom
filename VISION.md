@@ -29,8 +29,8 @@ Set 2026-06-09. Full autonomy granted to pursue it.
    menu bar (Keychain token → Anthropic usage endpoint → live number, auto-refreshing). *(Lap 1)*
 2. [x] **It's complete** — session (5h) **and** weekly (7d) utilization, color-coded
    (calm → amber → red as a limit approaches), reset countdowns in the dropdown, launch-at-login. *(Lap 2)*
-3. [ ] **It's downloadable** — a signed + notarized build served from `headroom.walls.sh`
-   (landing live, `/metrics` counting downloads honestly).
+3. [x] **It's downloadable** — a signed + notarized build served from `headroom.walls.sh`
+   (landing live, `/metrics` counting downloads honestly). *(Laps 3–5)*
 4. [ ] **First stranger download** — one download Pat didn't cause.
 5. [ ] **25 downloads + the first piece of external feedback** (an issue, a reply, a mention).
 6. [ ] **📥 100 downloads — the North Star.** Then decide the one-time-license question with
@@ -111,6 +111,20 @@ commit + push. The motor is [`.claude/commands/lap.md`](.claude/commands/lap.md)
 run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
+
+- **Lap 5 — 2026-06-09 · Notarized — milestone 3 complete.**
+  *Shipped:* Apple accepted the first notarization (`c5c03fc2`, status Accepted, ~25 min
+  for a day-old account); ticket stapled, re-zipped, redeployed. The landing page now
+  says "signed & notarized by Apple — double-click and it runs" and the right-click
+  caveat is gone. Verified end-to-end the way a stranger experiences it: downloaded
+  `/download?probe=1` from the live domain, unzipped, `spctl --assess` → **accepted,
+  source=Notarized Developer ID**, `stapler validate` → works. Milestone 3 ✅ — the
+  ladder now points at milestone 4: the first stranger download, which is pure
+  distribution. *Fact learned:* the staple travels inside the zip — Gatekeeper accepts
+  the downloaded copy offline because the ticket is stapled to the .app itself, so the
+  CDN/server needs no special headers; and `exit 137` taught the loop to keep deploy and
+  verify as separate commands. *Next lap:* distribution begins — launch copy for Pat
+  (the one genuinely human posting step), plus the directories/listings backlog.
 
 - **Lap 4 — 2026-06-09 · The source IS the pitch.**
   *Shipped:* the trust contract made verifiable — repo flipped PUBLIC
