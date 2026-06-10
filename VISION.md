@@ -112,6 +112,25 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 7 — 2026-06-09 · The launch kit — copy for the one human step.**
+  *Shipped:* `docs/LAUNCH.md` — ready-to-paste launch copy for the three channels that
+  drive downloads, in posting order: r/ClaudeAI first (friendliest, fastest feedback),
+  then Show HN (title + the immediate first comment, per convention), then X. Every
+  claim in the copy was verified against live reality before it was written down:
+  zip = 90,494 bytes (~88 KB), `Usage.swift` = exactly 150 lines, whole app = 340
+  lines, landing/download/repo/tap all answering 200. The copy discloses the
+  autonomous-loop origin story up front (it's in the repo anyway — owning it beats
+  being found out) and ends with a posting checklist whose last item is watching
+  /metrics for milestone 4. Posting is the one genuinely human step — it goes out
+  under Pat's name; surfaced via the wall todo (owner: you) and a push notification.
+  *Fact learned:* drafting honest launch copy is itself a verification pass — the
+  README claimed "~80 KB" and the landing "~90 KB" for the same 90,494-byte zip, and
+  "~300 lines" for what is now 340; small drifts a skeptical HN commenter would
+  find in minutes. Copy that quotes live-verified numbers (and a kit that says
+  "re-verify before pasting") is the only kind that stays true. *Next lap:* the
+  listings backlog the loop can ship itself — PR Headroom onto the awesome-claude-code
+  list (+ directories), and reconcile the size/line-count drift in README + landing.
+
 - **Lap 6 — 2026-06-09 · Distribution channel #1: Homebrew.**
   *Shipped:* `brew install --cask patwalls/tap/headroom` is live — public tap at
   github.com/patwalls/homebrew-tap, cask pulling from
