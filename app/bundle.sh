@@ -15,8 +15,11 @@ swift build -c release --triple x86_64-apple-macosx13.0
 X86_BIN=$(swift build -c release --triple x86_64-apple-macosx13.0 --show-bin-path)/Headroom
 
 rm -rf dist/Headroom.app
-mkdir -p dist/Headroom.app/Contents/MacOS
+mkdir -p dist/Headroom.app/Contents/MacOS dist/Headroom.app/Contents/Resources
 lipo -create "$ARM64_BIN" "$X86_BIN" -output dist/Headroom.app/Contents/MacOS/Headroom
+# App icon — regenerate with: swift tools/make-icon.swift /tmp/Headroom.iconset &&
+# iconutil -c icns /tmp/Headroom.iconset -o Resources/Headroom.icns
+cp Resources/Headroom.icns dist/Headroom.app/Contents/Resources/
 
 cat > dist/Headroom.app/Contents/Info.plist <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -31,6 +34,7 @@ cat > dist/Headroom.app/Contents/Info.plist <<PLIST
     <key>CFBundleVersion</key><string>${VERSION}</string>
     <key>LSMinimumSystemVersion</key><string>13.0</string>
     <key>LSUIElement</key><true/>
+    <key>CFBundleIconFile</key><string>Headroom</string>
     <key>NSHumanReadableCopyright</key><string>headroom.walls.sh</string>
 </dict>
 </plist>

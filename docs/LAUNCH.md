@@ -1,7 +1,7 @@
 # Launch kit — ready to paste
 
 Three posts, one per channel, in posting order. Every claim below was verified against
-live reality on 2026-06-09, v0.2.0 (zip = 154,215 bytes, `Usage.swift` = 164 lines, app
+live reality on 2026-06-09, v0.2.0 (zip = 289,329 bytes, `Usage.swift` = 164 lines, app
 total ~780 lines, landing/download/repo/tap all 200). **The posting itself is Pat's** — it goes
 out under his name. Rules: post honestly, answer every comment, never astroturf, and if
 a number changes (size, line count), re-verify before pasting.
@@ -33,7 +33,7 @@ a number changes (size, line count), re-verify before pasting.
 > surface is deliberately small: the entire network + Keychain code is 
 > file (Usage.swift), the whole app is ~780 lines of AppKit with zero dependencies,
 > and the token goes to api.anthropic.com and nowhere else — no analytics, no
-> auto-updater, no other network calls. Signed & notarized; ~150 KB zip; or
+> auto-updater, no other network calls. Signed & notarized; ~280 KB zip; or
 > `brew install --cask patwalls/tap/headroom`. Free.
 >
 > One more thing worth disclosing because it's in the repo anyway: most of this was
@@ -69,7 +69,7 @@ second attempt days later.
 > network/Keychain surface is  file you can read on GitHub (whole app is
 > ~780 lines, no dependencies). Signed & notarized.
 >
-> Download: https://headroom.walls.sh (~150 KB) · Brew:
+> Download: https://headroom.walls.sh (~280 KB) · Brew:
 > `brew install --cask patwalls/tap/headroom` · Source:
 > https://github.com/patwalls/headroom
 >

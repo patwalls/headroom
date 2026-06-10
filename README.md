@@ -17,7 +17,7 @@ Headroom puts the number where ambient numbers belong:
 ## Install
 
 **[Download from headroom.walls.sh](https://headroom.walls.sh/download)** — free,
-macOS 13+, universal (Apple Silicon & Intel), ~150 KB. Signed & notarized.
+macOS 13+, universal (Apple Silicon & Intel), ~280 KB. Signed & notarized.
 
 Unzip, drag `Headroom.app` to Applications, open it. On first launch Headroom explains
 the one permission it needs, then macOS asks once (its standard Keychain dialog, for the

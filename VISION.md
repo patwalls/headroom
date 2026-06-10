@@ -114,6 +114,22 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 17 — 2026-06-10 · The icon (v0.2.4) — no more generic blank app.**
+  *Shipped:* Headroom has a face: a programmatically rendered app icon — the dropdown's
+  two meter bars (green session, amber week) on a Big Sur squircle, vector-drawn at all
+  10 .iconset sizes by `app/tools/make-icon.swift` (same philosophy as --snapshot: the
+  icon is generated from code, regenerable any lap, can't rot in a design file nobody
+  has). `bundle.sh` now bakes `Headroom.icns` + CFBundleIconFile into every build.
+  v0.2.4 notarized, deployed, verified live: /download → 289,329 B → icns present in
+  the bundle, Gatekeeper accepted; relaunched in Pat's menu bar. Every consent dialog,
+  Finder window, and launch-post screenshot now shows a real product instead of the
+  generic blank-app glyph. Size claims re-synced (~280 KB — the icns is half the zip).
+  *Fact learned:* the icon was load-bearing for trust all along — the Keychain consent
+  dialog renders the requesting app's icon front and center, so until this lap the
+  scariest moment in onboarding starred a generic placeholder; polish and trust aren't
+  separate backlogs here. *Next lap:* --signin E2E (still waiting on Pat's 60-second
+  Authorize click), v0.3 design, or listings/PR feedback — whichever has moved.
+
 - **Lap 16 — 2026-06-10 · v0.2.3 SHIPPED (Lap 15's fix + the "Sign in with Claude" spike) — downloads: 6.**
   *Shipped:* two threads converged. (1) Lap 15 (a parallel session with Pat) had fixed
   the cold-start 429 in source but the release never shipped — this lap bundled,
