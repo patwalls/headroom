@@ -28,10 +28,14 @@ if CommandLine.arguments.contains("--print") {
     }
     print("captured: \(ISO8601DateFormatter().string(from: at))")
     print("parsed: session(5h)=\(usage.fiveHour.utilization)% week(7d)=\(usage.sevenDay.utilization)%")
+    if let ctx = usage.contextUsed { print("parsed: context=\(ctx)%") }
+    if let model = usage.modelName { print("parsed: model=\(model)") }
     let d = Render.decide(usage)
     print("render: title=\"\(d.title)\" tone=\(d.tone.rawValue)")
     print("render: session=\"\(d.session.map { Render.line($0) } ?? "— (window reset — open Claude Code)")\"")
     print("render: week=\"\(d.week.map { Render.line($0) } ?? "— (window reset — open Claude Code)")\"")
+    if let ctx = d.context { print("render: context=\"\(Render.percent(ctx))\"") }
+    if let model = d.modelName { print("render: model=\"\(model)\"") }
     exit(0)
 }
 
@@ -58,6 +62,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var statusItem: NSStatusItem!
     private let sessionMeter = MeterMenuView(label: "Session (5h)")
     private let weeklyMeter = MeterMenuView(label: "Week (7d)")
+    private let contextMeter = MeterMenuView(label: "Context")
+    private let contextItem = NSMenuItem()
     private let statusLine = NSMenuItem(title: "Starting…", action: nil, keyEquivalent: "")
     private let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "")
     private var timer: Timer?
@@ -77,6 +83,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             item.isEnabled = false
             menu.addItem(item)
         }
+        // Context window — same bar, but hidden when Claude Code didn't report a number.
+        contextItem.view = contextMeter
+        contextItem.isEnabled = false
+        menu.addItem(contextItem)
         statusLine.isEnabled = false
         menu.addItem(statusLine)
         menu.addItem(.separator())
@@ -151,6 +161,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let note = "Open Claude Code to see your usage"
             sessionMeter.awaiting(note)
             weeklyMeter.awaiting(note)
+            contextItem.isHidden = true
             statusLine.title = note
             return
         }
@@ -160,9 +171,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let d = Render.decide(usage)
         if let five = d.session { sessionMeter.update(five) } else { sessionMeter.awaiting("window reset — open Claude Code") }
         if let seven = d.week { weeklyMeter.update(seven) } else { weeklyMeter.awaiting("window reset — open Claude Code") }
+        // Context window: show the bar only when Claude Code gave us a number. resetsAt nil
+        // → no countdown caption (it resets when a new session starts, which we can't see).
+        if let context = d.context {
+            contextItem.isHidden = false
+            contextMeter.update(Usage.Window(utilization: context, resetsAt: nil))
+        } else {
+            contextItem.isHidden = true
+        }
         setTitle(d.title, color: d.tone.color)
 
-        statusLine.title = "Updated \(Self.clock.string(from: at))"
+        statusLine.title = [d.modelName, "Updated \(Self.clock.string(from: at))"]
+            .compactMap { $0 }.joined(separator: " · ")
     }
 
     /// Re-render countdowns and re-read the file the moment the menu opens.

@@ -35,6 +35,8 @@ enum Render {
         let tone: Tone
         let session: Usage.Window?  // nil = rolled over, show "—"
         let week: Usage.Window?
+        let context: Double?        // nil = not available
+        let modelName: String?
     }
 
     static func decide(_ usage: Usage) -> Decision {
@@ -45,7 +47,9 @@ enum Render {
             title: "CC \(seven.map { percent($0.utilization) } ?? "—%")",
             tone: levels.isEmpty ? .calm : Tone(utilization: levels.max()!),
             session: five,
-            week: seven)
+            week: seven,
+            context: usage.contextUsed,
+            modelName: usage.modelName)
     }
 
     static func percent(_ utilization: Double) -> String {

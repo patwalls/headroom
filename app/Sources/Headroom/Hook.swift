@@ -33,8 +33,15 @@ enum HookUsage {
         }
 
         guard let five = window("five_hour"), let seven = window("seven_day") else { return nil }
+
+        // Bonus context Claude Code already hands us in the same JSON (not under rate_limits):
+        // the live context-window fill and the active model's display name. Both optional —
+        // absent on older Claude Code — so missing data just hides those rows, never breaks.
+        let contextUsed = ((root["context_window"] as? [String: Any])?["used_percentage"] as? NSNumber)?.doubleValue
+        let modelName = (root["model"] as? [String: Any])?["display_name"] as? String
+
         let mtime = (try? FileManager.default.attributesOfItem(atPath: path))?[.modificationDate] as? Date
-        return (Usage(fiveHour: five, sevenDay: seven), mtime ?? Date())
+        return (Usage(fiveHour: five, sevenDay: seven, contextUsed: contextUsed, modelName: modelName), mtime ?? Date())
     }
 }
 

@@ -19,6 +19,8 @@ struct Usage {
     }
     let fiveHour: Window
     let sevenDay: Window
+    var contextUsed: Double?   // context_window.used_percentage, nil if absent
+    var modelName: String?     // model.display_name, nil if absent
 }
 
 struct AppError: Error, CustomStringConvertible {
