@@ -7,6 +7,8 @@ form-only/human-only listings get a paste-ready packet below.
 |---|---|---|---|
 | [jaywcjlove/awesome-mac](https://github.com/jaywcjlove/awesome-mac) | ~105k | PR (AI-assisted welcome) | **PR open** — [#2175](https://github.com/jaywcjlove/awesome-mac/pull/2175) (2026-06-09) |
 | [hesreallyhim/awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) | ~46k | Web-UI issue form, **human-only** | Packet ready below — **submit on/after 2026-06-16** |
+| [serhii-londar/open-source-mac-os-apps](https://github.com/serhii-londar/open-source-mac-os-apps) | ~49k | PR to applications.json | **PR open** — [#1153](https://github.com/serhii-londar/open-source-mac-os-apps/pull/1153) (2026-06-10) |
+| [jeffreyjackson/mac-apps](https://github.com/jeffreyjackson/mac-apps) | ~1.5k | PR | **PR open** — [#84](https://github.com/jeffreyjackson/mac-apps/pull/84) (2026-06-10) |
 | Homebrew (own tap) | — | `patwalls/homebrew-tap` | ✅ Live (Lap 6) |
 
 ---
@@ -19,10 +21,6 @@ form-only/human-only listings get a paste-ready packet below.
 **at least one week old**: Headroom was born 2026-06-09, so **don't submit before
 2026-06-16**.
 
-**Strongly recommended first:** pick the license (the form requires one; "No License /
-Not Specified" is an option but the maintainer explicitly scrutinizes licensing — an
-MIT-licensed submission has much better odds, and the license question is already on
-your todo list).
 
 Paste these into the form fields:
 
@@ -32,7 +30,7 @@ Paste these into the form fields:
 - **Primary Link:** `https://github.com/patwalls/headroom` (they want the repo, not the site)
 - **Author Name:** `patwalls`
 - **Author Link:** `https://github.com/patwalls`
-- **License:** whatever you decide (see above) — `MIT` or `No License / Not Specified`
+- **License:** `MIT`
 - **Description:**
   > Native macOS menu bar app that shows Claude Code's 5-hour session and 7-day weekly
   > utilization as a live percentage, color-coded as a limit approaches, with reset

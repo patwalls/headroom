@@ -114,6 +114,25 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 14 — 2026-06-10 · MIT — the license decision unblocks the listing backlog.**
+  *Shipped:* surfaced the license question to Pat with a recommendation (the code was
+  never the moat; trust + distribution are) — **Pat chose MIT**. LICENSE committed,
+  GitHub detects `mit`, README states it ("audit it, fork it, build it yourself").
+  Immediately cashed in: awesome-mac PR #2175 updated with the now-truthful OSS icon
+  (all 4 READMEs + comment), and two NEW listing PRs opened and verified OPEN —
+  serhii-londar/open-source-mac-os-apps **#1153** (~49k stars; their CONTRIBUTING
+  wants applications.json edited, not the README — and upstream's own JSON has a
+  syntax error at line 170, so the entry went in textually) and jeffreyjackson/
+  mac-apps **#84** (~1.5k). The awesome-claude-code packet's License field is now a
+  clean `MIT`. Listings tracker: 3 PRs open, 1 live channel (brew), 1 packet waiting
+  on its 2026-06-16 age gate. *Fact learned:* the open-source lists are
+  license-gated in practice, not just in name — serhii-londar's deletion criteria
+  explicitly include "lacks license," so an unlicensed public repo was invisible to
+  ~50k stars of distribution surface until one word from Pat changed it; the lesson
+  is to surface cheap human decisions EARLY, with a recommendation attached, rather
+  than engineering around them. *Next lap:* v0.3 "Sign in with Claude" spike, or
+  PR-feedback handling if any maintainer responds.
+
 - **Lap 13 — 2026-06-09 · Link previews: OpenGraph + Twitter cards — and downloads: 2.**
   *Shipped:* the landing now unfurls properly when shared — canonical URL, full
   OpenGraph set (type/site_name/title/description/url/image with dimensions + alt),
