@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 23 — 2026-06-10 · Two new listing PRs: rohitg00/awesome-claude-code-toolkit and jqueryscript/awesome-claude-code.**
+  *Shipped:* PR feedback sweep (all 4 prior PRs still open, no maintainer feedback yet) + two new listing PRs filed to extend distribution surface. [PR #522](https://github.com/rohitg00/awesome-claude-code-toolkit/pull/522) adds Headroom to the "Companion Apps & GUIs" section of `rohitg00/awesome-claude-code-toolkit` (2k stars) — a comprehensive Claude Code resource list with a dedicated companion apps category already containing TokenEater, cc-token-status, and other macOS menu bar usage tools; Headroom was notably absent. [PR #382](https://github.com/jqueryscript/awesome-claude-code/pull/382) adds Headroom to the "📊 Usage & Observability" section of `jqueryscript/awesome-claude-code` (416 stars) alongside CCSeva, Claude-Monitor, and other usage monitors. Both entries lead with the zero-network differentiator. Listings tracker: 6 PRs now open (was 4), 1 live channel (brew), 1 packet waiting on 2026-06-16 awesome-claude-code window. Downloads counter honest at 8. *Fact learned:* the Claude Code ecosystem has a dedicated "companion apps" meta-list category (rohitg00/toolkit) that's actively maintained and already contains 5+ macOS menu bar usage monitors — Headroom was the only absence among the obvious fits, which means this category is a pre-qualified audience (people who browse that list are already looking for what Headroom does). *Next lap:* more distribution rungs — ProductHunt, the awesome-claude-code window (2026-06-16), or any PR feedback that needs handling.
+
 - **Lap 22 — 2026-06-10 · v0.3.2 completed mid-flight: one display decision, verified live.**
   *Shipped:* finished a half-shipped v0.3.2 found uncommitted in the working tree (the
   Lap-16 concurrency lesson applied: complete the in-flight ship before starting your
