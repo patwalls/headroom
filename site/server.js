@@ -72,25 +72,24 @@ the 5-hour session and the 7-day week — color-coded before a limit stops you m
 Yours shows your numbers.</p>
 
 <a class="cta" href="/download">Download Headroom — free</a>
-<p class="fine">v0.3.0 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~280 KB zip ·
+<p class="fine">v0.3.1 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~250 KB zip ·
 signed &amp; notarized by Apple — double-click and it runs.</p>
 <p class="fine">Homebrew: <code>brew install --cask patwalls/tap/headroom</code></p>
-<p class="fine">On first launch Headroom explains the one permission it needs, then macOS
-asks once (its standard Keychain dialog) — click "Always Allow" and it never asks again.</p>
-<p class="fine">New in v0.3: "Enable Live Data" reads the numbers straight from Claude Code's
-own status line — zero API calls, zero rate limits, no Keychain prompt at all.</p>
+<p class="fine">No permission dialogs, no API key, no login — on first launch Headroom quietly
+wires itself into Claude Code's status line and the numbers are just there.</p>
 
 <h2>Zero config — really</h2>
-<p>Claude Code already keeps an OAuth token in your macOS Keychain. Headroom reads it the
-same way Claude Code does and asks Anthropic for the same utilization numbers
-<code>/usage</code> shows — so there's no API key, no login, no setup. Install it and the
-number is just there.</p>
+<p>Claude Code already knows your usage — it renders it in its own status line. Headroom
+reads exactly those numbers from your machine: the same 5-hour and 7-day percentages
+<code>/usage</code> shows, updated every time Claude Code does. No API key, no login,
+no polling, no rate limits. Install it and the number is just there.</p>
 
-<div class="trust"><strong>The trust contract.</strong> Headroom sends your token to
-<code>api.anthropic.com</code> and nowhere else. It never logs it, never stores a copy,
-never phones home. The source is small enough to read —
-<a href="https://github.com/patwalls/headroom">read it on GitHub</a>: the entire
-network + Keychain surface is one ~165-line file.</div>
+<div class="trust"><strong>The trust contract.</strong> Headroom never touches your token,
+your Keychain, or your account — and it makes <em>zero network calls</em>. It reads the
+rate-limit numbers Claude Code itself writes, from a local file in <code>~/.claude</code>.
+No analytics, no auto-updater, no phoning home. The source is small enough to read —
+<a href="https://github.com/patwalls/headroom">read it on GitHub</a>: ~590 lines, MIT,
+no dependencies.</div>
 
 <h2>Why</h2>
 <p>The weekly limit always finds you mid-task, because a meter you have to remember to

@@ -1,9 +1,9 @@
 # Headroom — Vision & the Entrepreneur Loop
 
 > Headroom is a **macOS menu bar app that shows your Claude Code usage as a live %** —
-> session (5h) and weekly (7d), color-coded as you approach the limit. It reads the OAuth
-> token Claude Code already keeps in your Keychain, so there's nothing to configure: install
-> it and the number is just *there*. Free download from [headroom.walls.sh](https://headroom.walls.sh).
+> session (5h) and weekly (7d), color-coded as you approach the limit. It reads the numbers
+> Claude Code itself renders in its status line — locally, no token, no API, no permission
+> dialogs: install it and the number is just *there*. Free from [headroom.walls.sh](https://headroom.walls.sh).
 
 This document codifies the product thesis **and** the **entrepreneur loop** that takes
 Headroom from "an idea" to a real, used thing. Re-read it at the start of every lap.
@@ -60,9 +60,10 @@ is a utility, not a service with marginal cost.
   The menu bar % must come from the real usage endpoint; the downloads count from real
   requests. Honest errors over silent zeros.
 - **One lap = one shipped thing + one fact learned.**
-- **Respect the trust position.** Headroom reads the user's OAuth token. It must NEVER send
-  that token anywhere except `api.anthropic.com`, never log it, never phone home. This is
-  non-negotiable and stated publicly on the landing page — it IS the product's pitch.
+- **Respect the trust position.** Headroom (since v0.3) touches NO token, NO Keychain, and
+  makes ZERO network calls — it reads the local file Claude Code's status line writes. Any
+  future path that ever touches a credential goes to `api.anthropic.com` and nowhere else,
+  never logged, never phoned home. Non-negotiable, stated publicly — it IS the pitch.
 
 ## 1. The thesis
 
@@ -113,6 +114,25 @@ commit + push. The motor is [`.claude/commands/lap.md`](.claude/commands/lap.md)
 run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
+
+- **Lap 20 — 2026-06-10 · The hook-only release is LIVE (v0.3.1) — and the pitch is finally the product.**
+  *Shipped:* Lap 19's blow-out, notarized and deployed from the Developer-ID machine as
+  v0.3.1 (the 0.3.0 zip briefly live this morning was the pre-blowout hybrid — replaced
+  within the hour). Landing, README, and VISION's own intro + trust mandate rewritten to
+  the new truth: Headroom touches NO token, NO Keychain, makes ZERO network calls — it
+  reads the file Claude Code's status line writes. Verified live: /download → 256,346 B
+  → Gatekeeper-accepted 0.3.1; landing says "zero network calls"; counter honest at 6.
+  Also this lap (pre-blowout work that stands): [awesome-macOS PR #868](https://github.com/iCHAIT/awesome-macOS/pull/868)
+  (~19k stars, 4th listing PR, verified OPEN) and the
+  [v0.2.5 GitHub release](https://github.com/patwalls/headroom/releases/tag/v0.2.5)
+  (notes-only — downloads stay on the counted path). *Fact learned:* a two-machine loop
+  needs version discipline more than code discipline — the same tag ("v0.3.0") briefly
+  meant two different architectures on two machines; the fix is bumping the patch number
+  whenever this side ships anything the other side authored, so every artifact in the
+  wild maps to exactly one source state. *Next lap:* refresh the launch kit (the
+  zero-network trust story is a much stronger HN pitch than the Keychain one), v0.3.1
+  GitHub release notes, PR feedback.
+
 
 - **Lap 19 — 2026-06-10 · Blow out the old data layer: hook-only, no API, no Keychain, no jq (v0.3.0).**
   *Shipped:* Pat's call — "nobody has ever installed this; do it right." So the entire

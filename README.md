@@ -17,11 +17,11 @@ Headroom puts the number where ambient numbers belong:
 ## Install
 
 **[Download from headroom.walls.sh](https://headroom.walls.sh/download)** — free,
-macOS 13+, universal (Apple Silicon & Intel), ~280 KB. Signed & notarized.
+macOS 13+, universal (Apple Silicon & Intel), ~250 KB. Signed & notarized.
 
-Unzip, drag `Headroom.app` to Applications, open it. On first launch Headroom explains
-the one permission it needs, then macOS asks once (its standard Keychain dialog, for the
-Claude Code token) — click **Always Allow** and it never asks again.
+Unzip, drag `Headroom.app` to Applications, open it. That's the whole setup: no
+permission dialogs, no API key, no login — Headroom quietly wires itself into Claude
+Code's status line and the numbers appear.
 
 Or with Homebrew:
 
@@ -38,20 +38,23 @@ swift build -c release && .build/release/Headroom
 
 ## How it works (the whole trick)
 
-Claude Code already keeps an OAuth token in your macOS Keychain. Headroom reads it the
-same way Claude Code does and asks Anthropic's usage endpoint for the same numbers
-`/usage` shows. That's it — no scraping, no estimating, the real meters.
+Claude Code already knows your usage — it receives the official 5h/7d rate-limit numbers
+and renders them in its own status line. Headroom installs a tiny status-line hook that
+saves that data to `~/.claude/headroom-usage.json`, and the menu bar reads it. The same
+numbers `/usage` shows, updated every time Claude Code does — no scraping, no estimating,
+no API polling, the real meters.
 
 ## The trust contract
 
 An app that sits next to your credentials all day must be auditable. So:
 
-- Your token is sent to **`api.anthropic.com` and nowhere else** — never logged, never
-  written to disk, never phoned home. There are no analytics, no auto-updater, no
-  network calls besides the one.
-- The entire network + Keychain surface is one small file:
-  [`app/Sources/Headroom/Usage.swift`](app/Sources/Headroom/Usage.swift). Read it.
-- No dependencies. AppKit + Foundation, ~780 lines total.
+- Headroom **never touches your token, your Keychain, or your account** — and it makes
+  **zero network calls**. It reads a local file Claude Code's own status line writes.
+  No analytics, no auto-updater, no phoning home.
+- The entire data surface is two small files:
+  [`Hook.swift`](app/Sources/Headroom/Hook.swift) (writes) and
+  [`Usage.swift`](app/Sources/Headroom/Usage.swift) (reads). Read them.
+- No dependencies. AppKit + Foundation, ~590 lines total.
 - **MIT licensed** — audit it, fork it, build it yourself.
 
 ## Built in public
