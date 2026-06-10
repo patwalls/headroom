@@ -11,9 +11,10 @@ push) on repeat until told to stop. It's the memorable name for `/loop /lap`.
 
 ## What to do
 
-0. **Label the session** (the equivalent of `/rename HEADROOM LOOP` — puts the business
+0. **Sync + label the session** (the equivalent of `/rename HEADROOM LOOP` — puts the business
    name in the cmux sidebar + session list). Run these; if either fails, continue — cosmetic:
    ```bash
+   git pull --rebase --autostash   # Pat ships from other machines — start from latest
    [ -n "$CMUX_CLAUDE_HOOK_CMUX_BIN" ] && CMUX_QUIET=1 "$CMUX_CLAUDE_HOOK_CMUX_BIN" rename-workspace "HEADROOM LOOP" || true
    node -e 'const fs=require("fs"),os=require("os"),d=os.homedir()+"/.claude/sessions";const id=process.env.CLAUDE_CODE_SESSION_ID;for(const f of fs.readdirSync(d)){const p=d+"/"+f;try{const j=JSON.parse(fs.readFileSync(p,"utf8"));if(j.sessionId===id){j.name="HEADROOM LOOP";fs.writeFileSync(p,JSON.stringify(j))}}catch{}}'
    ```

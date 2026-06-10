@@ -7,6 +7,7 @@ allowed-tools: Bash, Read, Edit, Write, Glob, Grep
 ## Context (auto-injected)
 
 - Repo: !`pwd` on branch !`git branch --show-current`
+- Synced with origin (Pat ships from other machines too): !`git pull --rebase --autostash 2>&1 | tail -1`
 - North Star + milestones + loop log: @VISION.md
 - Recent laps (git): !`git log --oneline -6`
 - App builds: !`cd app && swift build 2>&1 | tail -1`
