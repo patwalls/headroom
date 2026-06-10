@@ -36,17 +36,18 @@ Paste these into the form fields:
 - **Description:**
   > Native macOS menu bar app that shows Claude Code's 5-hour session and 7-day weekly
   > utilization as a live percentage, color-coded as a limit approaches, with reset
-  > countdowns. Zero configuration: it reads the OAuth token Claude Code already stores
-  > in the macOS Keychain and queries Anthropic's usage endpoint — the same numbers
-  > /usage shows.
+  > countdowns. Zero configuration and zero network calls: it reads the official
+  > rate-limit numbers Claude Code itself renders in its status line, via a tiny
+  > status-line hook — the same numbers /usage shows, from a local file.
 - **Validate Claims:**
   > Install (download from https://headroom.walls.sh or `brew install --cask
   > patwalls/tap/headroom`), launch, and compare the menu bar percentage with what
-  > `/usage` shows inside Claude Code — they match because both read the same endpoint.
-  > The entire network + Keychain surface is one 150-line file
-  > (app/Sources/Headroom/Usage.swift); the only network call is to api.anthropic.com.
-  > Uninstall: quit from the menu bar, delete Headroom.app (no files left behind; the
-  > Keychain item belongs to Claude Code, not Headroom).
+  > `/usage` shows inside Claude Code — they match because Headroom reads the data
+  > Claude Code itself writes. The app makes ZERO network requests (verify with Little
+  > Snitch or `nettop`); the entire data surface is two small files (Hook.swift,
+  > Usage.swift). Uninstall: quit from the menu bar, delete Headroom.app, and remove
+  > the headroom-statusline line from ~/.claude/settings.json + the two headroom-*
+  > files in ~/.claude if you want zero trace.
 - **Specific Task(s):**
   > Run Claude Code until the session meter moves, then glance at the menu bar — the
   > percentage updates within 60 seconds without opening a terminal.
@@ -54,9 +55,10 @@ Paste these into the form fields:
   > In Claude Code, run /usage and compare its session + weekly percentages with
   > Headroom's dropdown.
 - **Additional Comments:**
-  > Per the guidelines: the app makes NO network requests except to api.anthropic.com
-  > (that single call IS the product); no telemetry, no auto-update, no analytics.
-  > Signed & notarized. Disclosure: largely built by Claude Code itself in an
-  > autonomous build loop — the lap-by-lap log is in the repo's VISION.md.
+  > Per the guidelines: the app makes NO network requests at all — it reads a local
+  > file written by Claude Code's own status line; no telemetry, no auto-update, no
+  > analytics. Signed & notarized, MIT. Disclosure: largely built by Claude Code
+  > itself in an autonomous build loop — the lap-by-lap log is in the repo's
+  > VISION.md.
 
 After approval, add their badge to the README (snippet in their CONTRIBUTING.md).

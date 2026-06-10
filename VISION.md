@@ -115,6 +115,27 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 21 — 2026-06-10 · The launch kit tells the true (better) story — and the hook proves itself on machine #2.**
+  *Shipped:* docs/LAUNCH.md fully rewritten to v0.3.1 reality — the HN first-comment now
+  leads with "zero network calls" and owns the architectural wrong turn (polling → 429
+  purgatory → delete half the app) as part of the pitch; Reddit/X copy updated; every
+  number re-verified live (256,346 B zip, ~590 lines). The awesome-claude-code form
+  packet's description/validation/comments updated to the hook story (verify with
+  nettop: zero requests; uninstall instructions now cover the two ~/.claude files).
+  [v0.3.1 GitHub release](https://github.com/patwalls/headroom/releases/tag/v0.3.1)
+  published with the architecture-flip changelog. And the verification doubled as a
+  milestone: this machine's `--print` rendered session 67% / week 45% straight from
+  `~/.claude/headroom-usage.json` — the hook auto-wired here by v0.3.1's first launch,
+  written by the very Claude Code session running this loop, zero network. The
+  dropdown.png on the landing/README is re-shot from that data (amber session bar —
+  better for posts). All 4 listing PRs still OPEN, counter at 6. *Fact learned:* the
+  loop is now its own first user — the statusline hook gets continuously integration-
+  tested by the loop's own Claude Code sessions writing real data through it; dogfood
+  isn't a metaphor when the build tool IS the data source. *Next lap:* PR feedback,
+  the 6/16 awesome-claude-code submission window, or the next listing rung — the
+  launch ball is in Pat's court (kit is paste-ready).
+
+
 - **Lap 20 — 2026-06-10 · The hook-only release is LIVE (v0.3.1) — and the pitch is finally the product.**
   *Shipped:* Lap 19's blow-out, notarized and deployed from the Developer-ID machine as
   v0.3.1 (the 0.3.0 zip briefly live this morning was the pre-blowout hybrid — replaced
