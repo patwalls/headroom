@@ -114,6 +114,36 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 19 — 2026-06-10 · Blow out the old data layer: hook-only, no API, no Keychain, no jq (v0.3.0).**
+  *Shipped:* Pat's call — "nobody has ever installed this; do it right." So the entire
+  poll-the-API spine is gone. **Deleted:** `OAuth.swift` + the `--signin` spike (orphaned —
+  `storedAccessToken()` was never called), `KeychainToken`/`TokenStore`/`UsageClient` (the
+  rate-limited `/api/oauth/usage` client), and all the backoff/retry/staleGrace machinery
+  Laps 9/15/18 built to survive 429s. The app is now **one data source**: the Lap-18
+  statusline hook, made the *only* path. New shape: the hook just `printf`s Claude Code's
+  raw status JSON to `~/.claude/headroom-usage.json` (no jq needed — **jq dropped as a hard
+  dependency**; the Swift app parses the raw JSON it already knows how to parse, and jq is
+  now optional polish for the in-terminal `CC 5h.. 7d..` line only). The installer is fully
+  automatic, idempotent, and upgrade-safe: auto-wires on first launch with **no dialog and
+  no permission**, silently chains any existing status line (remembered in a
+  `headroom-prev-statusline` sidecar so re-installs/upgrades reconstruct it), rewrites the
+  script from current code every launch, and **never shows the user a command to paste**
+  (the old installer dumped a raw `cat | jq …` incantation at Pat — the bug that triggered
+  this lap). The Keychain consent explainer is **gone** (we read no Keychain). Honest
+  staleness: a window whose `resets_at` has passed shows "—", not a stale number. Menu:
+  "Refresh Now" + "Repair Live Data" (idempotent re-wire). Verified end-to-end on Pat's
+  machine: build clean (zero warnings — OAuth's dead-code warning gone with the file),
+  `--install-hook` upgrades the script, a piped statusline blob writes raw JSON that
+  `--print` parses to session 41% / week 39% with live countdowns. *Fact learned:* the
+  whole 429 saga (Laps 9→15→18) was the cost of insisting on the wrong data source — once
+  the hook proved the numbers were available locally, every line of rate-limit-survival code
+  became removable, and the app got smaller AND more correct. "Do it right" here meant
+  *delete*, not add. Also: parsing the raw blob in Swift (not jq in bash) erased the last
+  external dependency — the simplest hook is the one that just saves stdin. *Next lap:*
+  notarize + ship v0.3.0 (Developer ID gate — the remote Mac); rewrite the landing/README,
+  which still pitch "reads your Keychain token / sends it to api.anthropic.com" — both now
+  false and, happily, a *stronger* trust story (no token touched at all on the happy path).
+
 - **Lap 18 — 2026-06-10 · Local-first data: read Claude Code's own numbers, never poll the API (kills the 429 class).**
   *Shipped:* the architectural fix for the whole rate-limit saga. Research into how the
   field solves this (ccusage, ClaudeWatch, claude-usage-monitor, ~8 menu-bar competitors)

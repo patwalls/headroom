@@ -1,164 +1,27 @@
 import Foundation
-import Security
 
-// The data spine: Keychain OAuth token → Anthropic usage endpoint → utilization.
-// TRUST POSITION (VISION §0.5): the token is sent to api.anthropic.com and NOWHERE
-// else — never logged, never written, never phoned home.
+// What the app shows: utilization (0–100) for the two windows, plus when each resets.
+// Headroom reads these straight from Claude Code's own statusline data on disk (Hook.swift)
+// — it never calls an API, reads no token, and asks for no permission. That IS the design.
 
 struct Usage {
     struct Window {
         let utilization: Double
         let resetsAt: Date?
+
+        /// A reading goes stale once its window has rolled over since it was captured: we
+        /// no longer know the post-reset number, so the honest move is to show "—", not a
+        /// wrong value. (resetsAt == nil → treat as live; we just lack a countdown.)
+        var isLive: Bool {
+            guard let resetsAt else { return true }
+            return resetsAt > Date()
+        }
     }
     let fiveHour: Window
     let sevenDay: Window
 }
 
-enum HeadroomError: Error, CustomStringConvertible {
-    case keychain(OSStatus)
-    case credentialShape
-    case http(Int)
-    /// HTTP 429. The usage endpoint rate-limits per-token and the budget is SHARED with
-    /// Claude Code's own polling — so a burst (ours + CC's) trips it, and the server hands
-    /// back a Retry-After (seen as high as ~290s). Modelled apart from .http so we can obey
-    /// that wait instead of guessing, and so the UI can say "retrying" rather than "broken".
-    case rateLimited(retryAfter: TimeInterval?)
-    case network(String)
-    case responseShape
-
-    var description: String {
-        switch self {
-        case .keychain(let status):
-            return "Keychain read failed (status \(status)) — is Claude Code installed?"
-        case .credentialShape:
-            return "Unexpected credential format in Keychain"
-        case .http(401):
-            return "Token expired — open Claude Code once to refresh it"
-        case .http(let code):
-            return "Usage endpoint answered HTTP \(code)"
-        case .rateLimited:
-            return "Rate-limited by the usage endpoint — retrying shortly"
-        case .network(let msg):
-            return "Network error: \(msg)"
-        case .responseShape:
-            return "Unexpected usage response shape"
-        }
-    }
-}
-
-enum KeychainToken {
-    /// Reads the OAuth access token Claude Code keeps in the macOS Keychain
-    /// (generic password, service "Claude Code-credentials").
-    static func read() throws -> String {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: "Claude Code-credentials",
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne,
-        ]
-        var item: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &item)
-        guard status == errSecSuccess, let data = item as? Data else {
-            throw HeadroomError.keychain(status)
-        }
-        guard
-            let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-            let oauth = root["claudeAiOauth"] as? [String: Any],
-            let token = oauth["accessToken"] as? String
-        else {
-            throw HeadroomError.credentialShape
-        }
-        return token
-    }
-}
-
-/// Caches the token in memory so the Keychain (and its permission dialog) is touched
-/// once per launch, not once per refresh. Re-reads only after an auth failure — which
-/// also picks up a token Claude Code has refreshed since launch.
-final class TokenStore {
-    private var cached: String?
-    private let lock = NSLock()
-
-    func token() throws -> String {
-        lock.lock()
-        defer { lock.unlock() }
-        if let cached { return cached }
-        let fresh = try KeychainToken.read()
-        cached = fresh
-        return fresh
-    }
-
-    func invalidate() {
-        lock.lock()
-        defer { lock.unlock() }
-        cached = nil
-    }
-
-    /// Fetch usage, re-reading the Keychain once if the cached token was rejected.
-    func fetchUsage() throws -> Usage {
-        do {
-            return try UsageClient.fetch(token: token())
-        } catch HeadroomError.http(401) {
-            invalidate()
-            return try UsageClient.fetch(token: token())
-        }
-    }
-}
-
-enum UsageClient {
-    static let endpoint = URL(string: "https://api.anthropic.com/api/oauth/usage")!
-
-    /// Fetches the raw usage JSON. Synchronous; call off the main thread.
-    static func fetchRaw(token: String) throws -> Data {
-        var request = URLRequest(url: endpoint)
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.setValue("oauth-2025-04-20", forHTTPHeaderField: "anthropic-beta")
-        request.timeoutInterval = 15
-
-        var result: Result<Data, HeadroomError> = .failure(.network("no response"))
-        let done = DispatchSemaphore(value: 0)
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            defer { done.signal() }
-            if let error {
-                result = .failure(.network(error.localizedDescription))
-                return
-            }
-            let http = response as? HTTPURLResponse
-            let code = http?.statusCode ?? -1
-            if code == 200, let data {
-                result = .success(data)
-                return
-            }
-            if code == 429 {
-                // Retry-After is whole seconds here; obey it rather than hammer the limit.
-                let retryAfter = http?.value(forHTTPHeaderField: "Retry-After").flatMap(TimeInterval.init)
-                result = .failure(.rateLimited(retryAfter: retryAfter))
-                return
-            }
-            result = .failure(.http(code))
-        }.resume()
-        done.wait()
-        return try result.get()
-    }
-
-    static func fetch(token: String) throws -> Usage {
-        let data = try fetchRaw(token: token)
-        guard let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            throw HeadroomError.responseShape
-        }
-        func window(_ key: String) throws -> Usage.Window {
-            guard let obj = root[key] as? [String: Any],
-                  let utilization = obj["utilization"] as? Double
-            else { throw HeadroomError.responseShape }
-            var resetsAt: Date?
-            if let iso = obj["resets_at"] as? String {
-                let parser = ISO8601DateFormatter()
-                parser.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-                resetsAt = parser.date(from: iso)
-                    ?? ISO8601DateFormatter().date(from: iso)
-            }
-            return Usage.Window(utilization: utilization, resetsAt: resetsAt)
-        }
-        return Usage(fiveHour: try window("five_hour"), sevenDay: try window("seven_day"))
-    }
+struct AppError: Error, CustomStringConvertible {
+    let message: String
+    var description: String { message }
 }

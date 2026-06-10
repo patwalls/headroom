@@ -28,7 +28,7 @@ enum Snapshot {
             bitmapDataPlanes: nil, pixelsWide: Int(width * 2), pixelsHigh: 316,
             bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
             colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0
-        ) else { throw HeadroomError.network("could not create bitmap") }
+        ) else { throw AppError(message: "could not create bitmap") }
         rep.size = panel.bounds.size
 
         NSGraphicsContext.saveGraphicsState()
@@ -37,7 +37,7 @@ enum Snapshot {
         NSGraphicsContext.restoreGraphicsState()
 
         guard let png = rep.representation(using: .png, properties: [:]) else {
-            throw HeadroomError.network("could not encode png")
+            throw AppError(message: "could not encode png")
         }
         try png.write(to: URL(fileURLWithPath: path))
     }
