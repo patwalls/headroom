@@ -28,6 +28,20 @@ const page = `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Headroom — Claude Code usage in your menu bar</title>
 <meta name="description" content="A free macOS menu bar app that shows your Claude Code session and weekly usage as a live %. Zero config — it reads the token Claude Code already stores.">
+<link rel="canonical" href="https://headroom.walls.sh/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Headroom">
+<meta property="og:title" content="Headroom — Claude Code usage in your menu bar">
+<meta property="og:description" content="Session (5h) + weekly (7d) Claude Code usage as a live %, color-coded before a limit stops you mid-task. Free, zero config, signed &amp; notarized.">
+<meta property="og:url" content="https://headroom.walls.sh/">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta property="og:image:width" content="640">
+<meta property="og:image:height" content="316">
+<meta property="og:image:alt" content="Headroom's dropdown: color-coded session and weekly usage meters with reset countdowns">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Headroom — Claude Code usage in your menu bar">
+<meta name="twitter:description" content="Session (5h) + weekly (7d) Claude Code usage as a live %, color-coded before a limit stops you mid-task. Free, zero config, signed &amp; notarized.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
 <style>
   :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
   body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}

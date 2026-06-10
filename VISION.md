@@ -114,6 +114,21 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 13 — 2026-06-09 · Link previews: OpenGraph + Twitter cards — and downloads: 2.**
+  *Shipped:* the landing now unfurls properly when shared — canonical URL, full
+  OpenGraph set (type/site_name/title/description/url/image with dimensions + alt),
+  and `summary_large_image` Twitter card, all pointing at the real `/dropdown.png`
+  render from Lap 12 (640×316 ≈ the 2:1 card ratio). When Pat posts to HN/Reddit/X —
+  or anyone shares headroom.walls.sh — the preview is the actual product image.
+  Verified live: 13 og:/twitter: tags served, og:image fetches 200 image/png, counter
+  at **2** (second non-probe download arrived between laps — the awesome-mac PR is
+  still the only public surface). *Fact learned:* the Lap-12 investment compounds
+  immediately — because /dropdown.png is the app's own rendering, the social preview
+  image is now also incapable of drifting from the product; one honest artifact feeds
+  README, landing, and every unfurl. *Next lap:* the v0.3 "Sign in with Claude" spike,
+  or more listing surface (awesome-menubar etc.) — counter and PR #2175 to be checked
+  first.
+
 - **Lap 12 — 2026-06-09 · The screenshot is the app: `--snapshot` + real image everywhere.**
   *Shipped:* the landing's typed-number mock is gone. New `headroom --snapshot out.png`
   harness renders the dropdown's actual MeterMenuViews — same drawing code the menu
