@@ -7,7 +7,9 @@ import AppKit
 enum Snapshot {
     static func write(usage: Usage, to path: String) throws {
         let width: CGFloat = 320
-        let panel = PanelView(frame: NSRect(x: 0, y: 0, width: width, height: 158))
+        let hasContext = usage.contextUsed != nil
+        let height: CGFloat = hasContext ? 216 : 158
+        let panel = PanelView(frame: NSRect(x: 0, y: 0, width: width, height: height))
         panel.appearance = NSAppearance(named: .darkAqua)
 
         let session = MeterMenuView(label: "Session (5h)")
@@ -18,14 +20,22 @@ enum Snapshot {
         week.update(usage.sevenDay)
         panel.addSubview(session)
         panel.addSubview(week)
+        if let ctx = usage.contextUsed {
+            let context = MeterMenuView(label: "Context")
+            context.frame = NSRect(x: 0, y: 124, width: width, height: 58)
+            context.update(Usage.Window(utilization: ctx, resetsAt: nil))
+            panel.addSubview(context)
+        }
 
         let clock = DateFormatter()
         clock.timeStyle = .short
         clock.dateStyle = .none
-        panel.statusText = "Updated \(clock.string(from: Date()))"
+        let updatedText = "Updated \(clock.string(from: Date()))"
+        panel.statusText = [usage.modelName, updatedText].compactMap { $0 }.joined(separator: " · ")
 
+        let pixelsHigh = Int(height * 2)
         guard let rep = NSBitmapImageRep(
-            bitmapDataPlanes: nil, pixelsWide: Int(width * 2), pixelsHigh: 316,
+            bitmapDataPlanes: nil, pixelsWide: Int(width * 2), pixelsHigh: pixelsHigh,
             bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
             colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0
         ) else { throw AppError(message: "could not create bitmap") }

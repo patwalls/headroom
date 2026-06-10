@@ -14,6 +14,7 @@ form-only/human-only listings get a paste-ready packet below.
 | [jqueryscript/awesome-claude-code](https://github.com/jqueryscript/awesome-claude-code) | ~416 | PR (Usage & Observability section) | **PR open** — [#382](https://github.com/jqueryscript/awesome-claude-code/pull/382) (2026-06-10) |
 | [LangGPT/awesome-claude-code](https://github.com/LangGPT/awesome-claude-code) | ~249 | PR (Monitoring & Analytics section) | **PR open** — [#90](https://github.com/LangGPT/awesome-claude-code/pull/90) (2026-06-10) |
 | [subinium/awesome-claude-code](https://github.com/subinium/awesome-claude-code) | ~85 | PR (Monitoring & Analytics section) | **PR open** — [#25](https://github.com/subinium/awesome-claude-code/pull/25) (2026-06-10) |
+| [MacMenuBar.com](https://macmenubar.com) | ~1.4k apps listed | Web form, **human-only** | Packet ready below — submit any time |
 | GitHub Releases | — | own repo | ✅ [v0.3.2 release](https://github.com/patwalls/headroom/releases/tag/v0.3.2) — notes only, download stays on the counted path |
 | Homebrew (own tap) | — | `patwalls/homebrew-tap` | ✅ Live (Lap 6) |
 
@@ -66,3 +67,20 @@ Paste these into the form fields:
   > VISION.md.
 
 After approval, add their badge to the README (snippet in their CONTRIBUTING.md).
+
+---
+
+## MacMenuBar.com submission packet (Pat — ~5 minutes)
+
+**Process:** Go to [https://macmenubar.com](https://macmenubar.com) and click "Submit Menu Bar App" in the navigation.
+Headroom qualifies: the menu bar IS the entire UI — there's no separate window, the app lives 100% in the menu bar.
+
+Fill in:
+
+- **App Name:** `Headroom`
+- **URL:** `https://headroom.walls.sh`
+- **Category:** `Developer Apps` (or System Stats — either fits)
+- **Price:** `Free`
+- **Short description (1–2 sentences):**
+  > Shows your Claude Code session (5h) and weekly (7d) usage as a live % in the menu bar — color-coded before a limit stops you mid-task. Zero config: it reads the numbers Claude Code already writes locally, no API key or network calls.
+- **Icon/screenshot:** The icon at `https://headroom.walls.sh/icon-512.png` or the dropdown screenshot at `https://headroom.walls.sh/dropdown.png`
