@@ -112,6 +112,25 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 6 — 2026-06-09 · Distribution channel #1: Homebrew.**
+  *Shipped:* `brew install --cask patwalls/tap/headroom` is live — public tap at
+  github.com/patwalls/homebrew-tap, cask pulling from
+  `headroom.walls.sh/download/Headroom.zip` (new brew-friendly route; brew infers the
+  archive type from the URL basename, so bare `/download` wouldn't unzip), so every brew
+  install counts on the North Star meter. Landing page + README now show the one-liner.
+  Verified end-to-end with a real `brew install --cask` (probe URL, so the stranger
+  counter stayed an honest 0): fetched from the live domain, unzipped, installed,
+  `spctl --assess` → accepted, source=Notarized Developer ID; then re-tapped from the
+  published GitHub repo and confirmed the cask resolves clean (deprecation in
+  `depends_on macos:` caught and fixed). This machine's `/opt/homebrew` belongs to
+  another user, so verification ran on a disposable `git clone` of brew in `$HOME` —
+  casks need no compilation, any prefix works. *Fact learned:* Homebrew HEAD now
+  enforces tap trust — non-interactive installs from third-party taps fail with
+  "untrusted tap" until `brew trust patwalls/tap` (stable 4.x doesn't have this yet;
+  interactive users will likely get a prompt). When that ships, install docs may need
+  the trust step. *Next lap:* launch copy for Pat (the one genuinely human posting
+  step) + the listings/directories backlog (awesome lists, alternativeto, etc.).
+
 - **Lap 5 — 2026-06-09 · Notarized — milestone 3 complete.**
   *Shipped:* Apple accepted the first notarization (`c5c03fc2`, status Accepted, ~25 min
   for a day-old account); ticket stapled, re-zipped, redeployed. The landing page now

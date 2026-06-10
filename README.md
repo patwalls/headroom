@@ -17,11 +17,17 @@ Headroom puts the number where ambient numbers belong:
 ## Install
 
 **[Download from headroom.walls.sh](https://headroom.walls.sh/download)** — free,
-macOS 13+, universal (Apple Silicon & Intel), ~80 KB.
+macOS 13+, universal (Apple Silicon & Intel), ~80 KB. Signed & notarized.
 
 Unzip, drag `Headroom.app` to Applications, open it. macOS will ask once for permission
 to read the Claude Code keychain item — that's the zero-config working as intended;
 click **Always Allow**.
+
+Or with Homebrew:
+
+```sh
+brew install --cask patwalls/tap/headroom
+```
 
 Or build it yourself in ~10 seconds:
 

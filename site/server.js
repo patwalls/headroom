@@ -60,6 +60,7 @@ the 5-hour session and the 7-day week — color-coded before a limit stops you m
 <a class="cta" href="/download">Download Headroom — free</a>
 <p class="fine">v0.1.0 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~90 KB zip ·
 signed &amp; notarized by Apple — double-click and it runs.</p>
+<p class="fine">Homebrew: <code>brew install --cask patwalls/tap/headroom</code></p>
 <p class="fine">macOS will ask once to allow reading the Claude Code keychain item —
 that's the zero-config working as intended; click "Always Allow" and it never asks again.</p>
 
@@ -102,7 +103,9 @@ createServer((req, res) => {
     }));
   }
 
-  if (url.pathname === "/download") {
+  // /download/Headroom.zip is the same download with a brew-friendly basename
+  // (Homebrew infers the archive type from the URL path).
+  if (url.pathname === "/download" || url.pathname === "/download/Headroom.zip") {
     if (!existsSync(BUILD_ZIP)) {
       res.writeHead(404, { "content-type": "application/json" });
       return res.end(JSON.stringify({ error: "no_release_yet", detail: "The first release is being built — check back soon." }));
