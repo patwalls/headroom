@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="120" viewBox="0 0 560 120">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1c1f26"/><stop offset="1" stop-color="#15171c"/>
+    </linearGradient>
+  </defs>
+  <rect width="560" height="120" rx="12" fill="url(#bg)"/>
+  <!-- menu bar strip -->
+  <rect x="16" y="16" width="528" height="28" rx="6" fill="#0c0e12"/>
+  <text x="34" y="35" font-family="Menlo,monospace" font-size="13" fill="#5b6170">…  📶  🔋  Tue 9:41</text>
+  <text x="446" y="35" font-family="Menlo,monospace" font-size="13" font-weight="700" fill="#e8e6e0">CC 37%</text>
+  <!-- dropdown -->
+  <rect x="306" y="50" width="238" height="54" rx="8" fill="#22252e"/>
+  <text x="320" y="71" font-family="Menlo,monospace" font-size="11" fill="#c9c6bd">Session (5h): 62% — resets in 1h 12m</text>
+  <text x="320" y="90" font-family="Menlo,monospace" font-size="11" fill="#c9c6bd">Week (7d): 37% — resets in 3d 4h</text>
+  <text x="34" y="80" font-family="-apple-system,Helvetica" font-size="11" fill="#5b6170">illustration — yours shows your real numbers</text>
+</svg>

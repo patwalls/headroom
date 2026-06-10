@@ -46,5 +46,14 @@ else
 fi
 codesign --verify --deep dist/Headroom.app
 
+# Notarize + staple when the Developer ID signature and notary profile both exist.
+if [ -n "$IDENTITY" ] && xcrun notarytool history --keychain-profile headroom-notary >/dev/null 2>&1; then
+    ditto -c -k --keepParent dist/Headroom.app dist/Headroom-notarize.zip
+    xcrun notarytool submit dist/Headroom-notarize.zip --keychain-profile headroom-notary --wait
+    rm dist/Headroom-notarize.zip
+    xcrun stapler staple dist/Headroom.app
+    spctl --assess --type execute dist/Headroom.app && echo "notarized + stapled: Gatekeeper accepts"
+fi
+
 ditto -c -k --keepParent dist/Headroom.app ../site/public/Headroom.zip
 echo "OK: dist/Headroom.app + site/public/Headroom.zip (v${VERSION}, $(lipo -archs dist/Headroom.app/Contents/MacOS/Headroom))"

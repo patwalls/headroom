@@ -112,6 +112,27 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 4 — 2026-06-09 · The source IS the pitch.**
+  *Shipped:* the trust contract made verifiable — repo flipped PUBLIC
+  (github.com/patwalls/headroom, description + homepage set), README rewritten to sell
+  (the meter problem → zero-config → the trust contract pointing at the exact ~150-line
+  network/Keychain surface in `Usage.swift` → build-from-source in one command), and the
+  landing page's "small enough to read" claim now links to the actual source. Verified:
+  `gh repo view` → PUBLIC; landing serves the GitHub link; `/metrics?probe=1` honest 0.
+  Signing infrastructure completed mid-lap with Pat: Developer ID cert created via CSR
+  (no Xcode needed), notary credentials validated via App Store Connect API key
+  (`headroom-notary` profile), `bundle.sh` now signs with the real identity and
+  notarizes+staples automatically; first notarization submitted, Apple still chewing
+  (new-account lag) — staple + re-ship fires the moment it clears. License deliberately
+  not chosen yet (source-visible, all-rights-reserved) — that's a real business decision
+  for Pat given the possible paid Pro tier. *Fact learned:* a brand-new Apple Developer
+  account hits propagation walls at every step (cert page, ASC API access request, first
+  notarization measured in tens of minutes, all "try again later") — the whole signing
+  pipeline is best set up a day before you need it, and none of it needs Xcode: CSR via
+  openssl, certs via the portal, notarytool ships with Command Line Tools. *Next lap:*
+  staple + re-ship the notarized build, drop the right-click caveat from the landing
+  page; then the distribution backlog proper (launch copy for Pat, directories).
+
 - **Lap 3 — 2026-06-09 · It's downloadable, live on the real domain.**
   *Shipped:* headroom.walls.sh is LIVE — site deployed to Railway (project `headroom`,
   origin `headroom-production-9217.up.railway.app`), wired through the walls.sh edge

@@ -72,13 +72,16 @@ number is just there.</p>
 
 <div class="trust"><strong>The trust contract.</strong> Headroom sends your token to
 <code>api.anthropic.com</code> and nowhere else. It never logs it, never stores a copy,
-never phones home. The source is small enough to read.</div>
+never phones home. The source is small enough to read —
+<a href="https://github.com/patwalls/headroom">read it on GitHub</a>: the entire
+network + Keychain surface is one ~150-line file.</div>
 
 <h2>Why</h2>
 <p>The weekly limit always finds you mid-task, because a meter you have to remember to
 poll isn't a meter. The menu bar is where ambient numbers belong.</p>
 
-<footer>Built in public — <a href="https://walls.sh">walls.sh</a> · Wall #003</footer>
+<footer>Built in public — <a href="https://walls.sh">walls.sh</a> · Wall #003 ·
+<a href="https://github.com/patwalls/headroom">source</a></footer>
 </main></body></html>`;
 
 createServer((req, res) => {
