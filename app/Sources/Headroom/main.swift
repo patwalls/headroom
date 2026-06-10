@@ -138,6 +138,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     /// Apple's Keychain consent dialog is scary when it ambushes you on first launch.
     /// Explain it in our own words first — once, before the first Keychain read.
     private func primeKeychainExplainerIfNeeded() {
+        // The hook path never reads the Keychain — don't explain a permission we won't ask
+        // for. If fresh local data is already present, stay silent.
+        if let hook = HookUsage.read(),
+           Date().timeIntervalSince(hook.capturedAt) < UsageProvider.hookFreshness { return }
         let key = "keychainExplainerShown"
         guard !UserDefaults.standard.bool(forKey: key) else { return }
         UserDefaults.standard.set(true, forKey: key)
@@ -189,8 +193,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     private func refresh() {
-        // While the endpoint is rate-limiting us, don't pile on — the 60s tick and
-        // menu-open refreshes both wait out the backoff window.
+        // A fresh local hook reading needs no network, so show it even while the API is
+        // in rate-limit backoff — the whole point of the hook is that the meter never
+        // blanks. (Small-file read; fine on the main thread.)
+        if let hook = HookUsage.read(),
+           Date().timeIntervalSince(hook.capturedAt) < UsageProvider.hookFreshness {
+            render(.success(UsageReading(usage: hook.usage, source: .hook)))
+            return
+        }
+        // No fresh local data — fall back to the API, but don't pile on during backoff
+        // (the 60s tick and menu-open refreshes both wait out the window).
         if let until = backoffUntil, Date() < until { return }
         lastFetchAt = Date()
         DispatchQueue.global(qos: .utility).async {
