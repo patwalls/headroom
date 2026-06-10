@@ -81,15 +81,25 @@ and ends with **one fact learned**. Optional focus: **$ARGUMENTS**
 - **Surface, don't fake, human-only steps.** Do everything up to the line, name the exact
   one thing Pat must do, run a different lap meanwhile.
 
-### Model policy — cheap loop, expensive specialist
+### Model policy — pick the model per lap
 
-This loop's sessions default to a cheap model (`.claude/settings.json` → `"model": "sonnet"`)
-because most laps are routine: sync, deploy, dossier updates, copy, polish, small fixes.
-When THIS lap is genuinely hard — a new app capability from scratch, a thorny
-architecture/design call, debugging that's gone in circles — don't grind on the session
-model: delegate that one step to a subagent via the Agent tool with `model: "opus"`
-(reserve `"fable"` for the very hardest builds), give it the full task spec up front, and
-verify its output yourself before shipping. Routine laps never escalate. If Pat wants a
-whole session on a big model, he starts it himself (`claude --model fable` or `/model`).
+The session runs on a cheap model (Sonnet, via `.claude/settings.json`) and acts as the
+**orchestrator**. It can't change its own model — but it can run each lap's heavy work in
+a subagent at whatever tier the lap deserves. So when you pick the lap (step 1), also
+**pick its tier and say so**:
+
+- **Routine** — sync, site deploy, dossier updates, copy, polish, small fixes → do it
+  yourself on the session model. No subagent.
+- **Substantial** — a real app feature, a meaty refactor, non-trivial debugging → run the
+  build/ship work in an Agent-tool subagent with `model: "opus"`. Hand it the full spec
+  up front: what to build, the real build/bundle commands (`swift build -c release`, the
+  .app bundle + ditto zip), what "done" looks like.
+- **Critical** — a new app capability from scratch, a thorny architecture call, debugging
+  that's gone in circles → same, with `model: "fable"`.
+
+The orchestrator always keeps the cheap parts: picking the lap, verifying the real output
+yourself (build exit 0, live /health, real downloads count), logging, committing, pushing.
+Always re-verify the subagent's claimed result before logging it. If Pat wants the whole
+session on a big model, he starts it himself (`claude --model fable` or `/model`).
 
 End by stating: what shipped, the fact learned, and the lap you'll likely run next.
