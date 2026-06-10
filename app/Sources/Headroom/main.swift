@@ -53,6 +53,13 @@ if CommandLine.arguments.contains("--signin") {
     }
 }
 
+// MARK: - --install-hook (wire Claude Code's statusline to feed the local data file)
+
+if CommandLine.arguments.contains("--install-hook") {
+    print(HookInstaller.install())
+    exit(0)
+}
+
 // MARK: - --snapshot harness (real rendering, real data — for README/landing)
 
 if let i = CommandLine.arguments.firstIndex(of: "--snapshot"), CommandLine.arguments.count > i + 1 {
@@ -111,6 +118,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(statusLine)
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: "Refresh Now", action: #selector(refreshNow), keyEquivalent: "r"))
+        menu.addItem(NSMenuItem(title: "Enable Live Data (no rate limits)…", action: #selector(enableLiveData), keyEquivalent: ""))
         // SMAppService only works from a real .app bundle (not a bare swift-build binary).
         if Bundle.main.bundleIdentifier != nil {
             loginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
@@ -154,6 +162,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc private func refreshNow() { refresh() }
 
+    /// Install the Claude Code statusline hook so the meter is fed from disk instead of
+    /// the rate-limited API. Reports the outcome, then refreshes to pick up the file.
+    @objc private func enableLiveData() {
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = "Headroom — live data"
+        alert.informativeText = HookInstaller.install()
+        alert.addButton(withTitle: "OK")
+        NSApp.activate(ignoringOtherApps: true)
+        alert.runModal()
+        refresh()
+    }
+
     @objc private func toggleLaunchAtLogin(_ sender: NSMenuItem) {
         do {
             if SMAppService.mainApp.status == .enabled {
@@ -173,16 +194,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let until = backoffUntil, Date() < until { return }
         lastFetchAt = Date()
         DispatchQueue.global(qos: .utility).async {
-            let outcome: Result<Usage, Error> = Result {
-                try self.tokenStore.fetchUsage()
+            let outcome: Result<UsageReading, Error> = Result {
+                try UsageProvider.fetch(self.tokenStore)
             }
             DispatchQueue.main.async { self.render(outcome) }
         }
     }
 
-    private func render(_ outcome: Result<Usage, Error>) {
+    private func render(_ outcome: Result<UsageReading, Error>) {
         switch outcome {
-        case .success(let usage):
+        case .success(let reading):
+            let usage = reading.usage
             lastUsage = usage
             lastSuccess = Date()
             backoffUntil = nil
@@ -191,7 +213,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             setTitle(Render.title(usage), color: Render.tone(usage).color)
             sessionMeter.update(usage.fiveHour)
             weeklyMeter.update(usage.sevenDay)
-            statusLine.title = "Updated \(Self.clock.string(from: Date()))"
+            let via = reading.source == .hook ? "Claude Code" : "API"
+            statusLine.title = "Updated \(Self.clock.string(from: Date())) · via \(via)"
         case .failure(let error):
             // Rate-limited: obey the server's Retry-After (it can be ~5 min), fall back to
             // exponential only when the header is absent. Then schedule a retry for the

@@ -114,6 +114,38 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 18 — 2026-06-10 · Local-first data: read Claude Code's own numbers, never poll the API (kills the 429 class).**
+  *Shipped:* the architectural fix for the whole rate-limit saga. Research into how the
+  field solves this (ccusage, ClaudeWatch, claude-usage-monitor, ~8 menu-bar competitors)
+  surfaced the key fact, confirmed against the official Claude Code docs: a **statusLine
+  hook** receives Claude Code's OWN rate-limit data on stdin —
+  `rate_limits.five_hour.used_percentage` / `seven_day` + `resets_at` (epoch). That's the
+  exact 5h/7d data Headroom was fighting the rate-limited `/api/oauth/usage` endpoint for,
+  handed over locally with **zero API calls, zero Keychain, zero 429 — ever** — and it's
+  authoritative (Claude Code already fetched it server-side). ClaudeWatch proved the pattern
+  in the wild. New `Hook.swift`: `headroom --install-hook` writes a tiny jq hook to
+  `~/.claude/headroom-statusline.sh` and wires `settings.json` (non-destructive — instructs
+  rather than clobbers if a statusLine already exists), the hook captures the numbers to
+  `~/.claude/headroom-usage.json` AND renders a `CC 5h..% · 7d..%` status line as a bonus,
+  and `UsageProvider.fetch` reads that file first — falling back to the API (with Lap 15's
+  backoff) only when the file is missing/stale, and to a stale-but-real hook reading when
+  the API is rate-limited. A "Enable Live Data (no rate limits)…" menu item runs the
+  installer. Verified end-to-end on Pat's live machine: build clean; installer wires
+  settings.json + writes the script; the real statusline hook fired and wrote Pat's actual
+  5h/7d numbers, which the menu bar read with no network. *Fact learned:* the authoritative
+  subscription numbers were available **locally all along** — Claude Code's statusLine stdin
+  carries `rate_limits.*`, so the right data source was never the poll-hostile API at all.
+  This supersedes the v0.3 `--signin` spike (which would have hit the same rate-limited
+  endpoint with a different token) AND removes the Keychain dialog from the happy path — the
+  hook install is a friendlier first-run than the consent prompt. Also reframes the moat:
+  ~8 competitors exist; "the meter that can never blank out, because it reads what Claude
+  Code already knows" is the differentiator. *Source dump:* code.claude.com/docs/en/statusline
+  (the `rate_limits.*` fields), github.com/elliotykim/claudewatch (same architecture, proven
+  live), github.com/ryoppippi/ccusage (JSONL approach — rejected: token counts undercounted
+  100×). *Next lap:* notarize + ship a build with the hook path (Developer ID gate — the
+  remote Mac), promote `--install-hook` in onboarding/landing, retire the `--signin` spike
+  or keep it only as the no-Claude-Code-installed fallback.
+
 - **Lap 17 — 2026-06-10 · The icon (v0.2.4) — no more generic blank app.**
   *Shipped:* Headroom has a face: a programmatically rendered app icon — the dropdown's
   two meter bars (green session, amber week) on a Big Sur squircle, vector-drawn at all
