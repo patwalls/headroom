@@ -1,7 +1,7 @@
 ---
 description: Run ONE lap of the Headroom loop — ship one real thing toward 100 stranger downloads, verify with real output, log it, push.
 argument-hint: "[optional focus, e.g. 'keychain' or 'notarize']"
-allowed-tools: Bash, Read, Edit, Write, Glob, Grep
+allowed-tools: Bash, Read, Edit, Write, Glob, Grep, Agent
 ---
 
 ## Context (auto-injected)
@@ -80,5 +80,16 @@ and ends with **one fact learned**. Optional focus: **$ARGUMENTS**
 - **One lap = one shipped thing + one fact.**
 - **Surface, don't fake, human-only steps.** Do everything up to the line, name the exact
   one thing Pat must do, run a different lap meanwhile.
+
+### Model policy — cheap loop, expensive specialist
+
+This loop's sessions default to a cheap model (`.claude/settings.json` → `"model": "sonnet"`)
+because most laps are routine: sync, deploy, dossier updates, copy, polish, small fixes.
+When THIS lap is genuinely hard — a new app capability from scratch, a thorny
+architecture/design call, debugging that's gone in circles — don't grind on the session
+model: delegate that one step to a subagent via the Agent tool with `model: "opus"`
+(reserve `"fable"` for the very hardest builds), give it the full task spec up front, and
+verify its output yourself before shipping. Routine laps never escalate. If Pat wants a
+whole session on a big model, he starts it himself (`claude --model fable` or `/model`).
 
 End by stating: what shipped, the fact learned, and the lap you'll likely run next.
