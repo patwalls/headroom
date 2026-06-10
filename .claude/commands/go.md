@@ -14,7 +14,7 @@ push) on repeat until told to stop. It's the memorable name for `/loop /lap`.
 0. **Label the session** (the equivalent of `/rename HEADROOM LOOP` — puts the business
    name in the cmux sidebar + session list). Run these; if either fails, continue — cosmetic:
    ```bash
-   [ -n "$CMUX_CLAUDE_HOOK_CMUX_BIN" ] && CMUX_QUIET=1 "$CMUX_CLAUDE_HOOK_CMUX_BIN" workspace rename "HEADROOM LOOP" || true
+   [ -n "$CMUX_CLAUDE_HOOK_CMUX_BIN" ] && CMUX_QUIET=1 "$CMUX_CLAUDE_HOOK_CMUX_BIN" workspace rename --title "HEADROOM LOOP" || true
    node -e 'const fs=require("fs"),os=require("os"),d=os.homedir()+"/.claude/sessions";const id=process.env.CLAUDE_CODE_SESSION_ID;for(const f of fs.readdirSync(d)){const p=d+"/"+f;try{const j=JSON.parse(fs.readFileSync(p,"utf8"));if(j.sessionId===id){j.name="HEADROOM LOOP";fs.writeFileSync(p,JSON.stringify(j))}}catch{}}'
    ```
 1. Parse `$ARGUMENTS`:
