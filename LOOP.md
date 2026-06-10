@@ -18,11 +18,13 @@ of walls.sh — a macOS menu bar app that shows your Claude Code usage as a live
 Open a session rooted in this repo (`~/code/headroom`), then:
 
 ```
-/lap                 # run exactly one lap
+/go                  # THE command — start the autonomous loop (laps on repeat, self-paced)
+/go 1h               # same, one lap per hour
+/lap                 # run exactly ONE lap — supervised mode
 /lap keychain        # one lap, focused on a topic you name
-/loop /lap           # keep running laps, self-paced — the autonomous loop
-/loop 1h /lap        # one lap every hour
 ```
+
+**`/go` is the ignition** — the memorable name for `/loop /lap`, same in every venture repo.
 
 ## The two halves of the product
 
