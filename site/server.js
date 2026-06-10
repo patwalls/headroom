@@ -72,11 +72,13 @@ the 5-hour session and the 7-day week — color-coded before a limit stops you m
 Yours shows your numbers.</p>
 
 <a class="cta" href="/download">Download Headroom — free</a>
-<p class="fine">v0.2.5 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~280 KB zip ·
+<p class="fine">v0.3.0 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~280 KB zip ·
 signed &amp; notarized by Apple — double-click and it runs.</p>
 <p class="fine">Homebrew: <code>brew install --cask patwalls/tap/headroom</code></p>
 <p class="fine">On first launch Headroom explains the one permission it needs, then macOS
 asks once (its standard Keychain dialog) — click "Always Allow" and it never asks again.</p>
+<p class="fine">New in v0.3: "Enable Live Data" reads the numbers straight from Claude Code's
+own status line — zero API calls, zero rate limits, no Keychain prompt at all.</p>
 
 <h2>Zero config — really</h2>
 <p>Claude Code already keeps an OAuth token in your macOS Keychain. Headroom reads it the

@@ -9,6 +9,8 @@ form-only/human-only listings get a paste-ready packet below.
 | [hesreallyhim/awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) | ~46k | Web-UI issue form, **human-only** | Packet ready below — **submit on/after 2026-06-16** |
 | [serhii-londar/open-source-mac-os-apps](https://github.com/serhii-londar/open-source-mac-os-apps) | ~49k | PR to applications.json | **PR open** — [#1153](https://github.com/serhii-londar/open-source-mac-os-apps/pull/1153) (2026-06-10) |
 | [jeffreyjackson/mac-apps](https://github.com/jeffreyjackson/mac-apps) | ~1.5k | PR | **PR open** — [#84](https://github.com/jeffreyjackson/mac-apps/pull/84) (2026-06-10) |
+| [iCHAIT/awesome-macOS](https://github.com/iCHAIT/awesome-macOS) | ~19k | PR | **PR open** — [#868](https://github.com/iCHAIT/awesome-macOS/pull/868) (2026-06-10) |
+| GitHub Releases | — | own repo | ✅ [v0.2.5 release](https://github.com/patwalls/headroom/releases/tag/v0.2.5) — notes only, download stays on the counted path |
 | Homebrew (own tap) | — | `patwalls/homebrew-tap` | ✅ Live (Lap 6) |
 
 ---
