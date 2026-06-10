@@ -27,7 +27,7 @@ let downloads = loadCount();
 const page = `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Headroom — Claude Code usage in your menu bar</title>
-<meta name="description" content="A free macOS menu bar app that shows your Claude Code session and weekly usage as a live %. Zero config — it reads the token Claude Code already stores.">
+<meta name="description" content="A free macOS menu bar app that shows your Claude Code session and weekly usage as a live %. Zero config, zero network calls — it reads the numbers Claude Code already renders.">
 <link rel="canonical" href="https://headroom.walls.sh/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Headroom">
