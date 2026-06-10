@@ -31,7 +31,9 @@ Set 2026-06-09. Full autonomy granted to pursue it.
    (calm → amber → red as a limit approaches), reset countdowns in the dropdown, launch-at-login. *(Lap 2)*
 3. [x] **It's downloadable** — a signed + notarized build served from `headroom.walls.sh`
    (landing live, `/metrics` counting downloads honestly). *(Laps 3–5)*
-4. [ ] **First stranger download** — one download Pat didn't cause.
+4. [x] **First stranger download** — one download Pat didn't cause. *(Lap 9: counter hit 1,
+   ~20 min after the awesome-mac PR went public. Not Pat, not a probe; we can't attribute
+   further because Headroom tracks nobody — the counter is the contract.)*
 5. [ ] **25 downloads + the first piece of external feedback** (an issue, a reply, a mention).
 6. [ ] **📥 100 downloads — the North Star.** Then decide the one-time-license question with
    real demand data, not vibes.
@@ -111,6 +113,32 @@ commit + push. The motor is [`.claude/commands/lap.md`](.claude/commands/lap.md)
 run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
+
+- **Lap 9 — 2026-06-09 · Pat's feedback lap: real meters, no more ?%, no more dialogs — and downloads: 1.**
+  *Shipped:* v0.2.0, notarized + stapled + live. (1) The dropdown now looks like the
+  landing page: custom NSMenuItem views drawing label + bold %, a color-coded rounded
+  bar per window (green/amber/red by that window's own level), reset countdown beneath —
+  and countdowns re-render the moment the menu opens. (2) The `CC ?%` Pat disliked was
+  HTTP 429 — Anthropic rate-limiting the usage poll (worst with 5 parallel Claude Code
+  loops sharing the token). Now a failed refresh keeps the last good number for up to
+  10 min with a quiet "retrying" note, 429s trigger exponential backoff (60s→5min cap),
+  and ?% is reserved for genuinely-unknown (dead token / 10+ min dark). (3) Pat's
+  password-prompt annoyance: every lap's debug rebuild was ad-hoc signed → new identity
+  → new Keychain dialog; `app/print.sh` now signs dev builds with the Developer ID cert
+  under a stable identifier, so "Always Allow" sticks once, forever. Verified: build
+  clean, v0.2.0 notarized ("The staple and validate action worked!"), relaunched live
+  in Pat's menu bar, live /download serves 107,328 bytes that unzip to a Gatekeeper-
+  accepted 0.2.0, size/line claims re-synced everywhere (~105 KB, ~460 lines). And the
+  North Star moved: **/metrics shows downloads: 1** — first non-probe download, ~20 min
+  after the awesome-mac PR went public. Milestone 4 ticked per the contract (the
+  counter decides; we track nobody, so attribution beyond not-Pat/not-probe is
+  unknowable by design). *Fact learned:* the usage endpoint 429s aggressively under
+  parallel session load — the very condition Headroom's user is in — so a usage meter
+  must treat rate-limiting as a display state (stale-but-shown + backoff), not an
+  error; and macOS Keychain ACLs key on code identity, so dev builds need a stable
+  Developer ID signature or every rebuild re-prompts. *Next lap:* watch the awesome-mac
+  PR + counter; repo topics + a real screenshot (the new dropdown is finally worth
+  photographing) for README/landing and Pat's launch posts.
 
 - **Lap 8 — 2026-06-09 · First external listing PR + the form-only packet.**
   *Shipped:* Headroom is in review on the biggest Mac software list —

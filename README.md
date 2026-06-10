@@ -17,7 +17,7 @@ Headroom puts the number where ambient numbers belong:
 ## Install
 
 **[Download from headroom.walls.sh](https://headroom.walls.sh/download)** — free,
-macOS 13+, universal (Apple Silicon & Intel), ~90 KB. Signed & notarized.
+macOS 13+, universal (Apple Silicon & Intel), ~105 KB. Signed & notarized.
 
 Unzip, drag `Headroom.app` to Applications, open it. macOS will ask once for permission
 to read the Claude Code keychain item — that's the zero-config working as intended;
@@ -51,7 +51,7 @@ An app that sits next to your credentials all day must be auditable. So:
   network calls besides the one.
 - The entire network + Keychain surface is one small file:
   [`app/Sources/Headroom/Usage.swift`](app/Sources/Headroom/Usage.swift). Read it.
-- No dependencies. AppKit + Foundation, ~340 lines total.
+- No dependencies. AppKit + Foundation, ~460 lines total.
 
 ## Built in public
 

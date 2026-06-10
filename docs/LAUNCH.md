@@ -1,8 +1,8 @@
 # Launch kit — ready to paste
 
 Three posts, one per channel, in posting order. Every claim below was verified against
-live reality on 2026-06-09 (zip = 90,494 bytes, `Usage.swift` = 150 lines, app total =
-340 lines, landing/download/repo/tap all 200). **The posting itself is Pat's** — it goes
+live reality on 2026-06-09, v0.2.0 (zip = 107,328 bytes, `Usage.swift` = 150 lines, app
+total ~460 lines, landing/download/repo/tap all 200). **The posting itself is Pat's** — it goes
 out under his name. Rules: post honestly, answer every comment, never astroturf, and if
 a number changes (size, line count), re-verify before pasting.
 
@@ -31,9 +31,9 @@ a number changes (size, line count), re-verify before pasting.
 >
 > An app that sits next to your credentials all day must be auditable, so the trust
 > surface is deliberately small: the entire network + Keychain code is one 150-line
-> file (Usage.swift), the whole app is ~340 lines of AppKit with zero dependencies,
+> file (Usage.swift), the whole app is ~460 lines of AppKit with zero dependencies,
 > and the token goes to api.anthropic.com and nowhere else — no analytics, no
-> auto-updater, no other network calls. Signed & notarized; ~90 KB zip; or
+> auto-updater, no other network calls. Signed & notarized; ~105 KB zip; or
 > `brew install --cask patwalls/tap/headroom`. Free.
 >
 > One more thing worth disclosing because it's in the repo anyway: most of this was
@@ -67,9 +67,9 @@ second attempt days later.
 > Because it sits next to your credentials, the trust part matters: the token goes to
 > api.anthropic.com and nowhere else, no analytics, no phoning home — and the entire
 > network/Keychain surface is one 150-line file you can read on GitHub (whole app is
-> ~340 lines, no dependencies). Signed & notarized.
+> ~460 lines, no dependencies). Signed & notarized.
 >
-> Download: https://headroom.walls.sh (~90 KB) · Brew:
+> Download: https://headroom.walls.sh (~105 KB) · Brew:
 > `brew install --cask patwalls/tap/headroom` · Source:
 > https://github.com/patwalls/headroom
 >
@@ -91,7 +91,7 @@ free + relevant; engage in comments.
 >
 > Headroom: session (5h) + weekly (7d) usage as a %, color-coded before a limit stops
 > you mid-task. Zero config — it reads the token Claude Code already stores. Free,
-> notarized, 340 lines of auditable Swift.
+> notarized, 460 lines of auditable Swift.
 >
 > https://headroom.walls.sh
 
