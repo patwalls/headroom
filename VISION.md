@@ -114,6 +114,44 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 15 — 2026-06-10 · Cold-start 429 fix: a fresh install no longer dead-ends on "—%" (v0.2.3).**
+  *Shipped:* Pat installed v0.2.2 on a NEW Mac and it stuck on "—%" / "fetching…" with a
+  bare "Usage endpoint answered HTTP 429" — the exact thing that would have hit everyone
+  at launch. Reproduced live against the real endpoint: the token + request are fine (200
+  on a calm call), but the usage endpoint rate-limits **per-token after ~5 rapid hits, and
+  that budget is SHARED with Claude Code's own usage polling**, handing back `Retry-After:
+  290` (a ~5-min lockout). Lap 9 had handled 429s *only when a prior good reading existed*
+  (stale-but-shown); on a truly cold start there's no reading, so it fell through to the
+  `?%`/raw-error path AND the meter captions never cleared from "fetching…". Three fixes
+  (v0.2.3): (1) parse `Retry-After` and model 429 as its own `rateLimited(retryAfter:)`
+  case — obey the server's wait instead of guessing exponential, and schedule a one-shot
+  retry for the instant the window clears (recover promptly, not up to 60s late); (2)
+  cold-start now reads honestly — transient causes (rate-limit/offline) show `CC —%` +
+  "Rate-limited (shared with Claude Code) — retrying in Nm" and keep retrying, while `?%`
+  + actionable text is reserved for real failures (expired token, Keychain); the stuck
+  "fetching…" caption is replaced via a new `MeterMenuView.awaiting(_:)`; (3) debounced
+  the menu-open refresh (15s) so flicking the menu can't trip the shared limit by itself.
+  Verified: `swift build` clean, `--print` returns real JSON (session 22% / week 37%), and
+  a deliberately-forced 429 now degrades to "Rate-limited by the usage endpoint — retrying
+  shortly" with a clean exit instead of the raw HTTP error. **Source fix committed; the
+  notarized v0.2.3 RELEASE is blocked:** `bundle.sh` on this (new) Mac can only ad-hoc
+  sign — `security find-identity` shows 0 valid identities, so the build is Gatekeeper-
+  *rejected*. The Developer ID cert + `headroom-notary` profile live on Pat's other Mac.
+  Held the binary rather than regress the live download: restored the notarized v0.2.2
+  `Headroom.zip` and kept the landing at v0.2.2 until v0.2.3 can be notarized. *Fact learned:* the rate limit
+  isn't ours to spend alone — it's one bucket shared with every Claude Code session on the
+  machine, so the very users Headroom targets (heavy CC users) are the most likely to trip
+  it on first launch; a usage meter therefore has to treat rate-limiting as a first-class,
+  self-healing *display state* keyed on the server's own `Retry-After`, and must never let
+  a cold start (no prior reading) collapse into a state indistinguishable from "broken."
+  And: a user installing on a fresh machine is the highest-signal QA the loop gets — this
+  bug was invisible on the dev box where a good reading was always already cached.
+  *Next lap:* cut the notarized v0.2.3 release — either build on the Mac that holds the
+  Developer ID cert, or get that cert + an app-specific-password notary profile onto this
+  machine (team V2N8FKLG3G) so the loop can ship from anywhere; then bump the landing to
+  v0.2.3 + redeploy. After that, the v0.3 "Sign in with Claude" spike or more listing
+  surface; counter + PR #2175 to be checked first.
+
 - **Lap 14 — 2026-06-10 · MIT — the license decision unblocks the listing backlog.**
   *Shipped:* surfaced the license question to Pat with a recommendation (the code was
   never the moat; trust + distribution are) — **Pat chose MIT**. LICENSE committed,

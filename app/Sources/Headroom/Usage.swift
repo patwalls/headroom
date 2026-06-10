@@ -18,6 +18,11 @@ enum HeadroomError: Error, CustomStringConvertible {
     case keychain(OSStatus)
     case credentialShape
     case http(Int)
+    /// HTTP 429. The usage endpoint rate-limits per-token and the budget is SHARED with
+    /// Claude Code's own polling — so a burst (ours + CC's) trips it, and the server hands
+    /// back a Retry-After (seen as high as ~290s). Modelled apart from .http so we can obey
+    /// that wait instead of guessing, and so the UI can say "retrying" rather than "broken".
+    case rateLimited(retryAfter: TimeInterval?)
     case network(String)
     case responseShape
 
@@ -31,6 +36,8 @@ enum HeadroomError: Error, CustomStringConvertible {
             return "Token expired — open Claude Code once to refresh it"
         case .http(let code):
             return "Usage endpoint answered HTTP \(code)"
+        case .rateLimited:
+            return "Rate-limited by the usage endpoint — retrying shortly"
         case .network(let msg):
             return "Network error: \(msg)"
         case .responseShape:
@@ -116,12 +123,19 @@ enum UsageClient {
                 result = .failure(.network(error.localizedDescription))
                 return
             }
-            let code = (response as? HTTPURLResponse)?.statusCode ?? -1
-            guard code == 200, let data else {
-                result = .failure(.http(code))
+            let http = response as? HTTPURLResponse
+            let code = http?.statusCode ?? -1
+            if code == 200, let data {
+                result = .success(data)
                 return
             }
-            result = .success(data)
+            if code == 429 {
+                // Retry-After is whole seconds here; obey it rather than hammer the limit.
+                let retryAfter = http?.value(forHTTPHeaderField: "Retry-After").flatMap(TimeInterval.init)
+                result = .failure(.rateLimited(retryAfter: retryAfter))
+                return
+            }
+            result = .failure(.http(code))
         }.resume()
         done.wait()
         return try result.get()

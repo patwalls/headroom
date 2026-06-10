@@ -53,10 +53,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "")
     private let tokenStore = TokenStore()
     private var timer: Timer?
+    private var retryTimer: Timer?
     private var lastUsage: Usage?
     private var lastSuccess: Date?
+    private var lastFetchAt: Date?
     private var backoffUntil: Date?
     private var rateLimitStrikes = 0
+    /// Opening the menu kicks a refresh; ignore the kick if we just fetched, so flicking
+    /// the menu open and shut a few times can't trip the shared rate limit by itself.
+    private static let menuRefreshDebounce: TimeInterval = 15
     /// A failed refresh keeps showing the last good number for this long (the data is
     /// 60s old, not unknown); past it, degrade honestly to "CC ?%".
     private static let staleGrace: TimeInterval = 10 * 60
@@ -140,6 +145,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         // While the endpoint is rate-limiting us, don't pile on — the 60s tick and
         // menu-open refreshes both wait out the backoff window.
         if let until = backoffUntil, Date() < until { return }
+        lastFetchAt = Date()
         DispatchQueue.global(qos: .utility).async {
             let outcome: Result<Usage, Error> = Result {
                 try self.tokenStore.fetchUsage()
@@ -155,15 +161,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             lastSuccess = Date()
             backoffUntil = nil
             rateLimitStrikes = 0
+            retryTimer?.invalidate()
             setTitle(Render.title(usage), color: Render.tone(usage).color)
             sessionMeter.update(usage.fiveHour)
             weeklyMeter.update(usage.sevenDay)
             statusLine.title = "Updated \(Self.clock.string(from: Date()))"
         case .failure(let error):
-            if case HeadroomError.http(429) = error {
+            // Rate-limited: obey the server's Retry-After (it can be ~5 min), fall back to
+            // exponential only when the header is absent. Then schedule a retry for the
+            // moment the window clears, so we recover promptly instead of up to 60s late.
+            if case HeadroomError.rateLimited(let retryAfter) = error {
                 rateLimitStrikes += 1
-                let wait = min(300.0, 60.0 * pow(2.0, Double(rateLimitStrikes - 1)))
+                let wait = retryAfter ?? min(300.0, 60.0 * pow(2.0, Double(rateLimitStrikes - 1)))
                 backoffUntil = Date().addingTimeInterval(wait)
+                scheduleRetry(after: wait)
             }
             // A transient failure (a 429, a network blip) doesn't make the number
             // unknown — the last reading is a minute old. Keep it, say we're retrying.
@@ -171,18 +182,54 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                Date().timeIntervalSince(at) < Self.staleGrace {
                 setTitle(Render.title(usage), color: Render.tone(usage).color)
                 statusLine.title = "Updated \(Self.clock.string(from: at)) — \(Self.brief(error)), retrying"
+            } else if Self.isTransient(error) {
+                // No reading yet (cold start) but the cause is temporary — don't look broken.
+                // The shared limit with Claude Code makes this the likely first-launch state.
+                setTitle("CC —%", color: nil)
+                let note: String
+                if case HeadroomError.rateLimited = error, let until = backoffUntil {
+                    note = "Rate-limited (shared with Claude Code) — retrying in \(Render.countdown(from: Date(), to: until))"
+                } else {
+                    note = "Waiting for connection — retrying"
+                    scheduleRetry(after: 15)
+                }
+                sessionMeter.awaiting(note)
+                weeklyMeter.awaiting(note)
+                statusLine.title = note
             } else {
+                // A real, actionable failure (expired token, Keychain, bad shape).
                 setTitle("CC ?%", color: nil)
+                sessionMeter.awaiting("—")
+                weeklyMeter.awaiting("—")
                 statusLine.title = "\(error)"
             }
         }
     }
 
+    /// Temporary conditions that fix themselves with a retry — never an error to surface
+    /// as if the user must act. Auth/Keychain/shape failures are the opposite, and fall through.
+    private static func isTransient(_ error: Error) -> Bool {
+        switch error {
+        case HeadroomError.rateLimited, HeadroomError.network: return true
+        default: return false
+        }
+    }
+
     private static func brief(_ error: Error) -> String {
         switch error {
+        case HeadroomError.rateLimited: return "rate-limited"
         case HeadroomError.http(let code): return "refresh got HTTP \(code)"
         case HeadroomError.network: return "network error"
         default: return "refresh failed"
+        }
+    }
+
+    /// One-shot retry timed to the backoff window's end (a hair past it, so the guard in
+    /// refresh() has cleared). Replaces any pending retry so waits never stack.
+    private func scheduleRetry(after seconds: TimeInterval) {
+        retryTimer?.invalidate()
+        retryTimer = Timer.scheduledTimer(withTimeInterval: seconds + 1, repeats: false) { [weak self] _ in
+            self?.refresh()
         }
     }
 
@@ -193,6 +240,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             sessionMeter.update(usage.fiveHour)
             weeklyMeter.update(usage.sevenDay)
         }
+        // Don't let opening the menu become a request firehose against a shared limit.
+        if let at = lastFetchAt, Date().timeIntervalSince(at) < Self.menuRefreshDebounce { return }
         refresh()
     }
 

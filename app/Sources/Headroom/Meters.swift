@@ -22,6 +22,15 @@ final class MeterMenuView: NSView {
 
     override var isFlipped: Bool { true }
 
+    /// No reading to show yet — replace the "—%" bar's caption with why (rate-limited,
+    /// offline, retrying…) so a stalled cold start reads as "working on it", not "broken".
+    func awaiting(_ note: String) {
+        percentText = "—%"
+        fraction = 0
+        caption = note
+        needsDisplay = true
+    }
+
     func update(_ window: Usage.Window?, now: Date = Date()) {
         guard let window else { needsDisplay = true; return }
         percentText = Render.percent(window.utilization)
