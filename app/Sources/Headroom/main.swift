@@ -28,9 +28,10 @@ if CommandLine.arguments.contains("--print") {
     }
     print("captured: \(ISO8601DateFormatter().string(from: at))")
     print("parsed: session(5h)=\(usage.fiveHour.utilization)% week(7d)=\(usage.sevenDay.utilization)%")
-    print("render: title=\"\(Render.title(usage))\" tone=\(Render.tone(usage).rawValue)")
-    print("render: session=\"\(Render.line(usage.fiveHour))\"")
-    print("render: week=\"\(Render.line(usage.sevenDay))\"")
+    let d = Render.decide(usage)
+    print("render: title=\"\(d.title)\" tone=\(d.tone.rawValue)")
+    print("render: session=\"\(d.session.map { Render.line($0) } ?? "— (window reset — open Claude Code)")\"")
+    print("render: week=\"\(d.week.map { Render.line($0) } ?? "— (window reset — open Claude Code)")\"")
     exit(0)
 }
 
@@ -154,19 +155,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             return
         }
 
-        // Show each window only while it's still live; a rolled-over window's old % would
-        // be wrong, so we show "—" for it instead of faking a number.
-        let five = usage.fiveHour.isLive ? usage.fiveHour : nil
-        let seven = usage.sevenDay.isLive ? usage.sevenDay : nil
-        if let five { sessionMeter.update(five) } else { sessionMeter.awaiting("window reset — open Claude Code") }
-        if let seven { weeklyMeter.update(seven) } else { weeklyMeter.awaiting("window reset — open Claude Code") }
-
-        // Menu bar shows the weekly %; color tracks whichever live window is closest to its
-        // limit, so an imminent 5h stop turns the title red even on a calm week.
-        let weekText = seven.map { Render.percent($0.utilization) } ?? "—%"
-        let levels = [five, seven].compactMap { $0?.utilization }
-        let tone = levels.isEmpty ? Tone.calm : Tone(utilization: levels.max()!)
-        setTitle("CC \(weekText)", color: tone.color)
+        // One shared display decision (Render.decide) — what --print verifies is
+        // exactly what renders here. Rolled-over windows come back nil → "—".
+        let d = Render.decide(usage)
+        if let five = d.session { sessionMeter.update(five) } else { sessionMeter.awaiting("window reset — open Claude Code") }
+        if let seven = d.week { weeklyMeter.update(seven) } else { weeklyMeter.awaiting("window reset — open Claude Code") }
+        setTitle(d.title, color: d.tone.color)
 
         statusLine.title = "Updated \(Self.clock.string(from: at))"
     }

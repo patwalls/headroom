@@ -72,7 +72,7 @@ the 5-hour session and the 7-day week — color-coded before a limit stops you m
 Yours shows your numbers.</p>
 
 <a class="cta" href="/download">Download Headroom — free</a>
-<p class="fine">v0.3.1 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~250 KB zip ·
+<p class="fine">v0.3.2 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~250 KB zip ·
 signed &amp; notarized by Apple — double-click and it runs.</p>
 <p class="fine">Homebrew: <code>brew install --cask patwalls/tap/headroom</code></p>
 <p class="fine">No permission dialogs, no API key, no login — on first launch Headroom quietly

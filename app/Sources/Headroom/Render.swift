@@ -24,14 +24,28 @@ enum Tone: String {
 }
 
 enum Render {
-    /// The menu bar shows the weekly %; the COLOR tracks whichever window is closer
-    /// to its limit, so an imminent 5h stop turns the bar red even on a calm week.
-    static func title(_ usage: Usage) -> String {
-        "CC \(percent(usage.sevenDay.utilization))"
+    /// THE display decision — the one source of truth shared by the GUI and the
+    /// --print harness, so what the harness verifies is exactly what users see.
+    /// Liveness rule: a window whose reset has passed shows nil (rendered as "—"),
+    /// never its stale number. The menu bar shows the weekly %; the COLOR tracks
+    /// whichever LIVE window is closer to its limit, so an imminent 5h stop turns
+    /// the title red even on a calm week.
+    struct Decision {
+        let title: String
+        let tone: Tone
+        let session: Usage.Window?  // nil = rolled over, show "—"
+        let week: Usage.Window?
     }
 
-    static func tone(_ usage: Usage) -> Tone {
-        Tone(utilization: max(usage.fiveHour.utilization, usage.sevenDay.utilization))
+    static func decide(_ usage: Usage) -> Decision {
+        let five = usage.fiveHour.isLive ? usage.fiveHour : nil
+        let seven = usage.sevenDay.isLive ? usage.sevenDay : nil
+        let levels = [five, seven].compactMap { $0?.utilization }
+        return Decision(
+            title: "CC \(seven.map { percent($0.utilization) } ?? "—%")",
+            tone: levels.isEmpty ? .calm : Tone(utilization: levels.max()!),
+            session: five,
+            week: seven)
     }
 
     static func percent(_ utilization: Double) -> String {

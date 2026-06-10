@@ -115,6 +115,28 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 22 — 2026-06-10 · v0.3.2 completed mid-flight: one display decision, verified live.**
+  *Shipped:* finished a half-shipped v0.3.2 found uncommitted in the working tree (the
+  Lap-16 concurrency lesson applied: complete the in-flight ship before starting your
+  own). The change itself: `Render.decide(_:)` is now THE single display decision — one
+  struct (title, tone, live session/week windows) consumed by both the GUI and the
+  `--print` harness, so what verification prints is *by construction* what users see
+  (previously the GUI re-derived liveness/tone in `applyUsage`, and the harness used
+  older `Render.title`/`tone` paths that ignored the rolled-over-window rule). The zip
+  in the tree was already notarized + stapled (Gatekeeper: accepted, Notarized Developer
+  ID, 0.3.2) — this lap deployed it and closed the loop: landing live at v0.3.2,
+  /download serves the exact 265,022-byte zip, the downloaded copy passes spctl,
+  `--print` renders real hook data through the new path (session 8% / week 52%, CC 52%
+  calm), counter honest at 7. [v0.3.2 release](https://github.com/patwalls/headroom/releases/tag/v0.3.2)
+  published notes-only (downloads stay on the counted path). *Fact learned:* the
+  two-machine seam now fails in a second mode — not just "same tag, two architectures"
+  (Lap 20) but "notarized artifact built, never deployed or committed"; the working-tree
+  check at lap start (git status before picking) is what catches it, and a notarized zip
+  sitting in `site/public/` is always recoverable evidence of intent — the bundle's
+  Info.plist + staple tell you exactly what it is even with zero commit history.
+  *Next lap:* PR feedback sweep (4 listing PRs open), the 6/16 awesome-claude-code
+  window, or the next distribution rung.
+
 - **Lap 21 — 2026-06-10 · The launch kit tells the true (better) story — and the hook proves itself on machine #2.**
   *Shipped:* docs/LAUNCH.md fully rewritten to v0.3.1 reality — the HN first-comment now
   leads with "zero network calls" and owns the architectural wrong turn (polling → 429
