@@ -73,10 +73,36 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.items.forEach { $0.target = self }
         statusItem.menu = menu
 
+        primeKeychainExplainerIfNeeded()
         refreshNow()
         timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
             self?.refresh()
         }
+    }
+
+    /// Apple's Keychain consent dialog is scary when it ambushes you on first launch.
+    /// Explain it in our own words first — once, before the first Keychain read.
+    private func primeKeychainExplainerIfNeeded() {
+        let key = "keychainExplainerShown"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        UserDefaults.standard.set(true, forKey: key)
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = "One quick permission"
+        alert.informativeText = """
+        Headroom shows your usage by reading the token Claude Code already keeps in \
+        your Mac's Keychain — no API key, no login, nothing to configure.
+
+        macOS may now ask once with its standard Keychain dialog. Choose “Always \
+        Allow” — the password it wants is your Mac login password, and you're typing \
+        it into Apple's dialog, not into Headroom. After that it never asks again.
+
+        Headroom sends the token to api.anthropic.com and nowhere else — never \
+        logged, never stored, no analytics.
+        """
+        alert.addButton(withTitle: "Continue")
+        NSApp.activate(ignoringOtherApps: true)
+        alert.runModal()
     }
 
     @objc private func refreshNow() { refresh() }

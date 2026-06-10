@@ -19,9 +19,9 @@ Headroom puts the number where ambient numbers belong:
 **[Download from headroom.walls.sh](https://headroom.walls.sh/download)** — free,
 macOS 13+, universal (Apple Silicon & Intel), ~105 KB. Signed & notarized.
 
-Unzip, drag `Headroom.app` to Applications, open it. macOS will ask once for permission
-to read the Claude Code keychain item — that's the zero-config working as intended;
-click **Always Allow**.
+Unzip, drag `Headroom.app` to Applications, open it. On first launch Headroom explains
+the one permission it needs, then macOS asks once (its standard Keychain dialog, for the
+Claude Code token) — click **Always Allow** and it never asks again.
 
 Or with Homebrew:
 

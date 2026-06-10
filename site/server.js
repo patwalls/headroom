@@ -58,11 +58,11 @@ the 5-hour session and the 7-day week — color-coded before a limit stops you m
 <p class="fine">↑ what it looks like. Yours shows your real numbers.</p>
 
 <a class="cta" href="/download">Download Headroom — free</a>
-<p class="fine">v0.2.1 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~105 KB zip ·
+<p class="fine">v0.2.2 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~105 KB zip ·
 signed &amp; notarized by Apple — double-click and it runs.</p>
 <p class="fine">Homebrew: <code>brew install --cask patwalls/tap/headroom</code></p>
-<p class="fine">macOS will ask once to allow reading the Claude Code keychain item —
-that's the zero-config working as intended; click "Always Allow" and it never asks again.</p>
+<p class="fine">On first launch Headroom explains the one permission it needs, then macOS
+asks once (its standard Keychain dialog) — click "Always Allow" and it never asks again.</p>
 
 <h2>Zero config — really</h2>
 <p>Claude Code already keeps an OAuth token in your macOS Keychain. Headroom reads it the

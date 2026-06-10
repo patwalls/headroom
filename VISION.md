@@ -114,6 +114,25 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 11 — 2026-06-09 · First-run UX: explain the scary dialog before it appears (v0.2.2).**
+  *Shipped:* Pat asked for better UX around the Keychain consent moment. The dialog
+  itself is immovable (macOS's consent for reading another app's Keychain item), so
+  v0.2.2 stops it from ambushing people: on first launch, before the first Keychain
+  read, a native explainer says what's about to happen, that "Always Allow" + the Mac
+  login password go to Apple's dialog (not Headroom), and that the token goes to
+  api.anthropic.com and nowhere else. Shows once (UserDefaults flag). Landing + README
+  copy updated to describe the new flow. Live-verified: /download → 0.2.2, Gatekeeper
+  accepted, counter honest at 1; the --print harness broke through the 429 storm and
+  printed real JSON (session 90→93% during the run — the meter moving live). The v0.3
+  candidate (own OAuth "Sign in with Claude" flow — no dialog at all, one browser
+  click) is parked in the queue as the flagship alternative. *Fact learned:* the
+  Keychain dialog renders the requesting code's icon — a bare executable gets an
+  `exec`-badged lock, a bundled app gets its app icon; Pat's screenshot of "two dialogs
+  at once" was actually the dev harness (bare binary) prompting coincidentally while
+  the app's explainer was up — distinguishable at a glance once you know the badge.
+  *Next lap:* screenshot the (now full-width, explained) dropdown for README/landing +
+  launch posts, repo topics, awesome-mac PR check.
+
 - **Lap 10 — 2026-06-09 · Full-width bars (Pat's second look), v0.2.1 live.**
   *Shipped:* Pat's immediate feedback on the new dropdown — the meters didn't span the
   menu — fixed and shipped as v0.2.1 (notarized + stapled + deployed) within the hour.
