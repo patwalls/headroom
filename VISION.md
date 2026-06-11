@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 110 — 2026-06-11 · New SEO page: /weekly — Claude Code 7-day weekly limit explained.**
+  *Shipped:* https://headroom.walls.sh/weekly is live — targets "claude code 7 day limit", "claude code weekly cap", "claude code weekly limit reset" queries. Explains the slow-drain nature of the 7-day window (old requests fall off over days, not minutes), jq recipe to convert weeklyResetSec to days, the pace forecast feature, strategies for staying under the cap. Emphasizes this is the limit that "ruins your week" — higher urgency to monitor than the session limit. 16 SEO pages total. Downloads: 54 (up from 53 — Reddit blitz working). *Fact learned:* Downloads went from 50→54 in about 1 hour after the 20-subreddit Reddit blitz. Per-subreddit limit reset means we can re-post to previously-blocked subs tomorrow. *Next lap:* r/macOS Saturday June 13. More SEO pages (/brew, /install, /vscode). Check download momentum tomorrow.
+
 - **Lap 109 — 2026-06-11 · New SEO page: /session — Claude Code 5-hour session limit explained.**
   *Shipped:* https://headroom.walls.sh/session is live — targets "claude code 5 hour limit", "claude code session limit", "claude code stops working" queries. Explains the rolling window mechanic, clears up common misconceptions (not per-launch, not after 5h running), shows jq recipes to read sessionUsagePct + sessionResetSec, compares session vs weekly limit, and provides strategies (compress context, staged work, amber threshold). 15 SEO pages total. Downloads: 53. *Fact learned:* Each rate limit dimension (session vs weekly) deserves its own page — searchers who just hit a "5 hour" stop are asking a different question than people who hit the "7 day" cap. *Next lap:* /weekly page for the 7-day cap. r/macOS Saturday June 13. More untried subreddits (r/elixir, r/haskell, r/kotlin, etc.)
 

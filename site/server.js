@@ -335,6 +335,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/reset</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/starship</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/session</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/weekly</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -1869,6 +1870,129 @@ Your 5-hour Claude Code window is 92% full. Resets in 23m.</code></pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
+  }
+
+  if (url.pathname === "/weekly") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code 7-Day Weekly Limit — What It Is and How to Track It</title>
+<meta name="description" content="Claude Code's 7-day rolling weekly cap is the limit that takes days to recover from. Learn exactly how it works, how to monitor your weekly usage, and how to avoid hitting it.">
+<link rel="canonical" href="https://headroom.walls.sh/weekly">
+<meta property="og:title" content="Claude Code 7-Day Weekly Limit — What It Is and How to Track It">
+<meta property="og:description" content="Claude Code's 7-day rolling weekly cap is the limit that takes days to recover from. Learn exactly how it works, how to monitor your weekly usage, and how to avoid hitting it.">
+<meta property="og:url" content="https://headroom.walls.sh/weekly">
+<meta property="og:type" content="website">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2rem;font-weight:700;margin:0 0 8px;line-height:1.2}
+  h2{font-size:1.2rem;font-weight:600;margin:40px 0 12px;color:var(--accent)}
+  p{margin:0 0 16px;color:var(--ink)}
+  code{font-family:"SF Mono",Menlo,monospace;font-size:.88em;background:var(--panel);padding:2px 6px;border-radius:4px}
+  pre{background:var(--panel);border:1px solid #2a2d36;border-radius:8px;padding:20px;overflow-x:auto;font-size:.88em;line-height:1.6;margin:0 0 24px}
+  .dim{color:var(--dim)}
+  .warn{color:var(--warn)}
+  .ok{color:var(--ok)}
+  .bad{color:var(--bad)}
+  .callout{background:var(--panel);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 20px;margin:0 0 24px}
+  table{width:100%;border-collapse:collapse;margin:0 0 24px}
+  th,td{text-align:left;padding:10px 14px;border-bottom:1px solid #23262f}
+  th{color:var(--dim);font-weight:500;font-size:.9em}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  nav{margin-bottom:40px}
+  footer{margin-top:64px;padding-top:24px;border-top:1px solid #23262f;color:var(--dim);font-size:.9em}
+</style>
+</head><body><main>
+<nav><a href="/">← Headroom</a></nav>
+
+<h1>Claude Code's 7-Day Weekly Limit</h1>
+<p class="dim">The limit that ruins your week if you don't watch it. Here's how the rolling cap works and how to stay informed before it cuts you off.</p>
+
+<div class="callout">
+<strong>The painful version:</strong> Hit the weekly cap on a Tuesday and you may be waiting until the following Tuesday to get capacity back. Unlike the 5-hour session limit, there's no quick drain — old requests fall off very slowly when the window is 7 days wide.
+</div>
+
+<h2>How the 7-day rolling window works</h2>
+
+<p>The weekly limit is not a fixed calendar week ("resets every Monday"). It's a 7-day rolling window: each request you make stays in the window for 7 days, then falls off.</p>
+
+<p>If you used 80% of your weekly cap on Monday, that 80% doesn't clear until the following Monday — specifically, until exactly 7 days after each request was made, which trickles in slowly over the day.</p>
+
+<p>Because the window is so long, the "drain" is much slower than the 5-hour session window. You can't wait it out in an afternoon.</p>
+
+<h2>Checking your weekly usage</h2>
+
+<p>Inside Claude Code: <code>/usage</code> shows the weekly % and approximate reset time.</p>
+
+<p>From the terminal (requires Headroom):</p>
+
+<pre>jq '{weeklyUsagePct, weeklyResetSec}' ~/.claude/headroom-usage.json</pre>
+
+<p>Example output:</p>
+
+<pre>{
+  "weeklyUsagePct": 83.7,
+  "weeklyResetSec": 201600
+}</pre>
+
+<p><code>weeklyResetSec</code> is 201600 seconds — that's 2.3 days before the next significant drain. The weekly field is the one to watch over a multi-day horizon.</p>
+
+<h2>Convert weeklyResetSec to days</h2>
+
+<pre>jq '.weeklyResetSec / 86400 | . * 10 | round / 10 | tostring + " days"' ~/.claude/headroom-usage.json</pre>
+
+<h2>What Headroom shows</h2>
+
+<pre>CC 23%·<span class="bad">87%</span></pre>
+
+<p>The second number is the weekly %. When it turns <span class="bad">red at 90%</span>, you have roughly 10% of your weekly cap left. The dropdown shows the exact value and the time until the next significant drain.</p>
+
+<p>This is why the weekly % is the most important number to keep ambient. The session % recovers in hours; the weekly % recovers in days.</p>
+
+<h2>The pace forecast</h2>
+
+<p>Headroom's dropdown also shows a pace forecast: "at current pace, session exhausted in ~Xh" or "weekly exhausted in ~Xd." This gives you advance warning before you hit the wall, not after.</p>
+
+<h2>Avoiding the weekly cap</h2>
+
+<ul>
+  <li><strong>Watch the weekly % from day 1.</strong> At 70% (amber), plan how many heavy sessions you have left in the week. At 85%, you're in conservation mode.</li>
+  <li><strong>Front-load smaller tasks on high-% days.</strong> Context-heavy operations burn the weekly cap fast. Save those for the start of your weekly window.</li>
+  <li><strong>Use <code>/compact</code> generously.</strong> Compacting context mid-session reduces tokens per request, stretching your weekly budget.</li>
+  <li><strong>Plan across the rolling window, not the calendar week.</strong> If you burned 70% last Wednesday, your window resets next Wednesday — not "next Monday."</li>
+</ul>
+
+<h2>Weekly vs session: which is binding?</h2>
+
+<table>
+  <thead><tr><th>Limit</th><th>Window</th><th>How to recover</th><th>Which to watch</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Session</strong></td><td>5 hours</td><td>Wait a few minutes to a few hours</td><td>During active work sessions</td></tr>
+    <tr><td><strong>Weekly</strong></td><td>7 days</td><td>Wait days — the slow drain</td><td>Over multi-day project planning</td></tr>
+  </tbody>
+</table>
+
+<p>The session limit hits you suddenly during a work burst. The weekly limit is a slow squeeze — you can see it coming if you're watching, but it's catastrophic if you're not. Both meters need to be visible.</p>
+
+<h2>Monitor the weekly cap always-on</h2>
+
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<p>Or <a href="/download">download directly</a>. Free, MIT, ~267 KB. The weekly % is the second number in the menu bar — always visible, color-coded, with a countdown in the dropdown.</p>
+
+<p>→ <a href="/session">The 5-hour session limit</a><br>
+→ <a href="/reset">When does the limit reset?</a><br>
+→ <a href="/limits">Full rate limits guide</a><br>
+→ <a href="/notifications">Set up threshold alerts</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/session">Session limit</a> · <a href="/weekly">Weekly limit</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
   }
 
   if (url.pathname === "/session") {
