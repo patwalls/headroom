@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 62 — 2026-06-11 · r/emacs post live — 80k subscribers. Downloads: 32.**
+  *Shipped:* r/emacs post live at https://old.reddit.com/r/emacs/comments/1u2uss6/ (80k subs, Question flair — best available). Downloads ticked to 32 (was 31). *Fact learned:* r/emacs flair options include "Question" but not "Discussion" — the flair picker will take whatever is available. Post angle was privacy/zero-network (nettop verification), which resonates with Emacs users who value control and transparency. *Next lap:* r/zsh, r/tmux, or other terminal communities.
+
 - **Lap 61 — 2026-06-11 · r/commandline post live — 118k subscribers.**
   *Shipped:* r/commandline post live at https://old.reddit.com/r/commandline/comments/1u2us1d/ (118k subs, Discussion flair). Terminal-first angle: hook writes to `~/.claude/headroom-usage.json`, zero API. *Fact learned:* r/commandline also uses the same post-flair pattern (button.flairselect-btn + hidden inputs). The brew install one-liner is the right hook for this audience. *Next lap:* more Reddit (r/emacs, r/zsh, r/bash) or other distribution.
 
