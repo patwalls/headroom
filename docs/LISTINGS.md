@@ -91,3 +91,46 @@ Fill in:
 - **Short description (1–2 sentences):**
   > Shows your Claude Code session (5h) and weekly (7d) usage as a live % in the menu bar — color-coded before a limit stops you mid-task. Zero config: it reads the numbers Claude Code already writes locally, no API key or network calls.
 - **Icon/screenshot:** The icon at `https://headroom.walls.sh/icon-512.png` or the dropdown screenshot at `https://headroom.walls.sh/dropdown.png`
+
+---
+
+## Console.dev submission packet (Pat — ~2 minutes, email)
+
+**Process:** Email `hello@console.dev` — they review developer tools for their free weekly newsletter.
+Headroom fits their criteria: primary user is a developer, self-service install, forms part of a dev's regular workflow.
+
+**Subject:**
+> Tool suggestion: Headroom — zero-network Claude Code usage monitor for macOS
+
+**Body:**
+> Hi,
+>
+> I wanted to suggest **Headroom** for potential coverage in Console's weekly devtools picks.
+>
+> **What it is:** A free, native macOS menu bar app that shows Claude Code's 5-hour session and 7-day weekly usage as a live percentage — color-coded as limits approach, with reset countdowns.
+>
+> **What makes it interesting architecturally:** Most Claude usage monitors poll an API. Headroom doesn't make any network calls at all. It installs a tiny status-line hook inside Claude Code (non-destructively); Claude Code writes its own rate-limit JSON to a local file; Headroom reads that file. The entire data path is two local files. Verified zero-network with nettop.
+>
+> **Links:**
+> - Site + download: https://headroom.walls.sh
+> - GitHub (MIT, ~700 lines of Swift): https://github.com/patwalls/headroom
+> - Homebrew: `brew install --cask patwalls/tap/headroom`
+>
+> Free, signed & notarized, macOS 13+. Happy to provide any additional details.
+>
+> Thanks,
+> Pat Walls
+
+---
+
+## webfuse-com/awesome-claude PR (agent-browser, needs GitHub login)
+
+Script ready: `CONFIRM=1 node ~/code/agent-browser/tasks/headroom-awesome-claude.mjs`
+- Target: Applications > Desktop section (currently only 2 entries: Claude Desktop + Claude Desktop Debian)
+- Stars: 1,505
+
+## SKaplanOfficial/Mac-Menubar-Megalist issue (agent-browser, needs GitHub login)
+
+Script ready: `CONFIRM=1 node ~/code/agent-browser/tasks/headroom-megalist-issue.mjs`
+- Request adding Headroom to Developer Utilities section (alphabetically between Graphite and Icon Finder)
+- Stars: 109, but specifically a menu bar megalist — high fit

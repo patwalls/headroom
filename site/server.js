@@ -85,6 +85,16 @@ reads exactly those numbers from your machine: the same 5-hour and 7-day percent
 <code>/usage</code> shows, updated every time Claude Code does. No API key, no login,
 no polling, no rate limits. Install it and the number is just there.</p>
 
+<h2>How it reads your usage</h2>
+<p>On first launch, Headroom installs a tiny status-line hook that runs inside Claude Code
+(backed up non-destructively — any existing status line is preserved and chained). Each
+time Claude Code processes a prompt, the hook saves its own rate-limit JSON to
+<code>~/.claude/headroom-usage.json</code>. Headroom reads that file every 15 seconds.
+That's the entire data path: <strong>two local files, zero network calls.</strong>
+Run <code>nettop -p headroom</code> while the app is open — you'll see nothing.
+Most Claude usage monitors poll an API. Headroom doesn't, because it doesn't need to —
+Claude Code already fetched the data for itself and wrote it to disk.</p>
+
 <div class="trust"><strong>The trust contract.</strong> Headroom never touches your token,
 your Keychain, or your account — and it makes <em>zero network calls</em>. It reads the
 rate-limit numbers Claude Code itself writes, from a local file in <code>~/.claude</code>.
