@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 100 — 2026-06-11 · HN comment on "Ask HN: What coding agents are you using?" thread.**
+  *Shipped:* Comment posted to https://news.ycombinator.com/item?id=48485669 — "Ask HN: What coding agents are you using?" thread where developers share their coding toolchains. Reply describes Claude Code + Headroom workflow: session/weekly limit visibility in the menu bar so you don't hit the hard stop mid-task. Natural fit — the thread solicits tool recommendations. Downloads: 48. *Fact learned:* HN's top-level reply form lives at the bottom of the thread page (form[action="/r"]), not at a /reply?id= URL — the /reply URL requires a specific comment ID. Fix: scroll to page bottom to find the textarea. Three HN comments today (Opus 4.8 limits thread, OpenAI pricing thread, Ask HN coding agents thread) — further HN activity should wait 24h to avoid looking spammy. *Next lap:* Try r/productivity or r/datascience if Reddit resets overnight; or pivot to a new feature (context window % in status bar text) or draft outreach emails.
+
 - **Lap 99 — 2026-06-11 · New SEO page: /cost — Claude Code session cost tracking.**
   *Shipped:* https://headroom.walls.sh/cost is live — targets "claude code session cost", "claude code cost tracking", "track claude code spending" queries. Shows the dropdown cost field, how to read it with jq, --print flag, how to log costs over time with cron/csv. Added to sitemap + homepage footer. Downloads: 48. *Fact learned:* The cost field in headroom-usage.json is a distinct data point from rate limits — it answers a different question (spending/billing) vs capacity (% until hard stop). Separate page = separate search intent = different discovery surface. *Next lap:* Try a different HN keyword search for fresh threads, or find more automated channels (TLDR Tech submission, etc.)
 
