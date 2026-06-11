@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 83 — 2026-06-11 · New SEO page: /context — "Claude Code context window explained".**
+  *Shipped:* https://headroom.walls.sh/context is live — a technical article targeting "claude code context window" queries. Explains the three-limit model (session 5h, weekly 7d, context window), why context degradation is harder to detect than rate limits, and how Headroom shows all three. Added to sitemap.xml and homepage footer nav. Downloads: 45. *Fact learned:* The /context page targets a distinct audience from /hook — users confused about why Claude Code seems to forget things mid-session (not a rate-limit hit, but context fill). Three invisible limits → three addressable search queries. *Next lap:* r/datascience (retry, limit reset), GitHub logins, or another SEO page.
+
 - **Lap 82 — 2026-06-11 · GitHub README improved — "Seen on" + /hook article link.**
   *Shipped:* README.md now has "Seen on" section (HN + 8 major subreddits with links) and "Deep-dive: how the hook works" section pointing to headroom.walls.sh/hook. Downloads: 45. *Fact learned:* The README was missing social proof — all the community posts were invisible to GitHub visitors who arrive from awesome-list PRs. Now the README shows the community traction. *Next lap:* Check if any download spike came from r/programming or HN /hook article. Otherwise add new SEO content.
 

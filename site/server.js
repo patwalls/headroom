@@ -141,6 +141,7 @@ poll isn't a meter. The menu bar is where ambient numbers belong.</p>
 <a href="/changelog">changelog</a> ·
 <a href="/guide">guide</a> ·
 <a href="/hook">hook docs</a> ·
+<a href="/context">context window</a> ·
 <a href="/alternatives">alternatives</a></footer>
 <a href="https://walls.sh" class="wallsbadge" title="Every startup since 2012 — live on the wall"><span class="wbdot"></span>Wall № 003 · building autonomously · <b>walls.sh</b></a><style>.wallsbadge{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:8px;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.07em;text-transform:uppercase;color:#efe7d6;text-decoration:none;background:#15100a;border:1px solid #caa45a;border-radius:999px;padding:9px 14px;box-shadow:0 4px 18px rgba(0,0,0,.5);opacity:.93;transition:opacity .15s,box-shadow .15s}.wallsbadge:hover{opacity:1;box-shadow:0 4px 24px rgba(202,164,90,.4)}.wallsbadge b{color:#caa45a}.wbdot{width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 9px #39d98a;animation:wbblink 1.8s ease-in-out infinite}@keyframes wbblink{0%,100%{opacity:1}50%{opacity:.35}}@media(max-width:640px){.wallsbadge{right:10px;bottom:10px;padding:8px 11px}}</style></main></body></html>`;
 
@@ -301,6 +302,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/changelog</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/guide</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/hook</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/context</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/alternatives</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
@@ -889,6 +891,123 @@ weeklyResetAt    // ISO 8601, when the 7d window resets</code></pre>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/guide">Guide</a> · <a href="/alternatives">Alternatives</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/context") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Claude Code context window: what it is and how to monitor it</title>
+<meta name="description" content="Claude Code has three invisible limits: a 5-hour session cap, a 7-day weekly cap, and a context window that fills up as your conversation grows. Here's what each one means and how to see them.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://headroom.walls.sh/context">
+<meta property="og:title" content="Claude Code context window explained">
+<meta property="og:description" content="Three invisible limits in Claude Code — session (5h), weekly (7d), and context window — and how to monitor all three.">
+<meta property="og:url" content="https://headroom.walls.sh/context">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#d97757;text-decoration:none}
+h1{font-size:2rem;line-height:1.2;margin:0 0 .5em}
+h2{font-size:1.25rem;margin:2.4em 0 .6em;color:#e8e4da}
+p{color:#c9c6bd;margin:.8em 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:#1a1a1a;padding:2px 6px;border-radius:4px}
+pre{background:#141414;border:1px solid #252525;border-radius:8px;padding:20px;overflow-x:auto;margin:1.2em 0}
+pre code{background:none;padding:0;font-size:.9em;line-height:1.6}
+.limits{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:1.4em 0}
+.limit-card{background:#141a24;border:1px solid #1e2838;border-radius:10px;padding:16px 18px}
+.limit-card .name{font-weight:600;font-size:.95rem;margin-bottom:4px}
+.limit-card .detail{color:#8b8880;font-size:.88rem;line-height:1.5}
+.limit-card.session{border-color:#2a3a2a}.limit-card.weekly{border-color:#3a2a2a}.limit-card.context{border-color:#2a2a3a}
+.note{background:#1a1e2a;border:1px solid #2a3050;border-radius:8px;padding:14px 18px;margin:1.6em 0;font-size:.93rem;color:#9ba8cc}
+a{color:#d97757}
+.cta-block{background:#161a1f;border:1px solid #252a35;border-radius:10px;padding:24px;margin:2.4em 0;text-align:center}
+.cta-block a.btn{display:inline-block;padding:12px 24px;background:#d97757;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-top:8px}
+footer{margin-top:4em;font-size:.85rem;color:#6b6860;border-top:1px solid #1e1e1e;padding-top:1.6em}
+</style></head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<h1>Claude Code context window: what it is and how to monitor it</h1>
+<p>Claude Code has three limits that can stop your work — and two of them get all the attention while the third sneaks up on you. Here's what each one means.</p>
+
+<div class="limits">
+<div class="limit-card session">
+<div class="name">Session limit (5h)</div>
+<div class="detail">Resets every 5 hours. Exhausted by heavy usage in a single session.</div>
+</div>
+<div class="limit-card weekly">
+<div class="name">Weekly cap (7d)</div>
+<div class="detail">Resets weekly. Accumulates across all sessions over 7 days.</div>
+</div>
+<div class="limit-card context">
+<div class="name">Context window</div>
+<div class="detail">Fills as your conversation grows. Cleared by /clear or when Claude Code truncates.</div>
+</div>
+</div>
+
+<p>The session and weekly limits are rate limits — Claude's infrastructure enforcing plan quotas. The context window is different: it's a technical constraint of the underlying model. As your conversation with Claude Code gets longer, the context fills up. When it's full, Claude Code has to drop earlier messages or you have to run <code>/clear</code>.</p>
+
+<h2>Why the context window is sneaky</h2>
+<p>Most monitoring tools focus on the session and weekly limits because those are the ones that fire a hard stop. The context window fails differently — it degrades. As it fills:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li>Claude Code starts forgetting earlier parts of your conversation</li>
+<li>File context you added gets dropped silently</li>
+<li>Code it generated earlier may no longer be in context when it references it</li>
+<li>Answers become less coherent — but the session keeps running</li>
+</ul>
+
+<p>There's no error message. The session limit gives you a hard stop; the context window gives you a gradual degradation that's harder to catch.</p>
+
+<h2>How to see it</h2>
+<p>Claude Code's <code>/usage</code> command shows all three meters:</p>
+<pre><code>/usage
+# → Session (5h): 23%
+# → Weekly (7d): 67%
+# → Context: 41%</code></pre>
+
+<p>But <code>/usage</code> is a command you have to remember to run. For ambient awareness, you want something passive.</p>
+
+<h2>Ambient monitoring with Headroom</h2>
+<p>Headroom is a free macOS menu bar app that shows all three meters continuously, color-coded as they approach limits:</p>
+<pre><code>CC 23%·67%·41%   ← session · weekly · context (optional, in dropdown)</code></pre>
+
+<p>The menu bar normally shows the two rate limits (session + weekly) since those fire the hard stops. The context window percentage appears in the dropdown alongside the model name, session cost, and reset countdowns. When context is above 70%, Headroom color-codes it amber — giving you a heads-up before coherence degrades.</p>
+
+<div class="note">
+<strong>How Headroom reads the context window:</strong> Claude Code tracks context fill in its own status line data. Headroom's hook captures this locally — the same source as <code>/usage</code>, but written to <code>~/.claude/headroom-usage.json</code> automatically. No API polling, no credentials, no network calls.
+</div>
+
+<h2>When to /clear vs. waiting it out</h2>
+<p>The context window doesn't block you the way rate limits do. When it fills, you have options:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li><strong>/clear</strong> — resets the context. You lose conversation history but get a fresh window for new work.</li>
+<li><strong>/compact</strong> — Claude Code summarizes earlier parts of the conversation and continues. Less context loss than /clear, but the summary is lossy.</li>
+<li><strong>Starting a new session</strong> — fresh context, but you'll need to re-establish the task context.</li>
+</ul>
+
+<p>Headroom's context percentage tells you when you're approaching the point where you'll need to make this choice — before the degradation becomes obvious in Claude's responses.</p>
+
+<h2>The three-number view</h2>
+<p>A complete picture of your Claude Code state has three numbers:</p>
+<pre><code>Session:   23%  (5h window, hard stop at 100%)
+Weekly:    67%  (7d cap, hard stop at 100%)
+Context:   41%  (current conversation, soft degradation as it fills)</code></pre>
+
+<p>Most monitors only show the first two. Headroom shows all three — in the menu bar for session + weekly, and in the dropdown for context.</p>
+
+<div class="cta-block">
+<strong>Headroom</strong> shows all three Claude Code limits at a glance — session %, weekly %, and context fill in the dropdown. Free, zero config, native macOS.
+<br>
+<a class="btn" href="/download">Download Headroom — free</a>
+<br><br>
+<code style="font-size:.85rem">brew install --cask patwalls/tap/headroom</code>
+</div>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/guide">Guide</a> · <a href="/hook">Hook docs</a> · <a href="/alternatives">Alternatives</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
