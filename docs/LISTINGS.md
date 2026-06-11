@@ -125,11 +125,18 @@ Headroom fits their criteria: primary user is a developer, self-service install,
 
 ---
 
-## onmymenubar.app (agent-browser — no login needed, web form)
+## onmymenubar.app (Pat — ~2 minutes, web form, no login)
 
-Script ready: `CONFIRM=1 node ~/code/agent-browser/tasks/headroom-onmymenubar.mjs`
-- macOS menu bar apps directory — CodexBar is already listed (proof dev tools accepted)
-- No login required, pure web form at https://onmymenubar.app/submit
+Go to https://onmymenubar.app/submit and fill in:
+
+- **App Name:** `Headroom`
+- **Website:** `https://headroom.walls.sh`
+- **Description:** Shows your Claude Code session (5h) and weekly (7d) usage as a live % in the menu bar — color-coded before a limit stops you mid-task. Zero config: reads the numbers Claude Code already writes locally, no API key or network calls.
+- **GitHub:** `https://github.com/patwalls/headroom`
+- **Email:** patrickswalls@gmail.com
+- **Tags/Category:** Developer, AI, Open Source, Free
+
+Note: CodexBar is already listed there (proof dev tools accepted). The form uses React/client-side rendering — the script automation didn't work, but the form is quick to fill manually.
 
 ## JSONbored/awesome-claude PR (agent-browser, needs GitHub login)
 
