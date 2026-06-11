@@ -30,12 +30,14 @@ if CommandLine.arguments.contains("--print") {
     print("parsed: session(5h)=\(usage.fiveHour.utilization)% week(7d)=\(usage.sevenDay.utilization)%")
     if let ctx = usage.contextUsed { print("parsed: context=\(ctx)%") }
     if let model = usage.modelName { print("parsed: model=\(model)") }
+    if let cost = usage.sessionCost { print("parsed: cost=$\(String(format: "%.2f", cost))") }
     let d = Render.decide(usage)
     print("render: title=\"\(d.title)\" tone=\(d.tone.rawValue)")
     print("render: session=\"\(d.session.map { Render.line($0) } ?? "— (window reset — open Claude Code)")\"")
     print("render: week=\"\(d.week.map { Render.line($0) } ?? "— (window reset — open Claude Code)")\"")
     if let ctx = d.context { print("render: context=\"\(Render.percent(ctx))\"") }
     if let model = d.modelName { print("render: model=\"\(model)\"") }
+    if let cost = d.sessionCost { print("render: cost=\"\(Render.cost(cost))\"") }
     exit(0)
 }
 
@@ -64,6 +66,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let weeklyMeter = MeterMenuView(label: "Week (7d)")
     private let contextMeter = MeterMenuView(label: "Context")
     private let contextItem = NSMenuItem()
+    private let costItem = NSMenuItem()
     private let statusLine = NSMenuItem(title: "Starting…", action: nil, keyEquivalent: "")
     private let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "")
     private var timer: Timer?
@@ -87,6 +90,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         contextItem.view = contextMeter
         contextItem.isEnabled = false
         menu.addItem(contextItem)
+        costItem.isEnabled = false
+        costItem.isHidden = true
+        menu.addItem(costItem)
         statusLine.isEnabled = false
         menu.addItem(statusLine)
         menu.addItem(.separator())
@@ -162,6 +168,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             sessionMeter.awaiting(note)
             weeklyMeter.awaiting(note)
             contextItem.isHidden = true
+            costItem.isHidden = true
             statusLine.title = note
             return
         }
@@ -178,6 +185,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             contextMeter.update(Usage.Window(utilization: context, resetsAt: nil))
         } else {
             contextItem.isHidden = true
+        }
+        if let cost = d.sessionCost {
+            costItem.isHidden = false
+            costItem.title = "Session cost:  \(Render.cost(cost))"
+        } else {
+            costItem.isHidden = true
         }
         setTitle(d.title, color: d.tone.color)
 

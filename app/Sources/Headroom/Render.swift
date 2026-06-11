@@ -37,6 +37,7 @@ enum Render {
         let week: Usage.Window?
         let context: Double?        // nil = not available
         let modelName: String?
+        let sessionCost: Double?    // nil = not available
     }
 
     static func decide(_ usage: Usage) -> Decision {
@@ -49,11 +50,16 @@ enum Render {
             session: five,
             week: seven,
             context: usage.contextUsed,
-            modelName: usage.modelName)
+            modelName: usage.modelName,
+            sessionCost: usage.sessionCost)
     }
 
     static func percent(_ utilization: Double) -> String {
         "\(Int(utilization.rounded()))%"
+    }
+
+    static func cost(_ usd: Double) -> String {
+        String(format: "$%.2f", usd)
     }
 
     /// "14% — resets in 2h 1m (7:40 PM)"

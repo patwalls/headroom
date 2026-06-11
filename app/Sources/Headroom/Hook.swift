@@ -39,9 +39,10 @@ enum HookUsage {
         // absent on older Claude Code — so missing data just hides those rows, never breaks.
         let contextUsed = ((root["context_window"] as? [String: Any])?["used_percentage"] as? NSNumber)?.doubleValue
         let modelName = (root["model"] as? [String: Any])?["display_name"] as? String
+        let sessionCost = ((root["cost"] as? [String: Any])?["total_cost_usd"] as? NSNumber)?.doubleValue
 
         let mtime = (try? FileManager.default.attributesOfItem(atPath: path))?[.modificationDate] as? Date
-        return (Usage(fiveHour: five, sevenDay: seven, contextUsed: contextUsed, modelName: modelName), mtime ?? Date())
+        return (Usage(fiveHour: five, sevenDay: seven, contextUsed: contextUsed, modelName: modelName, sessionCost: sessionCost), mtime ?? Date())
     }
 }
 
