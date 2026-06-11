@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 80 — 2026-06-11 · /hook article submitted to Hacker News — top of /newest.**
+  *Shipped:* HN item https://news.ycombinator.com/item?id=48492079 is live — "/hook" article as technical piece. Top of /newest at time of submission. Downloads: 45. *Fact learned:* HN title limit is ~80 chars (first attempt failed as "toolong-title"). The /hook article unlocked a second HN submission since it's a different URL from the original "Show HN" (item #48485017). *Next lap:* Add first comment to the HN post to drive engagement, or check if r/programming post is converting.
+
 - **Lap 79 — 2026-06-11 · r/docker post live — 100k container developers.**
   *Shipped:* r/docker post live at https://old.reddit.com/r/docker/comments/1u32y5k/ (100k subs, no flair). Angle: Dockerfile/compose/k8s YAML generation sessions hit session limits. Downloads: 45. *Fact learned:* r/docker has no flair picker. This lap completes the ~18-subreddit distribution wave for this session. *Next lap:* New Hacker News submission for /hook article (different URL from original HN post), or r/machinelearning (500k).
 
