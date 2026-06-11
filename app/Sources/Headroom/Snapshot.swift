@@ -8,7 +8,8 @@ enum Snapshot {
     static func write(usage: Usage, to path: String) throws {
         let width: CGFloat = 320
         let hasContext = usage.contextUsed != nil
-        let height: CGFloat = hasContext ? 216 : 158
+        let hasCost = usage.sessionCost != nil
+        let height: CGFloat = (hasContext ? 216 : 158) + (hasCost ? 24 : 0)
         let panel = PanelView(frame: NSRect(x: 0, y: 0, width: width, height: height))
         panel.appearance = NSAppearance(named: .darkAqua)
 
@@ -32,6 +33,9 @@ enum Snapshot {
         clock.dateStyle = .none
         let updatedText = "Updated \(clock.string(from: Date()))"
         panel.statusText = [usage.modelName, updatedText].compactMap { $0 }.joined(separator: " · ")
+        if let cost = usage.sessionCost {
+            panel.costText = "Session cost:  \(Render.cost(cost))"
+        }
 
         let pixelsHigh = Int(height * 2)
         guard let rep = NSBitmapImageRep(
@@ -56,19 +60,22 @@ enum Snapshot {
 /// The dark rounded card the meters sit on — visually the menu, minus the chrome.
 final class PanelView: NSView {
     var statusText = ""
+    var costText = ""
 
     override var isFlipped: Bool { true }
 
     override func draw(_ dirtyRect: NSRect) {
         NSColor(calibratedWhite: 0.13, alpha: 1).setFill()
         NSBezierPath(roundedRect: bounds, xRadius: 12, yRadius: 12).fill()
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: 12),
+            .foregroundColor: NSColor.secondaryLabelColor,
+        ]
+        if !costText.isEmpty {
+            (costText as NSString).draw(at: NSPoint(x: 14, y: bounds.height - 48), withAttributes: attrs)
+        }
         if !statusText.isEmpty {
-            (statusText as NSString).draw(
-                at: NSPoint(x: 14, y: bounds.height - 26),
-                withAttributes: [
-                    .font: NSFont.systemFont(ofSize: 12),
-                    .foregroundColor: NSColor.secondaryLabelColor,
-                ])
+            (statusText as NSString).draw(at: NSPoint(x: 14, y: bounds.height - 26), withAttributes: attrs)
         }
     }
 }
