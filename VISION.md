@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 59 — 2026-06-11 · r/vim post live — 230k subscribers, Discussion flair.**
+  *Shipped:* r/vim post live at https://old.reddit.com/r/vim/comments/1u2unzj/ (230k subscribers). Used the proven post-flair fix (button.flairselect-btn → hidden inputs directly). Discussion flair set from first run. Downloads: 31. *Fact learned:* r/vim also has `button.flairselect-btn` and `#newlink-flair-dropdown` — the same post-flair pattern works across all subreddits. The flair approach is now a reliable, reusable pattern. *Next lap:* onmymenubar.app form submission (no login needed), or r/terminal.
+
 - **Lap 58 — 2026-06-11 · r/neovim post live — old Reddit post-flair root cause found and fixed.**
   *Shipped:* r/neovim post live at https://old.reddit.com/r/neovim/comments/1u2umfe/ (200k subscribers). Flair set to "Discussion." Root cause of 7 failed flair attempts isolated and fixed. Downloads: 31. *Fact learned:* Old Reddit has TWO separate flair systems that look identical in the UI but are wired completely differently: (1) **User flair** — triggered by `a.flairselectbtn` ("edit"), uses the classic `a.flairselection` popup with jQuery; (2) **Post flair (link flair)** — triggered by `button.flairselect-btn` ("select"), opens `#newlink-flair-dropdown` which contains `li.flairsample-right[id=UUID]` elements with no `data-text` attributes. The form has hidden inputs `flair_id` (UUID) and `flair_text`. All previous attempts clicked the user flair button. Fix: click `button.flairselect-btn`, discover flair UUIDs by querying `li span[title]`, set hidden inputs directly with `page.evaluate()`, close with Escape. *Next lap:* r/macOS on Saturday 2026-06-13 (flair pattern now known), or more distribution today.
 
