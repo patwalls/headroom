@@ -330,6 +330,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/notifications</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/cost</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/shell</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/tmux</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>`);
   }
 
@@ -1273,6 +1274,121 @@ footer{margin-top:4em;font-size:.85rem;color:#6b6860;border-top:1px solid #1e1e1
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/guide">Guide</a> · <a href="/limits">Rate limits</a> · <a href="/context">Context window</a> · <a href="/hook">Hook docs</a> · <a href="/alternatives">Alternatives</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/tmux") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Claude Code usage in tmux status bar — live % without leaving the terminal</title>
+<meta name="description" content="Show Claude Code session and weekly usage % in your tmux status bar. Copy-paste snippet that reads ~/.claude/headroom-usage.json — updates automatically, no daemon, no polling.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://headroom.walls.sh/tmux">
+<meta property="og:title" content="Claude Code usage in tmux status bar">
+<meta property="og:description" content="Keep Claude Code session/weekly % visible in your tmux status — reads the same local file Headroom uses. No API, no daemon.">
+<meta property="og:url" content="https://headroom.walls.sh/tmux">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#d97757;text-decoration:none}
+h1{font-size:2rem;line-height:1.2;margin:0 0 .5em}
+h2{font-size:1.25rem;margin:2.2em 0 .6em;color:#e8e4da}
+p{color:#c9c6bd;margin:.8em 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:#1a1a1a;padding:2px 6px;border-radius:4px;color:#e8b97e}
+pre{background:#141414;border:1px solid #252525;border-radius:8px;padding:20px;overflow-x:auto;margin:1.2em 0}
+pre code{background:none;padding:0;font-size:.9em;line-height:1.6;color:#c8c5ba}
+a{color:#d97757}
+.callout{background:#161a1f;border:1px solid #252a35;border-left:3px solid #d97757;border-radius:0 8px 8px 0;padding:16px 20px;margin:1.4em 0}
+.callout p{margin:0;color:#c9c6bd}
+.tmux-preview{background:#1b1b1b;border:1px solid #2a2a2a;border-radius:8px;padding:16px;margin:1.2em 0;font-family:ui-monospace,Menlo,monospace;font-size:.88em}
+.sb{background:#333;color:#aaa;padding:4px 12px;display:flex;justify-content:space-between;border-radius:4px;margin-bottom:8px}
+.sb-left{color:#ccc}
+.sb-right{color:#7bb97e}
+.cta-block{background:#161a1f;border:1px solid #252a35;border-radius:10px;padding:24px;margin:2.4em 0;text-align:center}
+.cta-block a.btn{display:inline-block;padding:12px 24px;background:#d97757;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-top:8px}
+footer{margin-top:4em;font-size:.85rem;color:#6b6860;border-top:1px solid #1e1e1e;padding-top:1.6em}
+</style></head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<h1>Claude Code usage in tmux status bar</h1>
+<p>If you work primarily in the terminal and tmux, you can show your Claude Code session and weekly usage in the tmux status bar — always visible at the bottom of the screen, no menu bar required. This snippet reads <code>~/.claude/headroom-usage.json</code> on every tmux status refresh.</p>
+
+<div class="callout"><p>The JSON file is written by Claude Code's statusLine hook — the same source Headroom reads on macOS. You don't need Headroom installed; just the hook. <a href="/hook">Install the hook manually</a> if you haven't already.</p></div>
+
+<h2>Basic status-right snippet</h2>
+<p>Add to <code>~/.tmux.conf</code>:</p>
+<pre><code># Claude Code usage in tmux status-right
+# Reads session (5h) and weekly (7d) from ~/.claude/headroom-usage.json
+# Example output: CC 23%·67%
+
+set -g status-right '#(jq -r "\"CC \" + ((.sessionUsagePct // 0) | round | tostring) + \"%·\" + ((.weeklyUsagePct // 0) | round | tostring) + \"%\"" ~/.claude/headroom-usage.json 2>/dev/null || echo "CC --")  #H  %H:%M'
+set -g status-interval 15</code></pre>
+
+<div class="tmux-preview">
+<div class="sb">
+<span class="sb-left">0:claude  1:term  2:vim</span>
+<span class="sb-right">CC 23%·67%  hostname  14:32</span>
+</div>
+</div>
+
+<p><code>status-interval 15</code> refreshes the status bar every 15 seconds — matches Headroom's refresh rate. Lower this to 5 for near-real-time updates (small overhead cost).</p>
+
+<h2>Color-coded version</h2>
+<p>Use tmux's color syntax to turn the text amber or red as limits approach:</p>
+<pre><code># Color-coded Claude Code usage — amber at 70%+, red at 90%+
+# Requires a script because tmux can't branch on shell output inline.
+
+# 1. Create ~/bin/cc-usage-tmux (chmod +x)
+#!/bin/bash
+F="$HOME/.claude/headroom-usage.json"
+[ -f "$F" ] || { echo "CC --"; exit; }
+S=$(jq -r '.sessionUsagePct // 0 | . + 0.5 | floor' "$F" 2>/dev/null)
+W=$(jq -r '.weeklyUsagePct // 0 | . + 0.5 | floor' "$F" 2>/dev/null)
+MAX=$(( S > W ? S : W ))
+if   [ "$MAX" -ge 90 ]; then COLOR="#[fg=red]"
+elif [ "$MAX" -ge 70 ]; then COLOR="#[fg=yellow]"
+else                         COLOR="#[fg=green]"
+fi
+echo "\${COLOR}CC \${S}%·\${W}%#[default]"</code></pre>
+<pre><code># 2. In ~/.tmux.conf
+set -g status-right '#(~/bin/cc-usage-tmux)  #H  %H:%M'
+set -g status-interval 15</code></pre>
+
+<h2>With context window %</h2>
+<p>Show all three metrics — session, weekly, and context fill:</p>
+<pre><code>set -g status-right '#(jq -r "\"CC \" + ((.sessionUsagePct // 0) | round | tostring) + \"%·\" + ((.weeklyUsagePct // 0) | round | tostring) + \"%·\" + ((.contextUsagePct // 0) | round | tostring) + \"%\"" ~/.claude/headroom-usage.json 2>/dev/null || echo "CC --")  %H:%M'</code></pre>
+<p>Output: <code>CC 23%·67%·41%</code> (session · weekly · context).</p>
+
+<h2>In the status-left</h2>
+<p>Prefer the left side? Replace <code>status-right</code> with <code>status-left</code> and adjust your existing left content:</p>
+<pre><code>set -g status-left '#(jq -r "\"CC \" + ((.sessionUsagePct // 0) | round | tostring) + \"%·\" + ((.weeklyUsagePct // 0) | round | tostring) + \"%\"" ~/.claude/headroom-usage.json 2>/dev/null || echo "CC --") | [#S] '</code></pre>
+
+<h2>Reloading the config</h2>
+<p>After editing <code>~/.tmux.conf</code>, reload without restarting:</p>
+<pre><code>tmux source-file ~/.tmux.conf</code></pre>
+<p>Or from inside tmux: <kbd>prefix</kbd> + <kbd>:</kbd> then type <code>source-file ~/.tmux.conf</code>.</p>
+
+<h2>Why jq directly (not a separate daemon)</h2>
+<p>tmux runs the shell command on every status refresh. Reading a small local JSON file with <code>jq</code> is effectively free — ~1 ms, no persistent process, no network, no background daemon. Claude Code updates the file as you work; tmux reads it on each tick.</p>
+
+<div class="cta-block">
+<p>On macOS? <strong>Headroom</strong> shows the same meters in the native menu bar — always visible even when tmux isn't open. Free, zero config.</p>
+<a href="/download" class="btn">Download Headroom — free</a>
+<p style="margin-top:12px;font-size:.9rem;color:#6b6860">or: <code>brew install --cask patwalls/tap/headroom</code></p>
+</div>
+
+<h2>Related</h2>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li><a href="/hook">How the hook works</a> — the statusLineHook mechanism and JSON schema</li>
+<li><a href="/shell">Shell prompt snippets</a> — zsh, bash, fish, Starship prompt integration</li>
+<li><a href="/limits">Rate limits explained</a> — the 5h session and 7d weekly windows</li>
+</ul>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/hook">Hook docs</a> · <a href="/shell">Shell prompt</a> · <a href="/limits">Rate limits</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
