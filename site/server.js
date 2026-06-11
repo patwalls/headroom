@@ -333,6 +333,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/tmux</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://headroom.walls.sh/model</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://headroom.walls.sh/reset</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/starship</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -1867,6 +1868,184 @@ Your 5-hour Claude Code window is 92% full. Resets in 23m.</code></pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
+  }
+
+  if (url.pathname === "/starship") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Usage in Starship Prompt — Headroom</title>
+<meta name="description" content="Show Claude Code session and weekly usage in your Starship prompt. A custom module reads Headroom's JSON file — no daemon, no polling, always current.">
+<link rel="canonical" href="https://headroom.walls.sh/starship">
+<meta property="og:title" content="Claude Code Usage in Starship Prompt — Headroom">
+<meta property="og:description" content="Show Claude Code session and weekly usage in your Starship prompt. A custom module reads Headroom's JSON file — no daemon, no polling, always current.">
+<meta property="og:url" content="https://headroom.walls.sh/starship">
+<meta property="og:type" content="website">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2rem;font-weight:700;margin:0 0 8px;line-height:1.2}
+  h2{font-size:1.2rem;font-weight:600;margin:40px 0 12px;color:var(--accent)}
+  p{margin:0 0 16px;color:var(--ink)}
+  code{font-family:"SF Mono",Menlo,monospace;font-size:.88em;background:var(--panel);padding:2px 6px;border-radius:4px}
+  pre{background:var(--panel);border:1px solid #2a2d36;border-radius:8px;padding:20px;overflow-x:auto;font-size:.88em;line-height:1.6;margin:0 0 24px}
+  .dim{color:var(--dim)}
+  .warn{color:var(--warn)}
+  .ok{color:var(--ok)}
+  .bad{color:var(--bad)}
+  .callout{background:var(--panel);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 20px;margin:0 0 24px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  nav{margin-bottom:40px}
+  footer{margin-top:64px;padding-top:24px;border-top:1px solid #23262f;color:var(--dim);font-size:.9em}
+</style>
+</head><body><main>
+<nav><a href="/">← Headroom</a></nav>
+
+<h1>Claude Code Usage in Starship</h1>
+<p class="dim">A Starship custom module that shows your Claude Code session and weekly usage — reads Headroom's local JSON, no daemon required.</p>
+
+<div class="callout">
+<strong>Prerequisites:</strong> <a href="https://starship.rs">Starship</a> installed + Headroom running (writes <code>~/.claude/headroom-usage.json</code> each time Claude Code renders its status line).
+</div>
+
+<h2>What it looks like</h2>
+
+<pre>~/projects/myapp on main <span class="warn">CC 72%·41%</span> ❯</pre>
+
+<p>The <code>CC</code> indicator shows <strong>session % · weekly %</strong>. Color-coded: gray when low, amber when either hits 70%, red when either hits 90%. Disappears when Claude Code isn't running (file is stale or missing).</p>
+
+<h2>Starship config (starship.toml)</h2>
+
+<p>Add a <code>[custom.claude]</code> module to your <code>~/.config/starship.toml</code>:</p>
+
+<pre>[custom.claude]
+description = "Claude Code session and weekly usage from Headroom"
+command = """
+jq -r '
+  if .sessionUsagePct == null then ""
+  else
+    (.sessionUsagePct | floor | tostring) + "%·" +
+    (.weeklyUsagePct  | floor | tostring) + "%"
+  end
+' ~/.claude/headroom-usage.json 2>/dev/null
+"""
+when = "test -f ~/.claude/headroom-usage.json"
+format = "[$output]($style) "
+style = "yellow"
+shell = ["sh", "-c"]</pre>
+
+<p>This hides automatically when the file doesn't exist (Headroom not installed, or Claude Code hasn't run yet).</p>
+
+<h2>Color-coded variant</h2>
+
+<p>Match Headroom's amber/red thresholds — amber at 70%, red at 90%:</p>
+
+<pre>[custom.claude]
+description = "Claude Code usage — color-coded like Headroom"
+command = """
+jq -r '
+  if .sessionUsagePct == null then ""
+  else
+    (.sessionUsagePct | floor) as \$s |
+    (.weeklyUsagePct  | floor) as \$w |
+    (if \$s >= 90 or \$w >= 90 then "red"
+     elif \$s >= 70 or \$w >= 70 then "yellow"
+     else "white" end) + ":" +
+    (\$s | tostring) + "%·" + (\$w | tostring) + "%"
+  end
+' ~/.claude/headroom-usage.json 2>/dev/null
+"""
+when = "test -f ~/.claude/headroom-usage.json"
+format = "CC [[$output](fg:\${{split(output, ':')[0]}})]($style) "
+style = "dimmed white"
+shell = ["sh", "-c"]</pre>
+
+<p>Because the color is dynamic, this uses Starship's nested format syntax — the outer format uses <code>$style</code> dimmed, but the output itself carries the color name prefix.</p>
+
+<h2>Simpler approach: the output carries the color prefix</h2>
+
+<p>If nested format feels complex, output the colored text directly using ANSI codes in the command:</p>
+
+<pre>[custom.claude]
+description = "Claude Code usage with inline ANSI color"
+command = """
+jq -r '
+  if .sessionUsagePct == null then ""
+  else
+    (.sessionUsagePct | floor) as \$s |
+    (.weeklyUsagePct  | floor) as \$w |
+    (if \$s >= 90 or \$w >= 90 then "\\u001b[31m"
+     elif \$s >= 70 or \$w >= 70 then "\\u001b[33m"
+     else "\\u001b[37m" end) as \$c |
+    \$c + "CC " + (\$s|tostring) + "%·" + (\$w|tostring) + "%\\u001b[0m"
+  end
+' ~/.claude/headroom-usage.json 2>/dev/null
+"""
+when = "test -f ~/.claude/headroom-usage.json"
+format = "[$output]($style) "
+style = ""
+shell = ["sh", "-c"]</pre>
+
+<h2>Prompt position</h2>
+
+<p>Add <code>custom.claude</code> to your <code>format</code> or <code>right_format</code>:</p>
+
+<pre><span class="dim"># Left prompt — before the ❯</span>
+format = """...\${custom.claude}\$character"""
+
+<span class="dim"># Right prompt (cleaner — doesn't eat left-side space)</span>
+right_format = """\${custom.claude}"""</pre>
+
+<h2>Include context window %</h2>
+
+<p>Headroom also tracks context window usage (<code>contextUsagePct</code>). Add a third number:</p>
+
+<pre>command = """
+jq -r '
+  if .sessionUsagePct == null then ""
+  else
+    (.sessionUsagePct | floor | tostring) + "%·" +
+    (.weeklyUsagePct  | floor | tostring) + "%·" +
+    (if .contextUsagePct != null then (.contextUsagePct | floor | tostring) + "%" else "" end)
+  end
+' ~/.claude/headroom-usage.json 2>/dev/null
+"""</pre>
+
+<p>This outputs <code>23%·41%·64%</code> — matching what Headroom v0.3.5 shows in the menu bar.</p>
+
+<h2>Testing the module</h2>
+
+<pre><span class="dim"># Verify the JSON exists and has the right shape</span>
+jq '{sessionUsagePct,weeklyUsagePct,contextUsagePct}' ~/.claude/headroom-usage.json
+
+<span class="dim"># Test the command output directly</span>
+jq -r '(.sessionUsagePct | floor | tostring) + "%·" + (.weeklyUsagePct | floor | tostring) + "%"' ~/.claude/headroom-usage.json
+
+<span class="dim"># Reload Starship (just open a new terminal or source your RC)</span></pre>
+
+<h2>Why this works without a daemon</h2>
+
+<p>Starship runs the <code>command</code> each time it renders the prompt — when you press Enter, the module runs <code>jq</code>, reads the current values from disk, and renders the output. Since Headroom keeps that file fresh (updated each time Claude Code renders its status line), the prompt always shows current numbers.</p>
+
+<p>No background process. No polling interval. The read happens at prompt-render time, which is exactly when you want fresh data: right before you type the next command.</p>
+
+<h2>Install Headroom</h2>
+
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<p>Or <a href="/download">download directly</a>. Free, MIT, ~267 KB, signed + notarized. Once installed, the JSON file is written automatically.</p>
+
+<p>→ <a href="/shell">Full shell prompt guide</a> (zsh · bash · fish · Starship)<br>
+→ <a href="/tmux">tmux status-right integration</a><br>
+→ <a href="/hook">How the statusLineHook works</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/shell">Shell prompts</a> · <a href="/starship">Starship</a> · <a href="/tmux">tmux</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
   }
 
   if (url.pathname === "/reset") {
