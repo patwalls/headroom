@@ -1,5 +1,6 @@
 import AppKit
 import ServiceManagement
+import UserNotifications
 
 // Headroom — Claude Code usage in the menu bar.
 // One data source: a Claude Code statusline hook saves Claude Code's own 5h/7d numbers
@@ -70,6 +71,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let statusLine = NSMenuItem(title: "Starting…", action: nil, keyEquivalent: "")
     private let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "")
     private var timer: Timer?
+    private var notifiedKeys: Set<String> = []
 
     private static let titleFont = NSFont.monospacedDigitSystemFont(
         ofSize: NSFont.systemFontSize, weight: .regular)
@@ -113,6 +115,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if HookInstaller.isWired() { HookInstaller.refreshScript() } else { HookInstaller.install() }
 
         refresh()
+        // Ask once for permission to post threshold notifications. macOS remembers the choice.
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
         // The hook updates the file as you use Claude Code; a light poll keeps the menu bar
         // and the reset countdowns current. Reading a tiny local file — no network.
         timer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { [weak self] _ in
@@ -196,6 +200,43 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         statusLine.title = [d.modelName, "Updated \(Self.clock.string(from: at))"]
             .compactMap { $0 }.joined(separator: " · ")
+
+        checkNotifications(d)
+    }
+
+    private func checkNotifications(_ d: Render.Decision) {
+        func check(meter: String, window: Usage.Window?, threshold: Double, windowLabel: String, windowDuration: String) {
+            let key = "\(meter).\(Int(threshold))"
+            guard let window else { notifiedKeys.remove(key); return }
+            if window.utilization >= threshold {
+                guard !notifiedKeys.contains(key) else { return }
+                notifiedKeys.insert(key)
+                let pct = Int(window.utilization.rounded())
+                let timeNote = window.resetsAt.map { "Resets in \(Render.countdown(from: Date(), to: $0))." } ?? ""
+                let lvl = threshold >= 90 ? "critical" : "warning"
+                sendNotification(
+                    id: key,
+                    title: "\(windowLabel) at \(pct)% — \(lvl)",
+                    body: "Your \(windowDuration) Claude Code window is \(pct)% full. \(timeNote)".trimmingCharacters(in: .whitespaces)
+                )
+            } else {
+                notifiedKeys.remove(key)
+            }
+        }
+
+        check(meter: "session", window: d.session, threshold: 70, windowLabel: "Session", windowDuration: "5-hour")
+        check(meter: "session", window: d.session, threshold: 90, windowLabel: "Session", windowDuration: "5-hour")
+        check(meter: "week",    window: d.week,    threshold: 70, windowLabel: "Weekly",  windowDuration: "7-day")
+        check(meter: "week",    window: d.week,    threshold: 90, windowLabel: "Weekly",  windowDuration: "7-day")
+    }
+
+    private func sendNotification(id: String, title: String, body: String) {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = .default
+        let request = UNNotificationRequest(identifier: id, content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
     }
 
     /// Re-render countdowns and re-read the file the moment the menu opens.
