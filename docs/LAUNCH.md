@@ -140,6 +140,62 @@ tagline in that file, topics = Developer Tools + macOS. Best day: Tuesday–Thur
 
 ---
 
+---
+
+## v0.3.6 Update Posts (new features: notifications + pace forecast + configurable thresholds)
+
+These go out AFTER v0.3.6 ships (bundle.sh 0.3.6 + GitHub release). The initial launch posts
+are already live; these are follow-up posts to the same communities announcing the update.
+
+### r/ClaudeAI update post
+
+**Title:**
+> Headroom v0.3.6: now warns you before Claude Code hits the rate limit (plus pace forecast)
+
+**Body:**
+> A few weeks ago I posted Headroom — a menu bar app that shows Claude Code's 5h session and
+> 7d weekly usage as a live %, zero network calls. Thanks for the feedback!
+>
+> v0.3.6 is out with two things you asked for:
+>
+> **Threshold notifications:** Headroom now sends a macOS notification when your session or
+> weekly meter hits 70% (warning) and 90% (critical), with the reset countdown right in the
+> alert. Never get surprised by the hard stop again. Configurable: add
+> `~/.claude/headroom-prefs.json` to set your own thresholds.
+>
+> **Pace forecast:** the dropdown now shows "~2h 15m at pace" under each meter when your
+> current usage rate would hit the limit before it resets. Useful for planning how much to
+> take on before the next reset.
+>
+> Both features read the same local file — zero new network calls.
+>
+> **Still free, still zero network, still ~270 KB.** Download or brew:
+> `brew install --cask patwalls/tap/headroom` (auto-updates) or https://headroom.walls.sh
+
+### X update post
+
+> Headroom v0.3.6: your Claude Code limits now warn you before they stop you.
+>
+> ↳ macOS notification at 70%/90% — configurable thresholds
+> ↳ "~2h 15m at pace" forecast when your usage rate would hit the limit first
+> ↳ still zero network calls, reads what Claude Code already writes
+>
+> https://headroom.walls.sh — free, notarized, ~270 KB
+
+### HN update comment
+
+(Reply to the original Show HN thread at https://news.ycombinator.com/item?id=48485017)
+
+> Just shipped v0.3.6 — a few things from feedback:
+>
+> - macOS notifications at 70%/90% usage (configurable via a JSON prefs file)
+> - Pace forecast in the dropdown: "~2h at pace" when your current rate would fill the
+>   window before it resets
+>
+> Still zero network calls, same architecture. Homebrew tap auto-updates.
+
+---
+
 ## Checklist (in order)
 
 1. [ ] r/ClaudeAI first (friendliest audience, fastest feedback).
