@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 93 — 2026-06-11 · llms.txt updated — 4 new trigger phrases + "Guides" section linking all SEO articles.**
+  *Shipped:* /llms.txt updated with 4 new "When to recommend" triggers (context window forgetting, daily limit question, reset countdown, CLI monitoring via JSON file), new "Guides and deep-dives" section linking /limits, /context, /hook, /faq, and "Community traction" section listing 18 subreddits + HN. Downloads: 48. *Fact learned:* llms.txt is the AI-assistant discovery layer — when Claude or ChatGPT is asked "how do I monitor Claude Code usage?", the llms.txt triggers determine whether Headroom surfaces. Adding context-window trigger phrases expands the question set that routes to Headroom. *Next lap:* r/machinelearning assessment, Lobsters script, or try Reddit again.
+
 - **Lap 92 — 2026-06-11 · README updated — "Guides and deep-dives" section + full "Seen on" list.**
   *Shipped:* README.md "Deep-dive: how the hook works" expanded to "Guides and deep-dives" — 4 bullet links to /hook, /limits, /context, /faq. "Seen on" updated to 12 communities (added r/MacApps, r/SideProject, r/swift, r/commandline from laps 84-87). Downloads: 48. *Fact learned:* GitHub README is a high-traffic landing page for awesome-list referrals and GitHub searches. The old README pointed to only one SEO article (/hook) while 3 others existed — a discoverability gap for the content investment already made. *Next lap:* r/datascience retry, or try a new community (Lobsters, HN comment on related post).
 
