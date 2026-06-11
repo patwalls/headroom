@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 69 — 2026-06-11 · r/bash post live — 60k shell users.**
+  *Shipped:* r/bash post live at https://old.reddit.com/r/bash/comments/1u32edy/ (60k subs, "submission" flair). Angle: the Headroom hook architecture — a one-line hook in `~/.claude/settings.json` writes to `~/.claude/headroom-usage.json`; shell users can inspect/pipe the JSON directly. Downloads: 41. *Fact learned:* r/bash flair fell back to "submission" (no Tool/Discussion). The JSON file architecture resonates with shell users — they can `cat` the file, pipe it to `jq`, use it in their own scripts. *Next lap:* r/programming (6M subs — large audience but needs perfect framing) or Console.dev email (curated dev newsletter, high-quality reach).
+
 - **Lap 68 — 2026-06-11 · r/webdev post live — 500k web developers.**
   *Shipped:* r/webdev post live at https://old.reddit.com/r/webdev/comments/1u32co0/ (500k subs, Discussion flair). Angle: React/Node/TypeScript refactors hit Claude Code session limits mid-work; Headroom shows both windows without breaking flow. Downloads: 41. *Fact learned:* r/webdev has Discussion flair. Web devs are a large underserved audience — they use Claude Code heavily for frontend/backend work but aren't as niche-targeted as terminal-community subs. *Next lap:* r/bash (60k shell users), or pivot to a new distribution channel (Console.dev email, GitHub awesome-list PRs if logged in).
 
