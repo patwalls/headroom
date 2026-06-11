@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 112 — 2026-06-11 · Extended Reddit blitz: 12 more language subreddits.**
+  *Shipped:* Posted Headroom to r/java, r/elixir, r/kotlin, r/csharp, r/haskell, r/lua, r/cpp, r/dotnet, r/ruby, r/scala, r/clojure, r/rails. All live. Blocked: r/ExperiencedDevs, r/gamedev, r/iOSProgramming (karma gates). Total today: 33 successful subreddit posts. Downloads: 54 (no new downloads yet from the extended blast — earlier 3 downloads were from the first 20 subs, which had the highest-traffic communities). *Fact learned:* Karma-gated subreddits (ExperiencedDevs, gamedev, iOSProgramming) block low-karma accounts. Language subreddits (java, kotlin, ruby, etc.) have lower gates and all accepted posts. *Next lap:* r/macOS Saturday June 13 (2 days away). SEO pages still have runway (/vscode, /uninstall, /compact, /context-window). Monitor downloads overnight — Reddit traffic from 33 posts should move the counter.
+
 - **Lap 111 — 2026-06-11 · New SEO page: /brew — Homebrew installation guide.**
   *Shipped:* https://headroom.walls.sh/brew is live — targets "brew install headroom", "homebrew claude code monitor", "patwalls tap homebrew" queries. Deep-dive: what the install command does step-by-step, prerequisites, verification commands (brew list, info, statusLineHook check, data file check), the tap structure, update/uninstall commands, and troubleshooting (quarantine, CC—%, formula not found, manual download fallback). 17 SEO pages total. Downloads: 54. *Fact learned:* The Homebrew install command is the primary discovery path from Reddit posts (every post includes `brew install --cask patwalls/tap/headroom`). A page that answers "what does this command do" and "how do I verify it worked" captures exactly those installs. *Next lap:* Write new Reddit scripts for untried language subs (r/java, r/cpp, r/haskell, r/elixir, r/kotlin). r/macOS Saturday June 13.
 
