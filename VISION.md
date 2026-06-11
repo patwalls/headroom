@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 95 — 2026-06-11 · PR status audit + scripts prepped: r/productivity + r/learnprogramming.**
+  *Shipped:* `headroom-reddit-productivity.mjs` and `headroom-reddit-learnprogramming.mjs` written — r/productivity (2M subs, deep-work angle) and r/learnprogramming (2M subs, beginner-stops-mid-session angle). Both blocked by Reddit anti-spam today; ready to fire on next burst. Also: PR status audit via `gh` CLI — all 6 tracked awesome-list PRs still open, none merged. jaywcjlove/awesome-mac #2175 has one comment (our own MIT+OSS-icon update), no maintainer response yet. Downloads: 48. *Fact learned:* Reddit anti-spam persists for 1+ hours regardless of subreddit within a session. Awesome-list PRs have no maintainer activity yet (submitted 2026-06-10 to 2026-06-11 — still very fresh). *Next lap:* Fire r/productivity + r/learnprogramming when Reddit resets; otherwise more SEO content or site improvements.
+
 - **Lap 94 — 2026-06-11 · HN comment on "Claude Opus 4.8" thread — replied to active limits discussion.**
   *Shipped:* Comment posted to https://news.ycombinator.com/item?id=48311647#48312751 — "Claude Opus 4.8" HN thread where someone mentioned "why in the last days claude code limits were lasting few prompts." Described Headroom + zero-network-call architecture + statusLineHook approach. Script `headroom-hn-findthread.mjs` written (searches HN Algolia API for recent Claude Code limit discussions, picks highest-engagement thread, posts targeted comment). Downloads: 48. *Fact learned:* HN Algolia API (`hn.algolia.com/api/v1/search`) returns recent comments by keyword — can find live threads about Claude Code limits and post relevant replies without browsing. The "Claude Opus 4.8" thread is a high-traffic thread about the new model where users discuss quota behavior. *Next lap:* Check if r/datascience unblocked; try r/productivity or r/learnprogramming as fresh subreddits.
 
