@@ -344,6 +344,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/tips</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/settings</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/mcp</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/log</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -3080,6 +3081,159 @@ print(f'Weekly  resets in: {fmt(wr)}')
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/hook">Hook docs</a> · <a href="/faq">FAQ</a> · <a href="/reset">Reset timing</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/log") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Log Claude Code Usage Over Time — Cron + jq Tracking Guide</title>
+<meta name="description" content="How to log Claude Code session and weekly usage snapshots with cron, build a CSV history, query trends with jq, and visualize usage patterns over time.">
+<link rel="canonical" href="https://headroom.walls.sh/log">
+<meta property="og:title" content="Log Claude Code Usage Over Time — Cron + jq Guide">
+<meta property="og:description" content="Set up cron to snapshot Claude Code usage every 15 minutes, build a CSV log, and query trends with jq. Includes daily summary and pace-warning scripts.">
+<meta property="og:url" content="https://headroom.walls.sh/log">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Log Claude Code Usage Over Time">
+<meta name="twitter:description" content="Cron snapshots, CSV log, jq queries — track your Claude Code usage history.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1.1rem;margin:2.2em 0 .35em;color:var(--ink);border-bottom:1px solid #242936;padding-bottom:.3em}
+  h3{font-size:.95rem;margin:1.4em 0 .25em;color:var(--accent)}
+  p{color:#c9c6bd;margin:.35em 0 .7em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.84rem;line-height:1.55;margin:.5em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · log</p>
+<h1>Log Claude Code usage over time</h1>
+<p class="sub">Snapshot your session and weekly usage every 15 minutes with cron, build a running CSV log, and query trends with jq. No new dependencies — just the file Claude Code already writes.</p>
+
+<h2>The data source</h2>
+<p>Claude Code writes a snapshot of your current usage to <code>~/.claude/headroom-usage.json</code> every time it refreshes its status line (requires the <a href="/hook">statusLineHook</a> set up). The file contains:</p>
+<pre>{
+  "sessionUsagePct": 34.2,
+  "weeklyUsagePct": 61.8,
+  "sessionCost": 0.42,
+  "modelName": "claude-sonnet-4-6",
+  "sessionResetSec": 9847,
+  "weeklyResetSec": 198432
+}</pre>
+<p>This is a point-in-time snapshot — it only shows right now. To build a history, you snapshot it on a schedule and append each reading to a log file.</p>
+
+<h2>Step 1 — Set up the hook</h2>
+<p>If <code>~/.claude/headroom-usage.json</code> doesn't exist yet, add the <code>statusLineHook</code> to <code>~/.claude/settings.json</code> first:</p>
+<pre>{
+  "statusLineHook": "cat ~/.claude/headroom-usage.json 2>/dev/null | jq -r '\"CC \\(.sessionUsagePct|floor)%·\\(.weeklyUsagePct|floor)%\"' 2>/dev/null || echo 'CC --%'"
+}</pre>
+<p>Start a Claude Code session and run any command — the file will appear. Then proceed.</p>
+<p>→ <a href="/hook">Full hook setup docs</a></p>
+
+<h2>Step 2 — Create the log script</h2>
+<p>Create <code>~/.claude/log-usage.sh</code>:</p>
+<pre>#!/bin/bash
+# Append a timestamped usage snapshot to the CSV log.
+LOG="$HOME/.claude/usage-log.csv"
+SRC="$HOME/.claude/headroom-usage.json"
+
+# Write header if new file
+[ -f "$LOG" ] || echo "timestamp,session_pct,weekly_pct,session_cost,model,session_reset_sec,weekly_reset_sec" >> "$LOG"
+
+# Only log if Claude Code has written data
+[ -f "$SRC" ] || exit 0
+jq -r "[
+  (now | todate),
+  .sessionUsagePct,
+  .weeklyUsagePct,
+  .sessionCost,
+  .modelName,
+  .sessionResetSec,
+  .weeklyResetSec
+] | @csv" "$SRC" >> "$LOG"</pre>
+<pre>chmod +x ~/.claude/log-usage.sh</pre>
+
+<h2>Step 3 — Schedule with cron</h2>
+<p>Open your crontab:</p>
+<pre>crontab -e</pre>
+<p>Add a line to snapshot every 15 minutes:</p>
+<pre># Log Claude Code usage every 15 minutes
+*/15 * * * * /bin/bash $HOME/.claude/log-usage.sh</pre>
+<p>Verify it was saved:</p>
+<pre>crontab -l | grep log-usage</pre>
+<div class="note"><p>macOS may prompt for Full Disk Access for cron on first run. Grant it in <strong>System Settings → Privacy & Security → Full Disk Access</strong> → add <code>/usr/sbin/cron</code>.</p></div>
+
+<h2>The log format</h2>
+<p>After a few hours, your log looks like:</p>
+<pre>timestamp,session_pct,weekly_pct,session_cost,model,session_reset_sec,weekly_reset_sec
+"2026-06-11T14:00:03Z",12.1,43.2,0.18,"claude-sonnet-4-6",16247,187203
+"2026-06-11T14:15:04Z",18.7,43.9,0.27,"claude-sonnet-4-6",15347,186303
+"2026-06-11T14:30:05Z",31.4,45.1,0.46,"claude-sonnet-4-6",14447,185403
+"2026-06-11T14:45:03Z",31.4,45.1,0.46,"claude-sonnet-4-6",13547,184503
+"2026-06-11T15:00:04Z",48.2,46.8,0.71,"claude-sonnet-4-6",12647,183603</pre>
+
+<h2>Querying the log with jq</h2>
+
+<h3>Today's peak session usage</h3>
+<pre>tail -n 96 ~/.claude/usage-log.csv | grep -v "^timestamp" | \
+  jq -Rs '[split("\n")[] | select(length>0) | split(",") | {session: .[1]|tonumber, ts: .[0]}] | max_by(.session)'</pre>
+
+<h3>Last 4 hours, session % only</h3>
+<pre>tail -n 16 ~/.claude/usage-log.csv | grep -v "^timestamp" | \
+  awk -F',' '{print $1, $2"%"}'</pre>
+
+<h3>Daily cost summary</h3>
+<pre>grep "^\"2026-06-11" ~/.claude/usage-log.csv | \
+  awk -F',' 'BEGIN{max=0} {v=$4+0; if(v>max) max=v} END{print "max cost so far today: $"max}'</pre>
+
+<h3>Weekly usage trend (last 7 days of noon snapshots)</h3>
+<pre>grep "T12:0" ~/.claude/usage-log.csv | tail -7 | \
+  awk -F',' '{printf "%s  weekly: %s%%\n", substr($1,2,10), $3}'</pre>
+
+<h3>Alert when weekly crosses 80%</h3>
+<p>Add this to your <code>~/.zshrc</code> or run it from cron:</p>
+<pre>WEEKLY=$(jq -r '.weeklyUsagePct' ~/.claude/headroom-usage.json 2>/dev/null)
+if (( $(echo "$WEEKLY > 80" | bc -l) )); then
+  osascript -e 'display notification "Claude Code weekly usage over 80%" with title "Headroom"'
+fi</pre>
+
+<h2>Log rotation</h2>
+<p>At 15-minute intervals the log grows ~100 rows/day. After a month that's ~3,000 rows — tiny. After a year, ~35,000 rows — still fast with grep/awk. If you prefer to rotate monthly:</p>
+<pre># Add to crontab — archive on the 1st of each month at midnight
+0 0 1 * * mv $HOME/.claude/usage-log.csv $HOME/.claude/usage-log-$(date +%Y-%m).csv</pre>
+
+<h2>Visualize with gnuplot (optional)</h2>
+<p>If you have gnuplot installed (<code>brew install gnuplot</code>), a quick terminal sparkline of weekly % over time:</p>
+<pre>gnuplot -e "
+  set terminal dumb 80 20;
+  set datafile separator ',';
+  set xdata time; set timefmt '%Y-%m-%dT%H:%M:%SZ';
+  plot '~/.claude/usage-log.csv' using 1:3 with lines title 'weekly %'
+"</pre>
+
+<hr style="border:none;border-top:1px solid #242936;margin:2.8em 0 2em">
+<p>If you want both the log for history and a live indicator without a terminal open, <a href="/">Headroom</a> keeps session and weekly usage visible in the menu bar at all times — color-coded before a limit stops you. Free, MIT, ~267 KB.</p>
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<p>→ <a href="/hook">statusLineHook setup</a><br>
+→ <a href="/notifications">Threshold notifications</a><br>
+→ <a href="/session">5-hour session window explained</a><br>
+→ <a href="/weekly">7-day weekly window explained</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/hook">Hook docs</a> · <a href="/tips">Tips</a> · <a href="/settings">settings.json</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
