@@ -107,6 +107,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             loginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
             menu.addItem(loginItem)
         }
+        menu.addItem(NSMenuItem(title: "Open Claude Code", action: #selector(openClaudeCode), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Share Headroom…", action: #selector(shareHeadroom), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Quit Headroom", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         menu.items.forEach { $0.target = self }
@@ -128,6 +129,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func refreshNow() { refresh() }
+
+    @objc private func openClaudeCode() {
+        // Try bundle ID first (works regardless of install location),
+        // fall back to the standard Applications path.
+        if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.anthropic.claudecode") {
+            NSWorkspace.shared.open(url)
+        } else {
+            let fallback = URL(fileURLWithPath: "/Applications/Claude.app")
+            NSWorkspace.shared.open(fallback)
+        }
+    }
 
     @objc private func shareHeadroom() {
         guard let button = statusItem.button else { return }

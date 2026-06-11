@@ -339,6 +339,7 @@ li b{color:#e8e8e8}
   <li><b>Pace forecast</b> — "~2h 15m at pace" in the meter caption when your usage rate would fill the window before reset</li>
   <li><b>Share Headroom…</b> — native macOS share sheet (Messages, Mail, AirDrop, copy link)</li>
   <li><b>Copy Stats</b> — ⌘C copies your current session/week/context/model/cost to the clipboard as plain text</li>
+  <li><b>Open Claude Code</b> — menu item to jump directly to Claude Code from the menu bar</li>
 </ul>
 </div>
 
