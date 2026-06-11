@@ -334,6 +334,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/model</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://headroom.walls.sh/reset</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/starship</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/session</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -1868,6 +1869,135 @@ Your 5-hour Claude Code window is 92% full. Resets in 23m.</code></pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
+  }
+
+  if (url.pathname === "/session") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code 5-Hour Session Limit — What It Is and How to Track It</title>
+<meta name="description" content="Claude Code's 5-hour session window is a rolling usage cap that stops you mid-task. Learn exactly how it works, how to see your current usage, and how to avoid hitting it unexpectedly.">
+<link rel="canonical" href="https://headroom.walls.sh/session">
+<meta property="og:title" content="Claude Code 5-Hour Session Limit — What It Is and How to Track It">
+<meta property="og:description" content="Claude Code's 5-hour session window is a rolling usage cap that stops you mid-task. Learn exactly how it works, how to see your current usage, and how to avoid hitting it unexpectedly.">
+<meta property="og:url" content="https://headroom.walls.sh/session">
+<meta property="og:type" content="website">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2rem;font-weight:700;margin:0 0 8px;line-height:1.2}
+  h2{font-size:1.2rem;font-weight:600;margin:40px 0 12px;color:var(--accent)}
+  p{margin:0 0 16px;color:var(--ink)}
+  code{font-family:"SF Mono",Menlo,monospace;font-size:.88em;background:var(--panel);padding:2px 6px;border-radius:4px}
+  pre{background:var(--panel);border:1px solid #2a2d36;border-radius:8px;padding:20px;overflow-x:auto;font-size:.88em;line-height:1.6;margin:0 0 24px}
+  .dim{color:var(--dim)}
+  .warn{color:var(--warn)}
+  .ok{color:var(--ok)}
+  .bad{color:var(--bad)}
+  .callout{background:var(--panel);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 20px;margin:0 0 24px}
+  table{width:100%;border-collapse:collapse;margin:0 0 24px}
+  th,td{text-align:left;padding:10px 14px;border-bottom:1px solid #23262f}
+  th{color:var(--dim);font-weight:500;font-size:.9em}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  nav{margin-bottom:40px}
+  footer{margin-top:64px;padding-top:24px;border-top:1px solid #23262f;color:var(--dim);font-size:.9em}
+</style>
+</head><body><main>
+<nav><a href="/">← Headroom</a></nav>
+
+<h1>Claude Code's 5-Hour Session Limit</h1>
+<p class="dim">A rolling usage cap that stops you mid-task. Here's exactly how it works and how to track it before it hits you.</p>
+
+<div class="callout">
+<strong>In one sentence:</strong> Claude Code tracks your token usage over a rolling 5-hour window. When you use too many tokens in that window, it stops and makes you wait until the window rolls forward.
+</div>
+
+<h2>What "session" means here</h2>
+
+<p>The "session" limit is not tied to a Claude Code session in the terminal sense (a single <code>claude</code> process). It's a 5-hour rolling window that tracks cumulative token usage across all your requests — whether you open and close Claude Code many times or keep one terminal running all day.</p>
+
+<p>Two common misconceptions:</p>
+<ul>
+  <li><strong>It's not "per launch."</strong> Closing and reopening Claude Code does not reset the window.</li>
+  <li><strong>It's not "after 5 hours of running."</strong> It's 5 hours from when you sent your first request, not from when you opened the app.</li>
+</ul>
+
+<h2>How the rolling window works</h2>
+
+<p>Requests "fall off" the window 5 hours after they were made. So if you made a burst of requests at 10:00am, that usage disappears from the window at 3:00pm — even if you've been making more requests since then.</p>
+
+<p>This means the window is continuously draining and refilling. You don't have to wait for a hard reset; you just have to wait until your oldest in-window requests are older than 5 hours.</p>
+
+<h2>How to check your current session usage</h2>
+
+<p>Inside Claude Code: run <code>/usage</code>. It shows the session % and when the window resets.</p>
+
+<p>From the terminal (requires Headroom):</p>
+
+<pre>jq '{sessionUsagePct, sessionResetSec}' ~/.claude/headroom-usage.json</pre>
+
+<p>Example output:</p>
+
+<pre>{
+  "sessionUsagePct": 72.3,
+  "sessionResetSec": 4820
+}</pre>
+
+<p><code>sessionUsagePct</code> is your current position in the window (0–100%). <code>sessionResetSec</code> is seconds until the oldest in-window request falls off — not when the whole window resets, but when you'll next see some capacity freed.</p>
+
+<h2>What Headroom shows</h2>
+
+<pre><span class="warn">CC 72%</span>·41%</pre>
+
+<p>The first number is the session %. Color-coded: gray when low, <span class="warn">amber at 70%</span>, <span class="bad">red at 90%</span>. The dropdown shows the exact % and the reset countdown.</p>
+
+<p>The value of having this in the menu bar (rather than running <code>/usage</code>) is that you see it before you need it. When you're at 72% and starting a big refactor, you know to check whether you'll have enough headroom to finish it — instead of discovering mid-task that you're out.</p>
+
+<h2>When you hit the session limit</h2>
+
+<p>Claude Code surfaces an error and refuses new requests until the window rolls forward enough to free up capacity. The wait is usually <strong>not 5 hours</strong> — it's however long until your oldest in-window requests fall off. If you sent a burst of requests 4h50m ago, you're waiting 10 minutes, not 5 hours.</p>
+
+<p>Check <code>sessionResetSec</code> in the JSON for the exact wait time:</p>
+
+<pre>jq '.sessionResetSec / 60 | floor | tostring + " minutes"' ~/.claude/headroom-usage.json</pre>
+
+<h2>The session limit vs the weekly limit</h2>
+
+<table>
+  <thead><tr><th>Limit</th><th>Window</th><th>Typical wait when hit</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Session</strong></td><td>5 hours</td><td>Minutes to ~1h (rolling drain)</td></tr>
+    <tr><td><strong>Weekly</strong></td><td>7 days</td><td>Hours to days</td></tr>
+  </tbody>
+</table>
+
+<p>The session limit is the one you'll hit more often during an intense work session. The <a href="/limits#weekly">weekly cap</a> is the one that ruins your week if you don't watch it.</p>
+
+<h2>Strategies for staying under the session limit</h2>
+
+<ul>
+  <li><strong>Compress context before long tasks.</strong> Start a fresh Claude Code process to clear the context window before large operations — shorter contexts = fewer tokens per request.</li>
+  <li><strong>Break large tasks into stages.</strong> A 90-minute pause between phases means those first-phase tokens fall off before you start the second phase.</li>
+  <li><strong>Watch the amber threshold.</strong> When Headroom turns amber (70%), you have roughly 30% of the window left. Plan for a natural break point rather than a forced one.</li>
+</ul>
+
+<h2>Monitor the session limit always-on</h2>
+
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<p>Or <a href="/download">download directly</a>. Free, MIT, ~267 KB, zero config, signed + notarized. The session % is in your menu bar at all times.</p>
+
+<p>→ <a href="/limits">Full Claude Code rate limits guide</a><br>
+→ <a href="/reset">When does the limit reset?</a><br>
+→ <a href="/notifications">Set up threshold alerts</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/session">Session limit</a> · <a href="/reset">Reset timing</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
   }
 
   if (url.pathname === "/starship") {
