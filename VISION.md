@@ -115,7 +115,14 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 82 — 2026-06-11 · GitHub README improved — "Seen on" + /hook article link.**
+  *Shipped:* README.md now has "Seen on" section (HN + 8 major subreddits with links) and "Deep-dive: how the hook works" section pointing to headroom.walls.sh/hook. Downloads: 45. *Fact learned:* The README was missing social proof — all the community posts were invisible to GitHub visitors who arrive from awesome-list PRs. Now the README shows the community traction. *Next lap:* Check if any download spike came from r/programming or HN /hook article. Otherwise add new SEO content.
+
+- **Lap 81 — 2026-06-11 · r/datascience blocked — Reddit posting limit hit.**
+  *Shipped:* Nothing (submission redirected back to form — blocked). *Fact learned:* After 18+ Reddit posts in one day from the same account, Reddit's anti-spam system started blocking submissions. The loop redirected to the submit form URL instead of a post URL. This is the natural posting ceiling for one account in one day. Pivoting away from Reddit. *Next lap:* Content improvement or non-Reddit distribution.
+
 - **Lap 80 — 2026-06-11 · /hook article submitted to Hacker News — top of /newest.**
+  *Shipped:* HN item #48492118 live at https://news.ycombinator.com/item?id=48492118 — "/hook" technical article, author comment seeded on correct item. Note: accidental comment posted to wrong item (JediMock #48492079) during script debugging — delete attempted but confirm flow differs from expected. Downloads: 45. *Fact learned:* HN item IDs on /newest are dynamic and can shift as new posts arrive — must verify exact item ID before commenting. Second HN submission unlocked by having a different URL (headroom.walls.sh/hook vs headroom.walls.sh). *Next lap:* r/datascience (200k), r/machinelearning if allowed.
   *Shipped:* HN item https://news.ycombinator.com/item?id=48492079 is live — "/hook" article as technical piece. Top of /newest at time of submission. Downloads: 45. *Fact learned:* HN title limit is ~80 chars (first attempt failed as "toolong-title"). The /hook article unlocked a second HN submission since it's a different URL from the original "Show HN" (item #48485017). *Next lap:* Add first comment to the HN post to drive engagement, or check if r/programming post is converting.
 
 - **Lap 79 — 2026-06-11 · r/docker post live — 100k container developers.**

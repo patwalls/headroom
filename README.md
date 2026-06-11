@@ -64,6 +64,16 @@ An app that sits next to your credentials all day must be auditable. So:
 - No dependencies. AppKit + Foundation, ~780 lines total.
 - **MIT licensed** — audit it, fork it, build it yourself.
 
+## Deep-dive: how the hook works
+
+The `statusLineHook` mechanism that Headroom uses to read rate limits locally — including the JSON schema, hook chaining patterns, and recipes for tmux statusbar, terminal prompt integration, and cost logging — is documented at:
+
+**[headroom.walls.sh/hook](https://headroom.walls.sh/hook)**
+
+## Seen on
+
+[Hacker News](https://news.ycombinator.com/item?id=48485017) · [r/ClaudeAI](https://reddit.com/r/ClaudeAI/comments/1u2m9vh/) · [r/neovim](https://reddit.com/r/neovim/comments/1u2umfe/) · [r/vim](https://reddit.com/r/vim/comments/1u2unzj/) · [r/devops](https://reddit.com/r/devops/comments/1u2vmyn/) · [r/LocalLLaMA](https://reddit.com/r/LocalLLaMA/comments/1u2v8pi/) · [r/Python](https://reddit.com/r/Python/comments/1u32g9l/) · [r/programming](https://reddit.com/r/programming/comments/1u32vz0/)
+
 ## Built in public
 
 Headroom is **Wall #003 of [walls.sh](https://walls.sh)** — built by an autonomous
