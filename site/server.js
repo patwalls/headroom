@@ -345,6 +345,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/settings</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/mcp</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/log</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/commands</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -3081,6 +3082,187 @@ print(f'Weekly  resets in: {fmt(wr)}')
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/hook">Hook docs</a> · <a href="/faq">FAQ</a> · <a href="/reset">Reset timing</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/commands") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Slash Commands — Complete Reference</title>
+<meta name="description" content="Every Claude Code slash command explained: /help, /model, /compact, /cost, /usage, /clear, /review, /memory, /mcp and more — with examples and when to use each.">
+<link rel="canonical" href="https://headroom.walls.sh/commands">
+<meta property="og:title" content="Claude Code Slash Commands — Complete Reference">
+<meta property="og:description" content="Every Claude Code slash command: /help, /model, /compact, /cost, /usage, /clear, /review, /memory, /mcp — with examples and when to use each.">
+<meta property="og:url" content="https://headroom.walls.sh/commands">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code Slash Commands — Complete Reference">
+<meta name="twitter:description" content="Every Claude Code slash command with examples and when to use each.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1rem;margin:0;color:var(--ink)}
+  p{color:#c9c6bd;margin:.3em 0 .6em;font-size:.95rem}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:12px 16px;overflow-x:auto;font-size:.84rem;line-height:1.5;margin:.4em 0 .8em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .cmd{background:var(--panel);border:1px solid #242936;border-radius:10px;padding:16px 20px;margin:1em 0}
+  .cmd-name{font-family:ui-monospace,Menlo,monospace;font-size:1.05rem;color:var(--ok);font-weight:600;margin:0 0 .3em}
+  .tag-line{color:var(--dim);font-size:.85rem;margin:.15em 0 .6em}
+  .section-head{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin:2.5em 0 .8em}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1.5em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · commands</p>
+<h1>Claude Code slash commands</h1>
+<p class="sub">Every built-in slash command — what it does, when to use it, and examples. Run <code>/help</code> inside any session to see the same list.</p>
+
+<p class="section-head">Session management</p>
+
+<div class="cmd">
+<div class="cmd-name">/help</div>
+<div class="tag-line">List all available commands</div>
+<p>Shows every slash command with a one-line description. Run this first in any new session. Also shows any custom project commands defined in <code>.claude/commands/</code>.</p>
+</div>
+
+<div class="cmd">
+<div class="cmd-name">/clear</div>
+<div class="tag-line">Clear the conversation history</div>
+<p>Wipes the current session's conversation history and starts fresh — same project context, new conversation. Use when you want a clean slate without closing and reopening. Your rate limit usage is unchanged.</p>
+</div>
+
+<div class="cmd">
+<div class="cmd-name">/compact [instructions]</div>
+<div class="tag-line">Summarize conversation history to free context window</div>
+<p>Condenses the conversation into a compact summary, freeing context window space while preserving your current task state. Optionally pass instructions to guide what the summary emphasizes:</p>
+<pre>/compact focus on the auth module changes</pre>
+<p>Run before switching to a new subtask, or when responses start feeling imprecise from a long context. Does not affect your rate limit meters.</p>
+<p>→ <a href="/compact">Full /compact guide</a></p>
+</div>
+
+<div class="cmd">
+<div class="cmd-name">/exit</div>
+<div class="tag-line">End the session</div>
+<p>Exits Claude Code. Same as Ctrl+C or closing the terminal window.</p>
+</div>
+
+<p class="section-head">Usage and limits</p>
+
+<div class="cmd">
+<div class="cmd-name">/usage</div>
+<div class="tag-line">Show session and weekly rate limit usage</div>
+<p>Prints your current usage against both rate limit windows:</p>
+<pre>Session (5h):  34% used · resets in 2h 44m
+Weekly (7d):   61% used · resets in 2d 7h</pre>
+<p>Same numbers as <code>~/.claude/headroom-usage.json</code> — but you have to remember to run it. If you want both meters visible at all times without a command, <a href="/">Headroom</a> shows them in the menu bar, color-coded before a limit stops you.</p>
+<p>→ <a href="/limits">Rate limits explained</a> · <a href="/session">5-hour window</a> · <a href="/weekly">7-day window</a></p>
+</div>
+
+<div class="cmd">
+<div class="cmd-name">/cost</div>
+<div class="tag-line">Show token usage and cost for this session</div>
+<p>Breaks down input tokens, output tokens, cache reads, and the estimated dollar cost for the current conversation. Useful for spotting expensive patterns — a large file being re-read every turn, or a long context that should have been compacted.</p>
+<pre>/cost
+# Input tokens:  48,234
+# Output tokens:  3,891
+# Cache reads:   42,100
+# Estimated cost: $0.42</pre>
+<p>→ <a href="/cost">Cost tracking guide</a></p>
+</div>
+
+<p class="section-head">Model and configuration</p>
+
+<div class="cmd">
+<div class="cmd-name">/model [model-id]</div>
+<div class="tag-line">Show or switch the current model</div>
+<p>Without arguments, shows the model in use. With a model ID, switches immediately:</p>
+<pre>/model
+# Current model: claude-sonnet-4-6
+
+/model claude-opus-4-8
+# Switched to claude-opus-4-8</pre>
+<p>The switch persists for the rest of the session. To set a permanent default, use <code>"model"</code> in <code>~/.claude/settings.json</code>.</p>
+<p>→ <a href="/model">Model selection guide</a></p>
+</div>
+
+<div class="cmd">
+<div class="cmd-name">/config</div>
+<div class="tag-line">Open Claude Code configuration</div>
+<p>Opens an interactive configuration menu for common settings: model, theme, verbosity, and more. Changes are written to <code>~/.claude/settings.json</code>.</p>
+</div>
+
+<p class="section-head">Memory</p>
+
+<div class="cmd">
+<div class="cmd-name">/memory</div>
+<div class="tag-line">View and manage Claude Code's memory</div>
+<p>Shows what Claude Code has stored in memory — facts about the project, your preferences, and decisions made in previous sessions. You can review and delete specific memories.</p>
+<pre>/memory
+# Lists all stored memory items with IDs
+
+/memory delete abc123
+# Removes that memory item</pre>
+</div>
+
+<p class="section-head">Code review and quality</p>
+
+<div class="cmd">
+<div class="cmd-name">/review</div>
+<div class="tag-line">Review the current diff or specified files</div>
+<p>Runs a code review on uncommitted changes or a specified set of files. Looks for bugs, security issues, and style problems. Can be used before committing to catch issues early.</p>
+<pre>/review
+# Reviews git diff HEAD
+
+/review src/auth.ts
+# Reviews a specific file</pre>
+</div>
+
+<p class="section-head">MCP servers</p>
+
+<div class="cmd">
+<div class="cmd-name">/mcp</div>
+<div class="tag-line">List connected MCP servers</div>
+<p>Shows all Model Context Protocol servers currently connected, their status, and which tools they expose. If a server shows as disconnected, restart it with <code>/mcp restart &lt;name&gt;</code>.</p>
+<pre>/mcp
+# • filesystem  ✓ connected  (tools: read_file, write_file, list_directory)
+# • github      ✓ connected  (tools: get_issue, list_prs, get_file)
+# • postgres    ✗ disconnected</pre>
+<p>→ <a href="/mcp">MCP setup guide</a></p>
+</div>
+
+<p class="section-head">Custom commands</p>
+
+<div class="cmd">
+<div class="cmd-name">/your-command</div>
+<div class="tag-line">Project and user-defined commands</div>
+<p>Any <code>.md</code> file in <code>.claude/commands/</code> (project-level) or <code>~/.claude/commands/</code> (user-level) becomes a slash command. The filename is the command name; the file content is the prompt template.</p>
+<pre># .claude/commands/deploy.md
+Deploy the app to staging: run \`npm run build\`, then \`railway up --ci\`,
+then verify with \`curl https://staging.example.com/health\`.</pre>
+<p>Run it with <code>/deploy</code>. Use <code>$ARGUMENTS</code> in the template to pass dynamic content: <code>/deploy production</code>.</p>
+</div>
+
+<div class="note"><p><strong>Tab completion:</strong> Type <code>/</code> and press Tab to see all available commands, including custom ones. Arrow keys navigate the list.</p></div>
+
+<hr style="border:none;border-top:1px solid #242936;margin:2.8em 0 2em">
+<p>The most important command for heavy Claude Code users: <code>/usage</code> — but it shows a snapshot only when you ask. <a href="/">Headroom</a> keeps the same numbers live in your menu bar, color-coded before a limit stops you mid-task. Free, MIT, ~267 KB.</p>
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<p>→ <a href="/settings">settings.json reference</a><br>
+→ <a href="/tips">Claude Code tips and tricks</a><br>
+→ <a href="/limits">Rate limits explained</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/settings">settings.json</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);

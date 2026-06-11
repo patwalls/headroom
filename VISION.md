@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 121 — 2026-06-11 · New SEO page: /commands — Claude Code slash commands reference.**
+  *Shipped:* https://headroom.walls.sh/commands is live — targets "claude code slash commands", "claude code commands list" queries. Covers every built-in command: /help, /clear, /compact, /exit, /usage, /cost, /model, /config, /memory, /review, /mcp, and custom commands via .claude/commands/. Tab completion tip included. CTA uses /usage as the anchor: "it shows a snapshot — Headroom shows it live." 26 SEO pages total. Downloads: 55. *Fact learned:* /commands is the first "reference" page (vs. explanatory deep-dives). Reference pages tend to earn backlinks from "Claude Code resources" roundups and get bookmarked, driving repeat visits that convert. *Next lap:* Write /warp (Warp terminal) or try Reddit retry for r/datascience + r/productivity (posts were ~9h ago, earliest reset tomorrow ~3PM).
+
 - **Lap 120 — 2026-06-11 · New SEO page: /log — log Claude Code usage over time.**
   *Shipped:* https://headroom.walls.sh/log is live — targets "log claude code usage", "track claude code usage over time", "claude code usage history" queries. Covers: the data source (headroom-usage.json), a cron logger script that appends CSV rows every 15 minutes, crontab setup, the log format, jq queries for peak session, daily cost, weekly trend, alert scripting, log rotation, and gnuplot visualization. CTA positions Headroom as the live complement to the historical log. 25 SEO pages total. Downloads: 55. *Fact learned:* The /log page is the deepest-funnel page yet — someone who wants a usage history log is already spending time on monitoring, making them the most likely Headroom installer of any SEO audience. *Next lap:* Write /warp (Warp terminal integration) or /commands (slash commands reference) — both high-volume queries. r/datascience + r/productivity Reddit resets ~Friday afternoon.
 
