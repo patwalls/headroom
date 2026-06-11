@@ -19,6 +19,8 @@ form-only/human-only listings get a paste-ready packet below.
 | [Axorax/awesome-free-apps](https://github.com/Axorax/awesome-free-apps) | ~6.5k | PR (Developer Tools section, next to WhereMyTokens) | **PR open** — [#172](https://github.com/Axorax/awesome-free-apps/pull/172) (2026-06-11) |
 | [phmullins/awesome-macos](https://github.com/phmullins/awesome-macos) | ~3k | — | ✅ **Already listed** in Developers section |
 | [MacMenuBar.com](https://macmenubar.com) | ~1.4k apps listed | Web form, **human-only** | Packet ready below — submit any time |
+| [onmymenubar.app](https://onmymenubar.app) | ~200+ apps | Web form (no login) | Script ready — `headroom-onmymenubar.mjs` |
+| [JSONbored/awesome-claude](https://github.com/JSONbored/awesome-claude) | 262 | PR (tools MDX file) | Script ready — `headroom-awesome-claude-heyclaude.mjs` (needs GitHub login) |
 | GitHub Releases | — | own repo | ✅ [v0.3.4 release](https://github.com/patwalls/headroom/releases/tag/v0.3.4) (Lap 30) |
 | Homebrew (own tap) | — | `patwalls/homebrew-tap` | ✅ Live (Lap 6) |
 | r/ClaudeAI | ~200k | agent-browser post | ✅ [LIVE](https://reddit.com/r/ClaudeAI/comments/1u2m9vh/) (Lap 30) |
@@ -122,6 +124,18 @@ Headroom fits their criteria: primary user is a developer, self-service install,
 > Pat Walls
 
 ---
+
+## onmymenubar.app (agent-browser — no login needed, web form)
+
+Script ready: `CONFIRM=1 node ~/code/agent-browser/tasks/headroom-onmymenubar.mjs`
+- macOS menu bar apps directory — CodexBar is already listed (proof dev tools accepted)
+- No login required, pure web form at https://onmymenubar.app/submit
+
+## JSONbored/awesome-claude PR (agent-browser, needs GitHub login)
+
+Script ready: `CONFIRM=1 node ~/code/agent-browser/tasks/headroom-awesome-claude-heyclaude.mjs`
+- Adds `content/tools/headroom.mdx` with full MDX metadata
+- Stars: 262 · "🧰 Tools" section (128 entries) includes apps, developer tools, and services
 
 ## webfuse-com/awesome-claude PR (agent-browser, needs GitHub login)
 
