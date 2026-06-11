@@ -15,8 +15,11 @@ form-only/human-only listings get a paste-ready packet below.
 | [LangGPT/awesome-claude-code](https://github.com/LangGPT/awesome-claude-code) | ~249 | PR (Monitoring & Analytics section) | **PR open** — [#90](https://github.com/LangGPT/awesome-claude-code/pull/90) (2026-06-10) |
 | [subinium/awesome-claude-code](https://github.com/subinium/awesome-claude-code) | ~85 | PR (Monitoring & Analytics section) | **PR open** — [#25](https://github.com/subinium/awesome-claude-code/pull/25) (2026-06-10) |
 | [MacMenuBar.com](https://macmenubar.com) | ~1.4k apps listed | Web form, **human-only** | Packet ready below — submit any time |
-| GitHub Releases | — | own repo | ✅ [v0.3.2 release](https://github.com/patwalls/headroom/releases/tag/v0.3.2) — notes only, download stays on the counted path |
+| GitHub Releases | — | own repo | ✅ [v0.3.4 release](https://github.com/patwalls/headroom/releases/tag/v0.3.4) (Lap 30) |
 | Homebrew (own tap) | — | `patwalls/homebrew-tap` | ✅ Live (Lap 6) |
+| r/ClaudeAI | ~200k | agent-browser post | ✅ [LIVE](https://reddit.com/r/ClaudeAI/comments/1u2m9vh/) (Lap 30) |
+| r/MacApps | ~200k | agent-browser post | ✅ [LIVE](https://reddit.com/r/macapps/comments/1u2ko9m/) (Lap 28) |
+| Hacker News (Show HN) | — | agent-browser post | ✅ [LIVE](https://news.ycombinator.com/item?id=48485017) (Lap 29 session) |
 
 ---
 
