@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 65 — 2026-06-11 · r/LocalLLaMA post live — 800k subscribers.**
+  *Shipped:* r/LocalLLaMA post live at https://old.reddit.com/r/LocalLLaMA/comments/1u2v8pi/ (800k subs, Discussion flair). Largest subreddit hit so far. Angle: zero-API-polling architecture, token never leaves machine. Downloads: 38. *Fact learned:* r/LocalLLaMA has Discussion flair available — the community is broad enough that Claude Code tooling fits. The "no API polling" angle differentiates from other monitors for this audience who cares deeply about how tools work under the hood. *Next lap:* check if r/LocalLLaMA post converts (big audience), then r/devops or MacMenuBar.com.
+
 - **Lap 64 — 2026-06-11 · r/tmux post live — 80k terminal power-users.**
   *Shipped:* r/tmux post live at https://old.reddit.com/r/tmux/comments/1u2v7zn/ (80k subs, Other flair — best available). Downloads: 38. *Fact learned:* r/tmux flair options don't include "Discussion" — fell back to "Other". The `nettop -p Headroom` verification command is a compelling hook for privacy-conscious terminal users who want to confirm zero network activity. *Next lap:* r/LocalLLaMA (large AI community), r/devops, or MacMenuBar.com form.
 
