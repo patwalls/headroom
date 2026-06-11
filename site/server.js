@@ -142,6 +142,7 @@ poll isn't a meter. The menu bar is where ambient numbers belong.</p>
 <a href="/guide">guide</a> ·
 <a href="/hook">hook docs</a> ·
 <a href="/context">context window</a> ·
+<a href="/limits">rate limits</a> ·
 <a href="/alternatives">alternatives</a></footer>
 <a href="https://walls.sh" class="wallsbadge" title="Every startup since 2012 — live on the wall"><span class="wbdot"></span>Wall № 003 · building autonomously · <b>walls.sh</b></a><style>.wallsbadge{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:8px;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.07em;text-transform:uppercase;color:#efe7d6;text-decoration:none;background:#15100a;border:1px solid #caa45a;border-radius:999px;padding:9px 14px;box-shadow:0 4px 18px rgba(0,0,0,.5);opacity:.93;transition:opacity .15s,box-shadow .15s}.wallsbadge:hover{opacity:1;box-shadow:0 4px 24px rgba(202,164,90,.4)}.wallsbadge b{color:#caa45a}.wbdot{width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 9px #39d98a;animation:wbblink 1.8s ease-in-out infinite}@keyframes wbblink{0%,100%{opacity:1}50%{opacity:.35}}@media(max-width:640px){.wallsbadge{right:10px;bottom:10px;padding:8px 11px}}</style></main></body></html>`;
 
@@ -303,6 +304,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/guide</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/hook</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/context</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/limits</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/alternatives</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
@@ -1008,6 +1010,125 @@ Context:   41%  (current conversation, soft degradation as it fills)</code></pre
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/guide">Guide</a> · <a href="/hook">Hook docs</a> · <a href="/alternatives">Alternatives</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/limits") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Claude Code rate limits explained: session (5h) and weekly (7d) caps</title>
+<meta name="description" content="Claude Code enforces two rate limits — a 5-hour session cap and a 7-day weekly cap. Both fire a hard stop with no warning. Here's exactly how they work and how to see them before they hit.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://headroom.walls.sh/limits">
+<meta property="og:title" content="Claude Code rate limits: session cap and weekly cap explained">
+<meta property="og:description" content="Two hard limits in Claude Code: 5-hour session cap and 7-day weekly cap. Both stop you cold. Here's how they work and how to monitor them.">
+<meta property="og:url" content="https://headroom.walls.sh/limits">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#d97757;text-decoration:none}
+h1{font-size:2rem;line-height:1.2;margin:0 0 .5em}
+h2{font-size:1.25rem;margin:2.4em 0 .6em;color:#e8e4da}
+p{color:#c9c6bd;margin:.8em 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:#1a1a1a;padding:2px 6px;border-radius:4px}
+pre{background:#141414;border:1px solid #252525;border-radius:8px;padding:20px;overflow-x:auto;margin:1.2em 0}
+pre code{background:none;padding:0;font-size:.9em;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:1.2em 0}
+th{text-align:left;font-size:.88rem;color:#8b8880;font-weight:500;padding:8px 12px;border-bottom:1px solid #252525}
+td{padding:10px 12px;border-bottom:1px solid #1a1a1a;color:#c9c6bd;font-size:.93rem}
+tr:last-child td{border-bottom:none}
+.note{background:#1a1e2a;border:1px solid #2a3050;border-radius:8px;padding:14px 18px;margin:1.6em 0;font-size:.93rem;color:#9ba8cc}
+a{color:#d97757}
+.cta-block{background:#161a1f;border:1px solid #252a35;border-radius:10px;padding:24px;margin:2.4em 0;text-align:center}
+.cta-block a.btn{display:inline-block;padding:12px 24px;background:#d97757;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-top:8px}
+footer{margin-top:4em;font-size:.85rem;color:#6b6860;border-top:1px solid #1e1e1e;padding-top:1.6em}
+.amber{color:#d99f30}
+.red{color:#d95757}
+.ok{color:#6fcf97}
+</style></head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<h1>Claude Code rate limits: how the session cap and weekly cap work</h1>
+<p>Claude Code has two rate limits that can stop your work cold, with no warning. Both come from Anthropic's API infrastructure — not from your machine, not from the app. Here's exactly how they work.</p>
+
+<h2>The two limits</h2>
+<table>
+<tr><th>Limit</th><th>Window</th><th>What it counts</th><th>When it resets</th></tr>
+<tr><td><strong>Session cap</strong></td><td>5 hours</td><td>Total tokens in any rolling 5-hour window</td><td>Rolling — oldest tokens fall off continuously</td></tr>
+<tr><td><strong>Weekly cap</strong></td><td>7 days</td><td>Total tokens across all sessions in a rolling 7-day window</td><td>Rolling — oldest sessions fall off continuously</td></tr>
+</table>
+
+<p>Both are <strong>rolling windows</strong>, not reset-at-midnight counters. If you hit the session cap at 3pm, you can't just wait until midnight — you have to wait until the tokens from 5 hours ago fall off. The exact reset time depends on when you started the heavy usage.</p>
+
+<h2>What happens when you hit a limit</h2>
+<p>Claude Code stops mid-task with a rate limit error. There's no soft warning, no "you're getting close" message. You find out when it's already too late to save the current task context.</p>
+
+<p>The error message looks like:</p>
+<pre><code>Claude API rate limit exceeded. Please try again in N minutes.</code></pre>
+
+<p>At that point your options are:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li>Wait for the rolling window to partially clear (session: up to 5h; weekly: up to 7d)</li>
+<li>Switch API keys if you have multiple Claude plans</li>
+<li>Accept the interruption and restart the task</li>
+</ul>
+
+<h2>How to see your current usage</h2>
+<p>Claude Code has a built-in <code>/usage</code> command that shows both meters:</p>
+<pre><code>/usage
+# Session (5h): 23%   — resets in ~3h 52m
+# Weekly (7d): 67%    — resets in ~2d 14h</code></pre>
+
+<p>But <code>/usage</code> is reactive — you have to remember to run it. If you're deep in a task and close to the limit, you'll likely forget.</p>
+
+<div class="note">
+<strong>Where these numbers come from:</strong> The rate-limit percentages come directly from Anthropic's API — the same source as the <code>/usage</code> command. Claude Code receives them with every API response and renders them in its terminal status line. They're the authoritative numbers, not estimates.
+</div>
+
+<h2>The patterns that hit limits fastest</h2>
+<p>Not all Claude Code usage is equal. These patterns consume tokens much faster than conversational use:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li><strong>Large codebase context</strong> — loading a whole repo into context on each message multiplies usage</li>
+<li><strong>Long back-and-forth debugging</strong> — each turn re-sends the full conversation history</li>
+<li><strong>Image-heavy sessions</strong> — screenshots and diagrams cost significantly more than text</li>
+<li><strong>Agentic loops</strong> — multiple tool calls per turn, each carrying the full context</li>
+</ul>
+
+<p>A session that would normally last all day can hit the 5-hour cap in 2-3 hours if you're doing heavy agentic work on a large codebase.</p>
+
+<h2>Monitoring limits passively with Headroom</h2>
+<p>Headroom puts both meters in the macOS menu bar as a color-coded live percentage:</p>
+<pre><code>CC <span style="color:#6fcf97">23%</span>·<span style="color:#6fcf97">67%</span>    ← always visible, no click needed</code></pre>
+
+<p>Color logic:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li><span class="ok">Green</span> — below 70%: you're fine</li>
+<li><span class="amber">Amber</span> — 70–90%: heads up, approaching the limit</li>
+<li><span class="red">Red</span> — above 90%: save your work, stop heavy usage</li>
+</ul>
+
+<p>The dropdown shows exact percentages, reset countdowns (e.g., "resets in 2h 14m"), your active model, session cost, and context window fill. You see it change as you work — so the limit stops being a surprise.</p>
+
+<h2>How Headroom reads the numbers</h2>
+<p>Headroom uses Claude Code's own <code>statusLineHook</code> mechanism. Claude Code writes a JSON file to <code>~/.claude/headroom-usage.json</code> every time it updates — the same data source as <code>/usage</code>. Headroom reads that file. No API calls, no credentials needed.</p>
+<pre><code>cat ~/.claude/headroom-usage.json
+# {"sessionUsagePct":23.1,"weeklyUsagePct":67.4,"contextUsagePct":41.0,...}</code></pre>
+
+<p>If you want to use this data in your own tooling — a shell prompt that shows session usage, a script that alerts at 80% — the JSON file is right there. See <a href="/hook">the hook docs</a> for the full schema and recipes.</p>
+
+<div class="cta-block">
+<strong>Headroom</strong> shows session % and weekly % in your menu bar — color-coded, always visible, zero config. Free native macOS app.
+<br>
+<a class="btn" href="/download">Download Headroom — free</a>
+<br><br>
+<code style="font-size:.85rem">brew install --cask patwalls/tap/headroom</code>
+</div>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/guide">Guide</a> · <a href="/hook">Hook docs</a> · <a href="/context">Context window</a> · <a href="/alternatives">Alternatives</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);

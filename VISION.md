@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 89 — 2026-06-11 · New SEO page: /limits — Claude Code rate limits explained.**
+  *Shipped:* https://headroom.walls.sh/limits is live — targets "claude code rate limit", "claude code daily limit", "claude code session limit" queries. Covers rolling window mechanics, what the error looks like, fast-consumption patterns, and Headroom as passive monitoring. Added to sitemap + homepage footer. Downloads: 48. *Fact learned:* Three distinct SEO pages now cover three distinct queries: /hook (hook mechanism), /context (context window fill), /limits (rate limits). All point back to the same product but from different user intent. *Next lap:* r/datascience retry, or more SEO/distribution.
+
 - **Lap 88 — 2026-06-11 · r/artificial blocked — Reddit anti-spam hit again.**
   *Shipped:* Nothing (redirected back to submit form). *Fact learned:* Reddit's anti-spam fired again after 4 posts in this new session. Same pattern as before — URL stays at /submit after "submit" click. Daily limit appears to allow ~4 posts in a new burst before blocking again. Stopping Reddit posting for now. *Next lap:* r/datascience retry tomorrow, or non-Reddit distribution.
 
