@@ -17,6 +17,8 @@ Headroom puts the number where ambient numbers belong:
 - **Color-coded before it bites** — calm below 70%, amber at 70%, red at 90%, tracking
   whichever window is closer to its limit
 - **Reset countdowns** for both windows in the dropdown
+- **Threshold notifications** — macOS alerts at 70% and 90%, configurable via `~/.claude/headroom-prefs.json`
+- **Pace forecast** — "~2h 15m at pace" when your current usage rate would hit the limit before reset
 - **Zero config.** No API key, no login, no settings. Install it and the number is there.
 
 ## Install

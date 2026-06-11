@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 48 — 2026-06-11 · README updated with v0.3.6 features (notifications + pace forecast).**
+  *Shipped:* Added two missing features to README.md: threshold notifications ("macOS alerts at 70% and 90%, configurable via `~/.claude/headroom-prefs.json`") and pace forecast ("~2h 15m at pace when your usage rate would hit the limit before reset"). Both features exist in main now. Downloads: 25. *Fact learned:* The README is the first thing PR maintainers see when they click through to verify an awesome-list submission. A richer, more complete feature list increases perceived quality and reduces the chance of "seems too basic" rejections. Features that exist in code but are pending release can still be listed — they're honest about what the codebase does. *Next lap:* continue the loop.
+
 - **Lap 47 — 2026-06-11 · GitHub Actions CI workflow — green build badge in README + PRs.**
   *Shipped:* Added `.github/workflows/build.yml` — runs `swift build -c release` on macOS 15 for every push to main and every PR. Added the build badge `[![Build](...)][...]` to README.md. When pushed to GitHub (pending keychain unlock), the CI will run and every open PR will show a green checkmark badge in the PR list. This signals active maintenance to list maintainers reviewing our 11 open PRs. Downloads: 25. *Fact learned:* The PR list view in GitHub shows CI status badges — "passing" vs. "no checks" can matter to maintainers who are cautious about merging untested code. A green Swift build badge is the minimum credibility signal for a native app. *Next lap:* look for more distribution channels or continue refining the app.
 
