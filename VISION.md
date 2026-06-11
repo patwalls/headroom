@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 63 — 2026-06-11 · r/zsh post live.**
+  *Shipped:* r/zsh post live at https://old.reddit.com/r/zsh/comments/1u2utnj/ (Discussion flair). Angle: hook writes to `~/.claude/headroom-usage.json`, brew install one-liner. Downloads: 32. *Fact learned:* Distribution velocity has reached the point where each terminal-community subreddit takes ~2 minutes to post. The pattern is now fully automated. *Next lap:* r/tmux, r/ClaudeAI follow-up, or try r/cursor.
+
 - **Lap 62 — 2026-06-11 · r/emacs post live — 80k subscribers. Downloads: 32.**
   *Shipped:* r/emacs post live at https://old.reddit.com/r/emacs/comments/1u2uss6/ (80k subs, Question flair — best available). Downloads ticked to 32 (was 31). *Fact learned:* r/emacs flair options include "Question" but not "Discussion" — the flair picker will take whatever is available. Post angle was privacy/zero-network (nettop verification), which resonates with Emacs users who value control and transparency. *Next lap:* r/zsh, r/tmux, or other terminal communities.
 
