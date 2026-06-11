@@ -122,7 +122,8 @@ poll isn't a meter. The menu bar is where ambient numbers belong.</p>
 
 <footer>Built in public — <a href="https://walls.sh">walls.sh</a> · Wall #003 ·
 <a href="https://github.com/patwalls/headroom">source</a> ·
-<a href="/changelog">changelog</a></footer>
+<a href="/changelog">changelog</a> ·
+<a href="/guide">guide</a></footer>
 <a href="https://walls.sh" class="wallsbadge" title="Every startup since 2012 — live on the wall"><span class="wbdot"></span>Wall № 003 · building autonomously · <b>walls.sh</b></a><style>.wallsbadge{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:8px;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.07em;text-transform:uppercase;color:#efe7d6;text-decoration:none;background:#15100a;border:1px solid #caa45a;border-radius:999px;padding:9px 14px;box-shadow:0 4px 18px rgba(0,0,0,.5);opacity:.93;transition:opacity .15s,box-shadow .15s}.wallsbadge:hover{opacity:1;box-shadow:0 4px 24px rgba(202,164,90,.4)}.wallsbadge b{color:#caa45a}.wbdot{width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 9px #39d98a;animation:wbblink 1.8s ease-in-out infinite}@keyframes wbblink{0%,100%{opacity:1}50%{opacity:.35}}@media(max-width:640px){.wallsbadge{right:10px;bottom:10px;padding:8px 11px}}</style></main></body></html>`;
 
 createServer((req, res) => {
@@ -280,6 +281,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://headroom.walls.sh/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://headroom.walls.sh/changelog</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/guide</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -384,6 +386,173 @@ li b{color:#e8e8e8}
 <a class="cta" href="/download">Download v${VERSION} — free</a>
 <a class="ghlink" href="https://github.com/patwalls/headroom/releases">All GitHub releases →</a>
 </div>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/guide") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>How to monitor Claude Code usage limits — Headroom</title>
+<meta name="description" content="A practical guide to monitoring Claude Code's 5-hour session and 7-day weekly usage limits before they stop you mid-task. Free macOS menu bar tool included.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://headroom.walls.sh/guide">
+<meta property="og:title" content="How to monitor Claude Code usage limits">
+<meta property="og:description" content="Claude Code has two invisible rate limits — the 5-hour session cap and the 7-day weekly cap. Here's how to see them before they stop you.">
+<meta property="og:url" content="https://headroom.walls.sh/guide">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}
+nav a:hover{color:#e8e4da}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+h2{font-size:20px;font-weight:600;margin:48px 0 12px;color:#fff}
+h3{font-size:16px;font-weight:600;margin:32px 0 8px;color:#ccc}
+p{margin:0 0 16px;color:#c9c6bd}
+ul,ol{color:#c9c6bd;padding-left:1.4em;margin:0 0 20px}
+li{margin-bottom:8px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px;background:#1e1e1e;padding:2px 6px;border-radius:4px;color:#e8e4da}
+pre{background:#1e1e1e;border-radius:8px;padding:16px 20px;overflow-x:auto;margin:0 0 24px}
+pre code{background:none;padding:0;font-size:13px}
+.tip{background:#1a1a0f;border-left:3px solid #caa45a;padding:12px 16px;border-radius:0 6px 6px 0;margin:24px 0;color:#c9c6bd}
+.cta{display:inline-block;background:#caa45a;color:#0d0d0d;font-weight:700;font-size:16px;padding:14px 28px;border-radius:8px;text-decoration:none;margin:24px 0 8px}
+.cta:hover{background:#d4b06a}
+.sub{font-size:14px;color:#666;margin:4px 0 0}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid #222;font-size:13px;color:#555}
+footer a{color:#888;text-decoration:none}
+footer a:hover{color:#e8e4da}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← Headroom</a></nav>
+
+<h1>How to monitor Claude Code usage limits before they stop you</h1>
+<p class="sub" style="margin-bottom:32px">Published June 2026 · 5 min read</p>
+
+<p>Claude Code has two invisible rate limits that most developers only discover the hard way:
+a hard stop mid-task when their session fills or their weekly cap runs out.</p>
+
+<p>This guide explains what those limits are, how to see them, and how to set up a
+persistent ambient monitor so you never get caught mid-task again.</p>
+
+<h2>The two Claude Code rate limits</h2>
+
+<h3>Session limit (5-hour window)</h3>
+<p>Claude Code tracks usage in rolling 5-hour windows. When you fill this window, Claude
+Code stops responding until the window resets. The reset time is rolling — it's 5 hours
+after your first message in that session, not a fixed clock time.</p>
+
+<h3>Weekly limit (7-day window)</h3>
+<p>There's also a 7-day rolling window. This is the harder one to manage: you can be at
+40% session usage and not realize your weekly window is at 95% until it blocks you.</p>
+
+<div class="tip">
+The weekly limit resets 7 days after your earliest usage in that window — not on Monday
+morning. If you did heavy work last Wednesday, your weekly reset is this Wednesday, not
+next Monday.
+</div>
+
+<h2>Option 1: Run <code>/usage</code> inside Claude Code</h2>
+<p>The built-in command. Run it any time to see both windows:</p>
+<pre><code>/usage</code></pre>
+<p>This works, but it's reactive: you have to remember to check, and it pulls you out of
+your flow to open a terminal window.</p>
+
+<h2>Option 2: Use the status line</h2>
+<p>Claude Code's status line (the bar at the bottom of the terminal) shows usage data
+when you add the right hook to <code>~/.claude/settings.json</code>. This is always
+visible while Claude Code is open but disappears when you switch windows.</p>
+
+<h2>Option 3: Headroom — ambient menu bar monitor</h2>
+<p>Headroom puts both usage percentages in your macOS menu bar as a live number that's
+always visible, even when you're in a browser or another app:</p>
+
+<p style="text-align:center;margin:32px 0">
+<img src="/dropdown.png" alt="Headroom's dropdown showing session and weekly meters"
+  style="max-width:320px;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,.6)">
+</p>
+
+<p>The menu bar shows <code>CC 10%·65%</code> — session·weekly — so you always know
+where you stand at a glance. It goes amber at 70% and red at 90% on whichever window
+is closer to its limit.</p>
+
+<p>The dropdown adds:</p>
+<ul>
+<li>Session (5h) bar with exact percentage and countdown to reset</li>
+<li>Weekly (7d) bar with exact percentage and countdown to reset</li>
+<li>Context window fill percentage</li>
+<li>Active model (Sonnet, Opus, Fable)</li>
+<li>Session cost</li>
+<li>macOS notifications at 70% and 90% (configurable)</li>
+</ul>
+
+<h2>How Headroom works (the architecture)</h2>
+<p>Most Claude Code usage monitors work by polling the Anthropic API — which requires
+storing your API token somewhere and making periodic network requests.</p>
+
+<p>Headroom works differently. Claude Code already knows your exact rate-limit numbers
+and writes them to a local file (<code>~/.claude/headroom-usage.json</code>) via a
+tiny status-line hook. Headroom reads that file. The result:</p>
+
+<ul>
+<li><strong>Zero network calls</strong> — the app makes no requests to any server, ever.
+Verify it yourself with <code>nettop</code> or Little Snitch.</li>
+<li><strong>No API token needed</strong> — Headroom never sees your token. It reads the
+  same numbers Claude Code renders in its own status line.</li>
+<li><strong>Same numbers as <code>/usage</code></strong> — because it reads the same source.
+</ul>
+
+<div class="tip">
+The one-time setup adds a single line to <code>~/.claude/settings.json</code>
+automatically on first launch. No manual configuration required.
+</div>
+
+<h2>Install Headroom</h2>
+
+<a href="/download" class="cta">Download Headroom — free, macOS 13+</a>
+<p class="sub">~267 KB · Signed &amp; notarized · Universal binary (Apple Silicon + Intel)</p>
+
+<p>Or with Homebrew:</p>
+<pre><code>brew install --cask patwalls/tap/headroom</code></pre>
+
+<p>Or build from source in ~10 seconds:</p>
+<pre><code>git clone https://github.com/patwalls/headroom.git
+cd headroom/app && swift run</code></pre>
+
+<h2>Configuring thresholds</h2>
+<p>By default, Headroom sends macOS notifications at 70% (warning) and 90% (critical)
+for both the session and weekly windows. To change these, create
+<code>~/.claude/headroom-prefs.json</code>:</p>
+<pre><code>{
+  "warnThreshold": 0.8,
+  "criticalThreshold": 0.95
+}</code></pre>
+
+<h2>FAQ</h2>
+
+<h3>Does Headroom work with Claude Code on a Pro or Max plan?</h3>
+<p>Yes. Both plans have the 5-hour session and 7-day weekly limits. Headroom reads
+whichever limits Claude Code reports.</p>
+
+<h3>What if I use multiple Claude Code instances?</h3>
+<p>Headroom reads from a single file (<code>~/.claude/headroom-usage.json</code>). If
+you run multiple instances, the last one to update wins. Support for multiple profiles
+is on the roadmap.</p>
+
+<h3>Does the menu bar item stay visible when Claude Code isn't running?</h3>
+<p>Yes — Headroom shows the last known values until Claude Code updates the file again.
+The percentages are accurate as of the last time Claude Code ran.</p>
+
+<h3>How do I uninstall?</h3>
+<p>Quit Headroom from the menu bar, delete <code>Headroom.app</code>, and optionally
+remove the hook line from <code>~/.claude/settings.json</code> and
+<code>~/.claude/headroom-usage.json</code> if you want a clean slate.</p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/changelog">changelog</a> ·
+<a href="https://github.com/patwalls/headroom">source on GitHub</a> ·
+Built in public · <a href="https://walls.sh">walls.sh Wall #003</a>
+</footer>
 </div></body></html>`);
   }
 
