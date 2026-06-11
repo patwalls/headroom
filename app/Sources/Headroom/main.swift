@@ -69,6 +69,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let contextItem = NSMenuItem()
     private let costItem = NSMenuItem()
     private let statusLine = NSMenuItem(title: "Starting…", action: nil, keyEquivalent: "")
+    private var lastDecision: Render.Decision?
     private let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "")
     private var timer: Timer?
     private var notifiedKeys: Set<String> = []
@@ -99,6 +100,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(statusLine)
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: "Refresh Now", action: #selector(refreshNow), keyEquivalent: "r"))
+        menu.addItem(NSMenuItem(title: "Copy Stats", action: #selector(copyStats), keyEquivalent: "c"))
         menu.addItem(NSMenuItem(title: "Repair Live Data", action: #selector(repairLiveData), keyEquivalent: ""))
         // SMAppService only works from a real .app bundle (not a bare swift-build binary).
         if Bundle.main.bundleIdentifier != nil {
@@ -132,6 +134,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let url = URL(string: "https://headroom.walls.sh")!
         let picker = NSSharingServicePicker(items: [url])
         picker.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+    }
+
+    @objc private func copyStats() {
+        let now = Date()
+        var lines: [String] = ["Headroom — Claude Code usage"]
+        if let d = lastDecision {
+            func windowLine(_ label: String, _ w: Usage.Window?) -> String {
+                guard let w else { return "\(label): —" }
+                let pct = Render.percent(w.utilization)
+                let remaining = w.resetsAt.map { "  ·  \(Render.countdown(from: now, to: $0)) remaining" } ?? ""
+                return "\(label): \(pct)\(remaining)"
+            }
+            lines.append(windowLine("Session (5h)", d.session))
+            lines.append(windowLine("Week (7d)", d.week))
+            if let ctx = d.context { lines.append("Context: \(Render.percent(ctx))") }
+            if let model = d.modelName { lines.append("Model: \(model)") }
+            if let cost = d.sessionCost { lines.append("Cost: \(Render.cost(cost))") }
+        } else {
+            lines.append("No data yet — open Claude Code to populate usage.")
+        }
+        lines.append("headroom.walls.sh")
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(lines.joined(separator: "\n"), forType: .string)
     }
 
     /// Re-wire the hook (idempotent) and report — for when something got into a weird state.
@@ -188,6 +213,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         // One shared display decision (Render.decide) — what --print verifies is
         // exactly what renders here. Rolled-over windows come back nil → "—".
         let d = Render.decide(usage)
+        lastDecision = d
         if let five = d.session { sessionMeter.update(five, windowDuration: Render.sessionWindowDuration) } else { sessionMeter.awaiting("window reset — open Claude Code") }
         if let seven = d.week { weeklyMeter.update(seven, windowDuration: Render.weekWindowDuration) } else { weeklyMeter.awaiting("window reset — open Claude Code") }
         // Context window: show the bar only when Claude Code gave us a number. resetsAt nil
