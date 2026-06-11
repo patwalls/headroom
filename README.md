@@ -9,6 +9,9 @@ Headroom puts the number where ambient numbers belong:
 ![Headroom's dropdown — the app's own rendering with real data](docs/dropdown.png)
 
 - **Session (5h) and weekly (7d) utilization** as a live %, refreshed every minute
+- **Context window fill** — a third bar so you can see how full your context is before coherence degrades
+- **Active model** shown in the status line — Sonnet 4.6, Opus, Fable, whatever you're running
+- **Session cost** — live dollar spend for the current session, from the same data Claude Code already tracks
 - **Color-coded before it bites** — calm below 70%, amber at 70%, red at 90%, tracking
   whichever window is closer to its limit
 - **Reset countdowns** for both windows in the dropdown
@@ -17,7 +20,7 @@ Headroom puts the number where ambient numbers belong:
 ## Install
 
 **[Download from headroom.walls.sh](https://headroom.walls.sh/download)** — free,
-macOS 13+, universal (Apple Silicon & Intel), ~250 KB. Signed & notarized.
+macOS 13+, universal (Apple Silicon & Intel), ~267 KB. Signed & notarized.
 
 Unzip, drag `Headroom.app` to Applications, open it. That's the whole setup: no
 permission dialogs, no API key, no login — Headroom quietly wires itself into Claude
@@ -54,7 +57,7 @@ An app that sits next to your credentials all day must be auditable. So:
 - The entire data surface is two small files:
   [`Hook.swift`](app/Sources/Headroom/Hook.swift) (writes) and
   [`Usage.swift`](app/Sources/Headroom/Usage.swift) (reads). Read them.
-- No dependencies. AppKit + Foundation, ~590 lines total.
+- No dependencies. AppKit + Foundation, ~666 lines total.
 - **MIT licensed** — audit it, fork it, build it yourself.
 
 ## Built in public
