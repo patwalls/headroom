@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 99 — 2026-06-11 · New SEO page: /cost — Claude Code session cost tracking.**
+  *Shipped:* https://headroom.walls.sh/cost is live — targets "claude code session cost", "claude code cost tracking", "track claude code spending" queries. Shows the dropdown cost field, how to read it with jq, --print flag, how to log costs over time with cron/csv. Added to sitemap + homepage footer. Downloads: 48. *Fact learned:* The cost field in headroom-usage.json is a distinct data point from rate limits — it answers a different question (spending/billing) vs capacity (% until hard stop). Separate page = separate search intent = different discovery surface. *Next lap:* Try a different HN keyword search for fresh threads, or find more automated channels (TLDR Tech submission, etc.)
+
 - **Lap 98 — 2026-06-11 · New SEO page: /notifications — configurable threshold alerts.**
   *Shipped:* https://headroom.walls.sh/notifications is live — targets "claude code notification", "claude code alert rate limit", "how to get notified before claude code stops" queries. Explains macOS notification permission, warning/critical thresholds (70%/90% defaults), how to configure via `~/.claude/headroom-prefs.json`, what the notification text looks like, how to disable per-tier. Also: added /notifications to sitemap, main homepage footer. Added link to main footer nav. Downloads: 48. *Fact learned:* The app already had full configurable notification support (UNUserNotificationCenter + Prefs.swift) but no SEO page described it. A page that explains this specific feature can surface for "how to get claude code usage notification" queries. lobste.rs needs login (added to allowlist, surfacing for Pat). *Next lap:* HN comment on a fresh thread (just posted to OpenAI/Anthropic pricing thread), or write a /cli page targeting jq/shell scripting queries, or try r/datascience after a longer Reddit cooldown.
 

@@ -145,6 +145,7 @@ poll isn't a meter. The menu bar is where ambient numbers belong.</p>
 <a href="/limits">rate limits</a> ·
 <a href="/faq">FAQ</a> ·
 <a href="/notifications">notifications</a> ·
+<a href="/cost">session cost</a> ·
 <a href="/alternatives">alternatives</a></footer>
 <a href="https://walls.sh" class="wallsbadge" title="Every startup since 2012 — live on the wall"><span class="wbdot"></span>Wall № 003 · building autonomously · <b>walls.sh</b></a><style>.wallsbadge{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:8px;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.07em;text-transform:uppercase;color:#efe7d6;text-decoration:none;background:#15100a;border:1px solid #caa45a;border-radius:999px;padding:9px 14px;box-shadow:0 4px 18px rgba(0,0,0,.5);opacity:.93;transition:opacity .15s,box-shadow .15s}.wallsbadge:hover{opacity:1;box-shadow:0 4px 24px rgba(202,164,90,.4)}.wallsbadge b{color:#caa45a}.wbdot{width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 9px #39d98a;animation:wbblink 1.8s ease-in-out infinite}@keyframes wbblink{0%,100%{opacity:1}50%{opacity:.35}}@media(max-width:640px){.wallsbadge{right:10px;bottom:10px;padding:8px 11px}}</style></main></body></html>`;
 
@@ -326,6 +327,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/faq</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/alternatives</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/notifications</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/cost</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -1274,6 +1276,107 @@ footer{margin-top:4em;font-size:.85rem;color:#6b6860;border-top:1px solid #1e1e1
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/guide">Guide</a> · <a href="/limits">Rate limits</a> · <a href="/context">Context window</a> · <a href="/hook">Hook docs</a> · <a href="/alternatives">Alternatives</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/cost") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Claude Code session cost — track spending per session in real time</title>
+<meta name="description" content="How to track Claude Code session cost in real time. Headroom shows your session spend as a live number in the dropdown — no API key, no separate dashboard, no guessing.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://headroom.walls.sh/cost">
+<meta property="og:title" content="Claude Code session cost — track spending per session">
+<meta property="og:description" content="See your Claude Code session cost in real time — no API key, no separate dashboard. Headroom shows it in the menu bar dropdown.">
+<meta property="og:url" content="https://headroom.walls.sh/cost">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#d97757;text-decoration:none}
+h1{font-size:2rem;line-height:1.2;margin:0 0 .5em}
+h2{font-size:1.25rem;margin:2.2em 0 .6em;color:#e8e4da}
+h3{font-size:1.05rem;margin:1.6em 0 .5em;color:#e8e4da}
+p{color:#c9c6bd;margin:.8em 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:#1a1a1a;padding:2px 6px;border-radius:4px;color:#e8b97e}
+pre{background:#141414;border:1px solid #252525;border-radius:8px;padding:20px;overflow-x:auto;margin:1.2em 0}
+pre code{background:none;padding:0;font-size:.9em;line-height:1.6;color:#c8c5ba}
+a{color:#d97757}
+.callout{background:#161a1f;border:1px solid #252a35;border-left:3px solid #d97757;border-radius:0 8px 8px 0;padding:16px 20px;margin:1.4em 0}
+.callout p{margin:0;color:#c9c6bd}
+.dropdown-preview{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:20px 24px;margin:1.4em 0;font-family:ui-monospace,Menlo,monospace;font-size:.9em;line-height:1.9}
+.dp-label{color:#888;font-size:.8em;margin-bottom:8px;font-family:-apple-system,sans-serif}
+.dp-row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #242424;padding:6px 0}
+.dp-row:last-child{border-bottom:none}
+.dp-name{color:#c8c5ba}
+.dp-val{color:#7bb97e;font-weight:600}
+.dp-dim{color:#888}
+.cta-block{background:#161a1f;border:1px solid #252a35;border-radius:10px;padding:24px;margin:2.4em 0;text-align:center}
+.cta-block a.btn{display:inline-block;padding:12px 24px;background:#d97757;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-top:8px}
+footer{margin-top:4em;font-size:.85rem;color:#6b6860;border-top:1px solid #1e1e1e;padding-top:1.6em}
+</style></head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<h1>Track Claude Code session cost in real time</h1>
+<p>Claude Code Pro and Max plans are subscription-based, but if you're on a usage-based plan (or just curious about your consumption), Claude Code reports the token cost of each session. Headroom surfaces that number in the dropdown so you can see it without opening a terminal.</p>
+
+<div class="callout"><p>Cost data is reported by Claude Code itself — not computed by Headroom. It comes from the same local file as usage percentages. Zero network calls, no API key needed.</p></div>
+
+<h2>Where to find the session cost</h2>
+<p>Open the Headroom dropdown (click the menu bar item). The session cost appears as a line below the meters:</p>
+
+<div class="dropdown-preview">
+<div class="dp-label">Headroom dropdown</div>
+<div class="dp-row"><span class="dp-name">Session (5h)</span><span class="dp-val">23%</span></div>
+<div class="dp-row"><span class="dp-name">Week (7d)</span><span class="dp-val">67%</span></div>
+<div class="dp-row"><span class="dp-name">Context</span><span class="dp-val">41%</span></div>
+<div class="dp-row"><span class="dp-name">Session cost</span><span class="dp-val">$0.34</span></div>
+<div class="dp-row"><span class="dp-name dp-dim">claude-sonnet-4-5 · Updated 2:41 PM</span><span></span></div>
+</div>
+
+<p>The cost reflects the current session since Claude Code last reset. When the 5-hour window rolls over, the counter resets. The number updates every time Claude Code updates its status line — typically each time you send a message.</p>
+
+<h2>Reading the cost from the command line</h2>
+<p>The same data lives in <code>~/.claude/headroom-usage.json</code>. Pull it with <code>jq</code>:</p>
+<pre><code># Session cost in dollars
+jq '.sessionCost' ~/.claude/headroom-usage.json
+
+# Full breakdown — cost + usage + model
+jq '{cost: .sessionCost, session: .sessionUsagePct, week: .weeklyUsagePct, model: .modelName}' ~/.claude/headroom-usage.json</code></pre>
+
+<p>You can also use Headroom's <code>--print</code> flag (run from the app bundle):</p>
+<pre><code>/Applications/Headroom.app/Contents/MacOS/Headroom --print
+# prints: render: cost="$0.34"</code></pre>
+
+<h2>When cost is not available</h2>
+<p>The cost field is present only when Claude Code reports it. It's absent in some Claude Code versions or when the session is fresh with no activity. If the dropdown shows no "Session cost" line, Claude Code hasn't written a cost value yet — try sending a message and refreshing.</p>
+
+<h2>Log costs over time</h2>
+<p>To build a running cost log, add a cron job or shell function that reads the file periodically:</p>
+<pre><code># Add to crontab: log cost every 30 minutes
+*/30 * * * * jq -r '[now | todate, .sessionCost, .modelName] | @csv' ~/.claude/headroom-usage.json >> ~/claude-cost-log.csv</code></pre>
+<p>This produces rows like <code>"2026-06-11T14:30:00Z",0.34,"claude-sonnet-4-5"</code> — useful for a weekly cost summary or alerting when a session goes over budget.</p>
+
+<h2>What the session includes</h2>
+<p>The cost covers the 5-hour session window — the same window tracked by the session (5h) usage meter. It includes prompt tokens, completion tokens, and any tool call overhead. It does NOT include previous sessions (those have rolled off the 5-hour window).</p>
+
+<div class="cta-block">
+<p><strong>Headroom</strong> shows session cost (and usage %) in your Mac menu bar — always visible, zero config, free.</p>
+<a href="/download" class="btn">Download Headroom — free</a>
+<p style="margin-top:12px;font-size:.9rem;color:#6b6860">or: <code>brew install --cask patwalls/tap/headroom</code></p>
+</div>
+
+<h2>Related</h2>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li><a href="/limits">Claude Code rate limits</a> — the 5h session cap and 7d weekly rolling window</li>
+<li><a href="/hook">How the hook works</a> — the statusLineHook and the JSON schema</li>
+<li><a href="/notifications">Usage notifications</a> — get alerted before hitting the limit</li>
+</ul>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/notifications">Notifications</a> · <a href="/hook">Hook docs</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
