@@ -26,6 +26,10 @@ form-only/human-only listings get a paste-ready packet below.
 | r/ClaudeAI | ~200k | agent-browser post | ✅ [LIVE](https://reddit.com/r/ClaudeAI/comments/1u2m9vh/) (Lap 30) |
 | r/MacApps | ~200k | agent-browser post | ✅ [LIVE](https://reddit.com/r/macapps/comments/1u2ko9m/) (Lap 28) |
 | r/SideProject | ~100k | agent-browser post | ✅ [LIVE](https://reddit.com/r/SideProject/comments/1u2rtbh/) (Lap 52) |
+| r/swift | ~80k | agent-browser post | ✅ [LIVE](https://reddit.com/r/swift/comments/1u2sefx/) (Lap 53) |
+| r/macOS | ~500k | agent-browser post | Queue for **Saturday 2026-06-13** (promo posts Saturday-only) |
+| [jamesmurdza/awesome-ai-devtools](https://github.com/jamesmurdza/awesome-ai-devtools) | ~3.8k | PR (Usage Analytics & Cost Tracking section) | Script ready — `headroom-awesome-aidevtools.mjs` (needs GitHub login) |
+| [ComposioHQ/awesome-claude-plugins](https://github.com/ComposioHQ/awesome-claude-plugins) | ~1.7k | PR (Developer Productivity section) | Script ready — `headroom-awesome-claude-plugins.mjs` (needs GitHub login) |
 | Hacker News (Show HN) | — | agent-browser post | ✅ [LIVE](https://news.ycombinator.com/item?id=48485017) (Lap 29 session) |
 
 ---
