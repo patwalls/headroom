@@ -42,7 +42,7 @@ const page = `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="twitter:title" content="Headroom — Claude Code usage in your menu bar">
 <meta name="twitter:description" content="Session (5h) + weekly (7d) Claude Code usage as a live %, color-coded before a limit stops you mid-task. Free, zero config, signed &amp; notarized.">
 <meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Headroom","applicationCategory":"DeveloperApplication","operatingSystem":"macOS 13+","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free macOS menu bar app that shows your Claude Code session (5h) and weekly (7d) usage as a live percentage, color-coded before a limit stops you mid-task. Zero config, zero network calls — reads the numbers Claude Code already renders locally.","downloadUrl":"https://headroom.walls.sh/download","url":"https://headroom.walls.sh","screenshot":"https://headroom.walls.sh/dropdown.png","codeRepository":"https://github.com/patwalls/headroom","license":"https://github.com/patwalls/headroom/blob/main/LICENSE","softwareVersion":"0.3.2","softwareRequirements":"Claude Code installed and running","keywords":"Claude Code,usage monitor,menu bar,macOS,session limit,weekly limit,rate limit"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Headroom","applicationCategory":"DeveloperApplication","operatingSystem":"macOS 13+","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free macOS menu bar app that shows your Claude Code session (5h) and weekly (7d) usage as a live percentage, color-coded before a limit stops you mid-task. Zero config, zero network calls — reads the numbers Claude Code already renders locally.","downloadUrl":"https://headroom.walls.sh/download","url":"https://headroom.walls.sh","screenshot":"https://headroom.walls.sh/dropdown.png","codeRepository":"https://github.com/patwalls/headroom","license":"https://github.com/patwalls/headroom/blob/main/LICENSE","softwareVersion":"0.3.4","softwareRequirements":"Claude Code installed and running","keywords":"Claude Code,usage monitor,menu bar,macOS,session limit,weekly limit,rate limit"}</script>
 <style>
   :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
   body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -73,7 +73,7 @@ the 5-hour session and the 7-day week — color-coded before a limit stops you m
 Yours shows your numbers.</p>
 
 <a class="cta" href="/download">Download Headroom — free</a>
-<p class="fine">v0.3.2 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~250 KB zip ·
+<p class="fine">v0.3.4 · macOS 13+ · universal (Apple Silicon &amp; Intel) · ~270 KB zip ·
 signed &amp; notarized by Apple — double-click and it runs.</p>
 <p class="fine">Homebrew: <code>brew install --cask patwalls/tap/headroom</code></p>
 <p class="fine">No permission dialogs, no API key, no login — on first launch Headroom quietly
@@ -91,6 +91,18 @@ rate-limit numbers Claude Code itself writes, from a local file in <code>~/.clau
 No analytics, no auto-updater, no phoning home. The source is small enough to read —
 <a href="https://github.com/patwalls/headroom">read it on GitHub</a>: ~590 lines, MIT,
 no dependencies.</div>
+
+<h2>What it shows</h2>
+<p>The menu bar title is the worse of your two usage meters — so it goes orange or red
+before a limit actually blocks you. The dropdown adds:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li>Session (5h) bar + countdown to reset</li>
+<li>Week (7d) bar + countdown to reset</li>
+<li>Context window percentage (when Claude Code reports it)</li>
+<li>Current model name</li>
+<li>Session cost — if your plan tracks it</li>
+<li>Threshold alerts: macOS notifications at 70% and 90%</li>
+</ul>
 
 <h2>Why</h2>
 <p>The weekly limit always finds you mid-task, because a meter you have to remember to
@@ -155,12 +167,12 @@ createServer((req, res) => {
 
 ## Installation
 
-- Download from https://headroom.walls.sh (signed & notarized by Apple, ~250 KB)
+- Download from https://headroom.walls.sh (signed & notarized by Apple, ~270 KB)
 - Homebrew: brew install --cask patwalls/tap/headroom
 
 ## Key facts
 
-- Free, MIT-licensed, ~590 lines of Swift, no dependencies
+- Free, MIT-licensed, ~700 lines of Swift, no dependencies
 - Reads data from ~/.claude/headroom-usage.json written by Claude Code's own statusLine hook
 - Never touches your API token, Keychain, or account
 - Zero network calls — verified with nettop
@@ -175,6 +187,19 @@ createServer((req, res) => {
 - Download / landing: https://headroom.walls.sh
 - Built in public as Wall #003 on walls.sh
 `);
+  }
+
+  if (url.pathname === "/robots.txt") {
+    res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
+    return res.end("User-agent: *\nAllow: /\nSitemap: https://headroom.walls.sh/sitemap.xml\n");
+  }
+
+  if (url.pathname === "/sitemap.xml") {
+    res.writeHead(200, { "content-type": "application/xml; charset=utf-8" });
+    return res.end(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://headroom.walls.sh/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+</urlset>`);
   }
 
   if (url.pathname === "/") {
