@@ -103,3 +103,12 @@ Always re-verify the subagent's claimed result before logging it. If Pat wants t
 session on a big model, he starts it himself (`claude --model fable` or `/model`).
 
 End by stating: what shipped, the fact learned, and the lap you'll likely run next.
+
+### The registry sweep (mandatory, every lap)
+
+Before ending the lap, re-read this wall's entry in `~/code/walls/registry.json`. If this
+lap — or any earlier one — satisfied an open `todo` item (especially `owner: "you"` items
+whose blocker has since cleared), mark it `done: true` with a dated note, and sweep for
+related items the same work satisfied. Then commit + push the walls repo. The wall is
+Pat's source of truth; a stale "needs you" item burns his attention on solved problems
+(the LinkedIn incident, 2026-06-11: shipped in Lap 107, still listed as needing him).
