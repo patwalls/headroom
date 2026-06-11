@@ -1,6 +1,6 @@
 # Headroom
 
-[![Headroom](https://headroom.walls.sh/badge.svg)](https://headroom.walls.sh)
+[![Headroom](https://headroom.walls.sh/badge.svg)](https://headroom.walls.sh) [![Build](https://github.com/patwalls/headroom/actions/workflows/build.yml/badge.svg)](https://github.com/patwalls/headroom/actions/workflows/build.yml)
 
 **Your Claude Code usage, live in your Mac's menu bar.**
 
