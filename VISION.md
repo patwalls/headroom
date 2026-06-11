@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 78 — 2026-06-11 · r/programming link post live — 6M subscribers, technical article.**
+  *Shipped:* r/programming post live at https://old.reddit.com/r/programming/comments/1u32vz0/ (6M subs). Link post to `/hook` article — "How Claude Code's status line hook works — read rate limits locally without any API calls." This works because r/programming is link-only and the /hook article is a genuine technical piece, not a product pitch. Downloads: 45 (up 1 since last check). *Fact learned:* The /hook article URL unlocked r/programming — the largest subreddit we've hit. Technical article framing is correct for this audience. *Next lap:* Wait to see if r/programming converts (it may take hours), or continue with r/docker, r/devtools, or other developer communities.
+
 - **Lap 77 — 2026-06-11 · New article page: /hook — Claude Code statusLineHook deep-dive.**
   *Shipped:* https://headroom.walls.sh/hook is live — a technical article explaining the `statusLineHook` mechanism: JSON schema, hook chaining, what you can build, tmux example, comparison vs. API polling. Added to sitemap.xml and footer nav. Downloads: 44. *Fact learned:* The /hook article targets developers who want to understand the hook pattern and build their own tools — a different and broader audience than the "install Headroom" pitch. The tmux statusbar example, logging recipe, and cost tracking use cases are new content that doesn't appear anywhere else. *Next lap:* Post /hook to HN, r/programming (link post — it now has a URL), or r/neovim follow-up.
 
