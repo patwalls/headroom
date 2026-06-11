@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 61 — 2026-06-11 · r/commandline post live — 118k subscribers.**
+  *Shipped:* r/commandline post live at https://old.reddit.com/r/commandline/comments/1u2us1d/ (118k subs, Discussion flair). Terminal-first angle: hook writes to `~/.claude/headroom-usage.json`, zero API. *Fact learned:* r/commandline also uses the same post-flair pattern (button.flairselect-btn + hidden inputs). The brew install one-liner is the right hook for this audience. *Next lap:* more Reddit (r/emacs, r/zsh, r/bash) or other distribution.
+
 - **Lap 60 — 2026-06-11 · onmymenubar.app submitted — curated macOS menu bar apps directory.**
   *Shipped:* Submitted Headroom to onmymenubar.app. Tally "Thanks for completing this form!" confirmation in screenshot. Downloads: 31. *Fact learned:* onmymenubar.app embeds a Tally.so form via iframe (id="iFrameResizer0"). Main page has zero `input`/`textarea` elements — any selector on `page` finds nothing. Fix: `page.frameLocator('iframe[src*="tally.so"]')` then fill by `aria-label`. Tally form had only 3 fields: App Name, Website Link, Your Email (no description or GitHub). *Next lap:* r/commandline, r/emacs, or more distribution channels.
 
