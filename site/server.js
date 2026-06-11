@@ -338,6 +338,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/weekly</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/brew</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/compact</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/statusline</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -1872,6 +1873,136 @@ Your 5-hour Claude Code window is 92% full. Resets in 23m.</code></pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
+  }
+
+  if (url.pathname === "/statusline") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Status Line — What the Status Bar Shows and How to Read It</title>
+<meta name="description" content="Claude Code's status line shows session %, weekly %, context %, model, and cost in real time. Learn what each field means and how to capture the data for external tools.">
+<link rel="canonical" href="https://headroom.walls.sh/statusline">
+<meta property="og:title" content="Claude Code Status Line — What the Status Bar Shows and How to Read It">
+<meta property="og:description" content="Claude Code's status line shows session %, weekly %, context %, model, and cost in real time. Learn what each field means and how to capture the data for external tools.">
+<meta property="og:url" content="https://headroom.walls.sh/statusline">
+<meta property="og:type" content="website">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2rem;font-weight:700;margin:0 0 8px;line-height:1.2}
+  h2{font-size:1.2rem;font-weight:600;margin:40px 0 12px;color:var(--accent)}
+  p{margin:0 0 16px;color:var(--ink)}
+  code{font-family:"SF Mono",Menlo,monospace;font-size:.88em;background:var(--panel);padding:2px 6px;border-radius:4px}
+  pre{background:var(--panel);border:1px solid #2a2d36;border-radius:8px;padding:20px;overflow-x:auto;font-size:.88em;line-height:1.6;margin:0 0 24px}
+  .dim{color:var(--dim)}
+  .warn{color:var(--warn)}
+  .ok{color:var(--ok)}
+  .bad{color:var(--bad)}
+  .callout{background:var(--panel);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 20px;margin:0 0 24px}
+  table{width:100%;border-collapse:collapse;margin:0 0 24px}
+  th,td{text-align:left;padding:10px 14px;border-bottom:1px solid #23262f}
+  th{color:var(--dim);font-weight:500;font-size:.9em}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  nav{margin-bottom:40px}
+  footer{margin-top:64px;padding-top:24px;border-top:1px solid #23262f;color:var(--dim);font-size:.9em}
+</style>
+</head><body><main>
+<nav><a href="/">← Headroom</a></nav>
+
+<h1>Claude Code Status Line</h1>
+<p class="dim">The status bar at the bottom of Claude Code shows live usage data — and that data is available to external tools.</p>
+
+<h2>What the status line shows</h2>
+
+<p>When Claude Code is active, the bottom of the terminal shows a status line with multiple fields, updated after each response:</p>
+
+<pre><span class="dim">⠿</span> claude-sonnet-4-6  <span class="ok">23%</span> session · <span class="warn">67%</span> weekly · <span class="ok">41%</span> context · $0.34</pre>
+
+<table>
+  <thead><tr><th>Field</th><th>What it means</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Model</strong></td><td>Active Claude model (claude-sonnet-4-6, claude-opus-4-8, claude-fable-5, etc.)</td></tr>
+    <tr><td><strong>Session %</strong></td><td>How much of the 5-hour rolling token window you've used</td></tr>
+    <tr><td><strong>Weekly %</strong></td><td>How much of the 7-day rolling token cap you've used</td></tr>
+    <tr><td><strong>Context %</strong></td><td>How full the current conversation context window is (resets on /clear or /compact)</td></tr>
+    <tr><td><strong>Cost</strong></td><td>Cumulative token cost for this session</td></tr>
+  </tbody>
+</table>
+
+<h2>How Headroom reads the status line</h2>
+
+<p>Claude Code has a <code>statusLineHook</code> feature: if configured, it invokes a shell script each time the status line updates, passing the raw data as JSON to stdin. Headroom installs itself as this hook — it receives the JSON, writes it to <code>~/.claude/headroom-usage.json</code>, and the macOS app reads from that file.</p>
+
+<p>The hook entry in <code>~/.claude/settings.json</code> looks like this:</p>
+
+<pre>{
+  "statusLineHook": "node ~/.claude/headroom-hook.js"
+}</pre>
+
+<p>The JSON Headroom writes:</p>
+
+<pre>{
+  "sessionUsagePct": 23.1,
+  "weeklyUsagePct": 67.4,
+  "contextUsagePct": 41.0,
+  "modelName": "claude-sonnet-4-6",
+  "sessionCost": 0.34,
+  "sessionResetSec": 14400,
+  "weeklyResetSec": 201600
+}</pre>
+
+<h2>Reading the status line data yourself</h2>
+
+<p>Once Headroom is installed, the data file is updated automatically. Any tool can read it:</p>
+
+<pre><span class="dim"># All fields</span>
+cat ~/.claude/headroom-usage.json | python3 -m json.tool
+
+<span class="dim"># Just the usage percentages</span>
+jq '{sessionUsagePct, weeklyUsagePct, contextUsagePct}' ~/.claude/headroom-usage.json
+
+<span class="dim"># Quick one-liner for shell prompt</span>
+jq -r '"CC " + (.sessionUsagePct|floor|tostring) + "%·" + (.weeklyUsagePct|floor|tostring) + "%"' ~/.claude/headroom-usage.json</pre>
+
+<h2>Write your own status line hook</h2>
+
+<p>You don't need Headroom to read the status line data — you can install your own hook in <code>~/.claude/settings.json</code>:</p>
+
+<pre>{
+  "statusLineHook": "cat >> /tmp/claude-usage.log"
+}</pre>
+
+<p>Or a Node script that does whatever you want:</p>
+
+<pre>// ~/.claude/my-hook.js
+const data = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
+// data.sessionUsagePct, data.weeklyUsagePct, data.contextUsagePct, etc.
+require('fs').writeFileSync('/tmp/claude-usage.json', JSON.stringify(data));</pre>
+
+<p>Then in settings.json: <code>"statusLineHook": "node ~/.claude/my-hook.js"</code></p>
+
+<h2>The statusLineHook vs the /usage command</h2>
+
+<p><code>/usage</code> is a command you run inside Claude Code — it shows current usage on demand. The <code>statusLineHook</code> runs automatically after every response, so external tools always have fresh data without polling Claude Code or the API.</p>
+
+<p>→ <a href="/hook">Full hook documentation</a><br>
+→ <a href="/shell">Show usage in your shell prompt</a><br>
+→ <a href="/tmux">Show usage in tmux status bar</a><br>
+→ <a href="/starship">Show usage in Starship</a></p>
+
+<h2>The menu bar view</h2>
+
+<p>Headroom takes the status line data and shows it as a persistent menu bar item — always visible, color-coded, with countdown timers in the dropdown.</p>
+
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/statusline">Status line</a> · <a href="/hook">Hook docs</a> · <a href="/shell">Shell prompts</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
   }
 
   if (url.pathname === "/compact") {

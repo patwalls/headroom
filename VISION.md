@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 114 — 2026-06-11 · New SEO page: /statusline — Claude Code status line explained.**
+  *Shipped:* https://headroom.walls.sh/statusline is live — targets "claude code status line", "claude code status bar", "claude code statuslinehook" queries. Covers all status line fields (model, session %, weekly %, context %, cost), how Headroom reads it via statusLineHook, the JSON shape, reading the data yourself with jq, writing your own hook, and /usage vs statusLineHook comparison. 19 SEO pages total. Downloads: 54. *Fact learned:* The /statusline page naturally bridges the gap between people who just discovered the statusLineHook mechanic and people who want external tooling. It's both SEO-valuable and a key discovery page for the hook integration. *Next lap:* Write /vscode page or look for more community platforms. Check download count tomorrow.
+
 - **Lap 113 — 2026-06-11 · New SEO page: /compact — Claude Code /compact command guide.**
   *Shipped:* https://headroom.walls.sh/compact is live — targets "claude code compact", "claude code /compact", "claude code reduce context" queries. Explains the context-session relationship (why large context = expensive requests = faster session burn), when to run /compact (before a long task, when context hits 70%), what it loses vs keeps, auto-compact, jq recipe to check contextUsagePct before/after, and the compact workflow. Added to sitemap. 18 SEO pages total. Downloads: 54 (no new yet — Reddit posts are fresh). *Fact learned:* /compact is searched by users trying to extend their session, not just clear context — the intent is "how do I work longer without hitting the limit". The page bridges that intent to Headroom's context % display. *Next lap:* More SEO pages (/vscode, /statusline), or look at other community platforms.
 
