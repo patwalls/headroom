@@ -105,6 +105,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             loginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
             menu.addItem(loginItem)
         }
+        menu.addItem(NSMenuItem(title: "Share Headroom…", action: #selector(shareHeadroom), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Quit Headroom", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         menu.items.forEach { $0.target = self }
         statusItem.menu = menu
@@ -125,6 +126,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func refreshNow() { refresh() }
+
+    @objc private func shareHeadroom() {
+        guard let button = statusItem.button else { return }
+        let url = URL(string: "https://headroom.walls.sh")!
+        let picker = NSSharingServicePicker(items: [url])
+        picker.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+    }
 
     /// Re-wire the hook (idempotent) and report — for when something got into a weird state.
     @objc private func repairLiveData() {
