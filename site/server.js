@@ -144,6 +144,7 @@ poll isn't a meter. The menu bar is where ambient numbers belong.</p>
 <a href="/context">context window</a> ·
 <a href="/limits">rate limits</a> ·
 <a href="/faq">FAQ</a> ·
+<a href="/notifications">notifications</a> ·
 <a href="/alternatives">alternatives</a></footer>
 <a href="https://walls.sh" class="wallsbadge" title="Every startup since 2012 — live on the wall"><span class="wbdot"></span>Wall № 003 · building autonomously · <b>walls.sh</b></a><style>.wallsbadge{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:8px;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.07em;text-transform:uppercase;color:#efe7d6;text-decoration:none;background:#15100a;border:1px solid #caa45a;border-radius:999px;padding:9px 14px;box-shadow:0 4px 18px rgba(0,0,0,.5);opacity:.93;transition:opacity .15s,box-shadow .15s}.wallsbadge:hover{opacity:1;box-shadow:0 4px 24px rgba(202,164,90,.4)}.wallsbadge b{color:#caa45a}.wbdot{width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 9px #39d98a;animation:wbblink 1.8s ease-in-out infinite}@keyframes wbblink{0%,100%{opacity:1}50%{opacity:.35}}@media(max-width:640px){.wallsbadge{right:10px;bottom:10px;padding:8px 11px}}</style></main></body></html>`;
 
@@ -324,6 +325,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/limits</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/faq</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/alternatives</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/notifications</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -1272,6 +1274,113 @@ footer{margin-top:4em;font-size:.85rem;color:#6b6860;border-top:1px solid #1e1e1
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/guide">Guide</a> · <a href="/limits">Rate limits</a> · <a href="/context">Context window</a> · <a href="/hook">Hook docs</a> · <a href="/alternatives">Alternatives</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/notifications") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Claude Code rate limit notifications — get alerted before the hard stop</title>
+<meta name="description" content="How to get macOS notifications before Claude Code's 5-hour session or 7-day weekly limit stops your work. Headroom fires alerts at configurable thresholds — 70%, 90%, or your own numbers.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://headroom.walls.sh/notifications">
+<meta property="og:title" content="Claude Code rate limit notifications">
+<meta property="og:description" content="Get macOS notifications before Claude Code's session or weekly limit stops your work. Configurable thresholds, zero network calls.">
+<meta property="og:url" content="https://headroom.walls.sh/notifications">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#d97757;text-decoration:none}
+h1{font-size:2rem;line-height:1.2;margin:0 0 .5em}
+h2{font-size:1.25rem;margin:2.2em 0 .6em;color:#e8e4da}
+h3{font-size:1.05rem;margin:1.6em 0 .5em;color:#e8e4da}
+p{color:#c9c6bd;margin:.8em 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:#1a1a1a;padding:2px 6px;border-radius:4px;color:#e8b97e}
+pre{background:#141414;border:1px solid #252525;border-radius:8px;padding:20px;overflow-x:auto;margin:1.2em 0}
+pre code{background:none;padding:0;font-size:.9em;line-height:1.6;color:#c8c5ba}
+a{color:#d97757}
+.callout{background:#161a1f;border:1px solid #252a35;border-left:3px solid #d97757;border-radius:0 8px 8px 0;padding:16px 20px;margin:1.4em 0}
+.callout p{margin:0;color:#c9c6bd}
+.cta-block{background:#161a1f;border:1px solid #252a35;border-radius:10px;padding:24px;margin:2.4em 0;text-align:center}
+.cta-block a.btn{display:inline-block;padding:12px 24px;background:#d97757;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-top:8px}
+.threshold-grid{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;background:#141414;border:1px solid #252525;border-radius:8px;padding:16px 20px;margin:1.2em 0;font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+.threshold-key{color:#e8b97e}
+.threshold-val{color:#c8c5ba}
+footer{margin-top:4em;font-size:.85rem;color:#6b6860;border-top:1px solid #1e1e1e;padding-top:1.6em}
+</style></head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<h1>Get notified before Claude Code stops you</h1>
+<p>Claude Code has two invisible meters — a <strong>5-hour session window</strong> and a <strong>7-day weekly rolling cap</strong>. When either fills, it stops mid-task with no warning. Headroom fires native macOS notifications before the hard stop, so you can save your work and plan around it.</p>
+
+<div class="callout"><p>Headroom makes <strong>zero network calls</strong>. The notification system reads from the same local file Claude Code's hook writes — no API key, no token, nothing leaves your machine.</p></div>
+
+<h2>How notifications work</h2>
+<p>On first launch, Headroom requests macOS notification permission (one prompt, macOS remembers your answer). After that, it watches your usage meters and fires an alert when a threshold is crossed:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li><strong>Warning</strong> — at 70% of the session or weekly window (amber in the menu bar)</li>
+<li><strong>Critical</strong> — at 90% (red in the menu bar, louder alert)</li>
+</ul>
+<p>Each notification fires once per threshold crossing per window, then resets when the window rolls over. You won't get the same alert twice for the same period.</p>
+
+<h2>Configuring thresholds</h2>
+<p>Create or edit <code>~/.claude/headroom-prefs.json</code> to move the thresholds to whatever % works for you:</p>
+<pre><code>{
+  "sessionWarnAt": 60,
+  "sessionCritAt": 85,
+  "weekWarnAt": 70,
+  "weekCritAt": 90
+}</code></pre>
+<p>Headroom reads this file on every refresh (every 15 seconds). No restart needed — changes take effect next tick.</p>
+
+<div class="threshold-grid">
+  <span class="threshold-key">sessionWarnAt</span><span class="threshold-val">% of 5-hour session window for the first alert (default: 70)</span>
+  <span class="threshold-key">sessionCritAt</span><span class="threshold-val">% of 5-hour session window for the critical alert (default: 90)</span>
+  <span class="threshold-key">weekWarnAt</span><span class="threshold-val">% of 7-day weekly cap for the first alert (default: 70)</span>
+  <span class="threshold-key">weekCritAt</span><span class="threshold-val">% of 7-day weekly cap for the critical alert (default: 90)</span>
+</div>
+
+<p>All values must be between 1 and 99. Values outside that range are silently clamped. Unknown keys are ignored. If the file is missing or malformed, defaults apply.</p>
+
+<h2>What the notifications look like</h2>
+<p>A warning notification reads:</p>
+<pre><code>Session at 71% — warning
+Your 5-hour Claude Code window is 71% full. Resets in 1h 24m.</code></pre>
+<p>A critical notification reads:</p>
+<pre><code>Session at 92% — critical
+Your 5-hour Claude Code window is 92% full. Resets in 23m.</code></pre>
+
+<h2>Enabling / disabling notifications</h2>
+<p>Notifications are on by default. To disable them entirely, open <strong>System Settings → Notifications → Headroom</strong> and toggle them off. macOS controls the delivery; Headroom just requests permission and posts the content.</p>
+<p>To disable only one tier (say, keep warnings but suppress criticals), set <code>sessionCritAt</code> to <code>99</code> — Headroom won't reach the threshold under normal usage.</p>
+
+<h2>The menu bar shows it too</h2>
+<p>While notifications fire at thresholds, the menu bar title (<code>CC 23%·67%</code>) is always visible. The color tracks whichever window is closest to its limit:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li><span style="color:#7bb97e">■</span> <strong>Below 70%</strong> — standard adaptive color, nothing to worry about</li>
+<li><span style="color:#d9a657">■</span> <strong>70–89%</strong> — amber, approaching the limit</li>
+<li><span style="color:#d96157">■</span> <strong>90%+</strong> — red, stop soon</li>
+</ul>
+<p>The dropdown adds reset countdowns ("resets in 1h 24m"), a pace forecast ("~2h at current pace"), context window fill, active model, and session cost.</p>
+
+<div class="cta-block">
+<p><strong>Install Headroom</strong> — free, ~267 KB, macOS 13+</p>
+<a href="/download" class="btn">Download Headroom</a>
+<p style="margin-top:12px;font-size:.9rem;color:#6b6860">or: <code>brew install --cask patwalls/tap/headroom</code></p>
+</div>
+
+<h2>Related</h2>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li><a href="/limits">How Claude Code rate limits work</a> — session window, weekly cap, rolling windows explained</li>
+<li><a href="/hook">How the hook works</a> — the statusLineHook that feeds Headroom's data</li>
+<li><a href="/faq">FAQ</a> — common questions about monitoring Claude Code usage</li>
+</ul>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/hook">Hook docs</a> · <a href="/faq">FAQ</a> · <a href="/alternatives">Alternatives</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
