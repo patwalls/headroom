@@ -120,7 +120,8 @@ before a limit actually blocks you. The dropdown adds:</p>
 poll isn't a meter. The menu bar is where ambient numbers belong.</p>
 
 <footer>Built in public — <a href="https://walls.sh">walls.sh</a> · Wall #003 ·
-<a href="https://github.com/patwalls/headroom">source</a></footer>
+<a href="https://github.com/patwalls/headroom">source</a> ·
+<a href="/changelog">changelog</a></footer>
 <a href="https://walls.sh" class="wallsbadge" title="Every startup since 2012 — live on the wall"><span class="wbdot"></span>Wall № 003 · building autonomously · <b>walls.sh</b></a><style>.wallsbadge{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:8px;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.07em;text-transform:uppercase;color:#efe7d6;text-decoration:none;background:#15100a;border:1px solid #caa45a;border-radius:999px;padding:9px 14px;box-shadow:0 4px 18px rgba(0,0,0,.5);opacity:.93;transition:opacity .15s,box-shadow .15s}.wallsbadge:hover{opacity:1;box-shadow:0 4px 24px rgba(202,164,90,.4)}.wallsbadge b{color:#caa45a}.wbdot{width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 9px #39d98a;animation:wbblink 1.8s ease-in-out infinite}@keyframes wbblink{0%,100%{opacity:1}50%{opacity:.35}}@media(max-width:640px){.wallsbadge{right:10px;bottom:10px;padding:8px 11px}}</style></main></body></html>`;
 
 createServer((req, res) => {
@@ -277,7 +278,111 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
     return res.end(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://headroom.walls.sh/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://headroom.walls.sh/changelog</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>`);
+  }
+
+  if (url.pathname === "/changelog") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Headroom Changelog — Claude Code usage monitor for macOS</title>
+<meta name="description" content="Version history for Headroom, a free macOS menu bar app that shows Claude Code session and weekly usage as a live percentage.">
+<link rel="canonical" href="https://headroom.walls.sh/changelog">
+<meta property="og:title" content="Headroom Changelog">
+<meta property="og:description" content="Version history for Headroom — Claude Code usage monitor for macOS">
+<meta property="og:url" content="https://headroom.walls.sh/changelog">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0f0f0f;color:#e8e8e8;padding:48px 24px 80px}
+.wrap{max-width:680px;margin:0 auto}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e8e8}
+h1{font-size:28px;font-weight:700;margin-bottom:8px}
+.sub{color:#888;margin-bottom:48px;font-size:15px}
+.version{margin-bottom:44px}
+.vtag{display:inline-block;background:#1e1e1e;border:1px solid #333;border-radius:6px;padding:3px 10px;font:600 13px/1.5 ui-monospace,monospace;color:#ccc;margin-bottom:12px}
+.vtag.latest{background:#1a2a1a;border-color:#2d5a2d;color:#5db85d}
+.vdate{color:#666;font-size:13px;margin-left:10px}
+h2{font-size:18px;font-weight:600;margin-bottom:12px}
+ul{padding-left:20px;color:#ccc}
+li{margin-bottom:6px;font-size:15px}
+li b{color:#e8e8e8}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;margin-left:6px;vertical-align:middle}
+.pill-new{background:#1a2a1a;color:#5db85d;border:1px solid #2d5a2d}
+.pill-fix{background:#1a1f2a;color:#5b8dd9;border:1px solid #2d4580}
+.upcoming{background:#1c1a0f;border:1px solid #4a3d10;border-radius:10px;padding:20px 24px;margin-bottom:44px}
+.upcoming h3{font-size:15px;font-weight:600;color:#c4a830;margin-bottom:10px}
+.upcoming ul{color:#bba}
+.upcoming li{font-size:14px}
+.cta-row{margin-top:48px;padding-top:32px;border-top:1px solid #222}
+.cta{display:inline-block;background:#d97757;color:#fff;text-decoration:none;padding:10px 20px;border-radius:8px;font-weight:600;font-size:15px}
+.cta:hover{background:#c46842}
+.ghlink{margin-left:16px;color:#888;text-decoration:none;font-size:14px}
+.ghlink:hover{color:#e8e8e8}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← Headroom</a></nav>
+<h1>Changelog</h1>
+<p class="sub">Every version of Headroom, newest first. <a href="https://github.com/patwalls/headroom/releases" style="color:#888">GitHub releases →</a></p>
+
+<div class="upcoming">
+<h3>Coming in v0.3.6 + v0.3.7 (on main, pending release)</h3>
+<ul>
+  <li><b>macOS notifications</b> — alerts at 70% and 90% when a window fills; configurable via <code style="font-size:12px;background:#2a2510;padding:1px 5px;border-radius:3px">~/.claude/headroom-prefs.json</code></li>
+  <li><b>Pace forecast</b> — "~2h 15m at pace" in the meter caption when your usage rate would fill the window before reset</li>
+  <li><b>Share Headroom…</b> — native macOS share sheet (Messages, Mail, AirDrop, copy link)</li>
+  <li><b>Copy Stats</b> — ⌘C copies your current session/week/context/model/cost to the clipboard as plain text</li>
+</ul>
+</div>
+
+<div class="version">
+<span class="vtag latest">v0.3.4</span><span class="vdate">June 2026 · current download</span>
+<h2>Context window, model name, session cost</h2>
+<ul>
+  <li><b>Context window bar</b> — a third meter showing how full your Claude Code context is before coherence degrades <span class="pill pill-new">new</span></li>
+  <li><b>Active model</b> — displays the current model (Sonnet 4.6, Opus, Fable) in the status line <span class="pill pill-new">new</span></li>
+  <li><b>Session cost</b> — live dollar spend for the current session, from the same data Claude Code tracks <span class="pill pill-new">new</span></li>
+  <li>Universal binary: Apple Silicon + Intel, macOS 13+, ~267 KB</li>
+  <li>Signed with Developer ID + notarized by Apple</li>
+</ul>
+</div>
+
+<div class="version">
+<span class="vtag">v0.3.2</span><span class="vdate">June 2026</span>
+<h2>Single display decision — what you see is what tests verify</h2>
+<ul>
+  <li><code style="font-size:12px;background:#1e1e1e;padding:1px 5px;border-radius:3px">Render.decide()</code> is now the one place that decides title, tone, and live windows — used by both the menu bar GUI and the <code style="font-size:12px;background:#1e1e1e;padding:1px 5px;border-radius:3px">--print</code> harness <span class="pill pill-fix">fix</span></li>
+  <li>Rolled-over windows (window elapsed) show "—" instead of stale data</li>
+</ul>
+</div>
+
+<div class="version">
+<span class="vtag">v0.3.1</span><span class="vdate">June 2026</span>
+<h2>Architecture flip — zero network calls</h2>
+<ul>
+  <li><b>Hook-based data path</b> — installs a tiny Claude Code statusline hook; Claude Code writes rate-limit data to <code style="font-size:12px;background:#1e1e1e;padding:1px 5px;border-radius:3px">~/.claude/headroom-usage.json</code>; Headroom reads it. No API polling, no credentials, no network. <span class="pill pill-new">new</span></li>
+  <li>Same numbers as <code style="font-size:12px;background:#1e1e1e;padding:1px 5px;border-radius:3px">/usage</code> inside Claude Code — because it's the same data source</li>
+  <li>Verified zero-network: <code style="font-size:12px;background:#1e1e1e;padding:1px 5px;border-radius:3px">nettop</code> shows no outbound requests from Headroom</li>
+</ul>
+</div>
+
+<div class="version">
+<span class="vtag">v0.2.x</span><span class="vdate">June 2026</span>
+<h2>Initial release (API polling)</h2>
+<ul>
+  <li>Session (5h) + weekly (7d) utilization in the menu bar, color-coded (calm → amber → red)</li>
+  <li>Reset countdowns in the dropdown</li>
+  <li>Launch at Login (SMAppService)</li>
+  <li>Polled Anthropic's usage endpoint — replaced in v0.3.1 with the hook approach</li>
+</ul>
+</div>
+
+<div class="cta-row">
+<a class="cta" href="/download">Download v${VERSION} — free</a>
+<a class="ghlink" href="https://github.com/patwalls/headroom/releases">All GitHub releases →</a>
+</div>
+</div></body></html>`);
   }
 
   if (url.pathname === "/") {
