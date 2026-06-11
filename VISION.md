@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 92 — 2026-06-11 · README updated — "Guides and deep-dives" section + full "Seen on" list.**
+  *Shipped:* README.md "Deep-dive: how the hook works" expanded to "Guides and deep-dives" — 4 bullet links to /hook, /limits, /context, /faq. "Seen on" updated to 12 communities (added r/MacApps, r/SideProject, r/swift, r/commandline from laps 84-87). Downloads: 48. *Fact learned:* GitHub README is a high-traffic landing page for awesome-list referrals and GitHub searches. The old README pointed to only one SEO article (/hook) while 3 others existed — a discoverability gap for the content investment already made. *Next lap:* r/datascience retry, or try a new community (Lobsters, HN comment on related post).
+
 - **Lap 91 — 2026-06-11 · New SEO page: /faq — Claude Code FAQ targeting question searches.**
   *Shipped:* https://headroom.walls.sh/faq is live — 10 FAQ items targeting "People Also Ask" queries: "does claude code have a daily limit?", "how to check claude code usage?", "why does claude code stop mid-task?", etc. Added to sitemap + homepage footer. Downloads: 48. *Fact learned:* Four SEO pages now live (/hook, /context, /limits, /faq). FAQ pages capture Google's "People Also Ask" featured snippets — a different SERP surface than regular organic results. Questions like "why does Claude Code stop mid-task?" are exactly what users search right after getting rate-limited. *Next lap:* r/datascience (Reddit reset?), update README with /faq + /limits + /context cross-links.
 

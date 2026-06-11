@@ -64,15 +64,16 @@ An app that sits next to your credentials all day must be auditable. So:
 - No dependencies. AppKit + Foundation, ~780 lines total.
 - **MIT licensed** — audit it, fork it, build it yourself.
 
-## Deep-dive: how the hook works
+## Guides and deep-dives
 
-The `statusLineHook` mechanism that Headroom uses to read rate limits locally — including the JSON schema, hook chaining patterns, and recipes for tmux statusbar, terminal prompt integration, and cost logging — is documented at:
-
-**[headroom.walls.sh/hook](https://headroom.walls.sh/hook)**
+- **[How the hook works](https://headroom.walls.sh/hook)** — the `statusLineHook` mechanism: JSON schema, hook chaining, recipes for tmux statusbar, terminal prompt integration, and cost logging
+- **[Claude Code rate limits explained](https://headroom.walls.sh/limits)** — how the 5h session and 7d weekly rolling windows work, what triggers them, and how to track them before they fire
+- **[Context window vs. rate limits](https://headroom.walls.sh/context)** — the third Claude Code limit most people discover too late: gradual context degradation vs. a hard rate-limit stop
+- **[FAQ](https://headroom.walls.sh/faq)** — common questions: "does Claude Code have a daily limit?", "how long until the rate limit resets?", "why does Claude Code stop mid-task?"
 
 ## Seen on
 
-[Hacker News](https://news.ycombinator.com/item?id=48485017) · [r/ClaudeAI](https://reddit.com/r/ClaudeAI/comments/1u2m9vh/) · [r/neovim](https://reddit.com/r/neovim/comments/1u2umfe/) · [r/vim](https://reddit.com/r/vim/comments/1u2unzj/) · [r/devops](https://reddit.com/r/devops/comments/1u2vmyn/) · [r/LocalLLaMA](https://reddit.com/r/LocalLLaMA/comments/1u2v8pi/) · [r/Python](https://reddit.com/r/Python/comments/1u32g9l/) · [r/programming](https://reddit.com/r/programming/comments/1u32vz0/)
+[Hacker News](https://news.ycombinator.com/item?id=48485017) · [r/ClaudeAI](https://reddit.com/r/ClaudeAI/comments/1u2m9vh/) · [r/neovim](https://reddit.com/r/neovim/comments/1u2umfe/) · [r/vim](https://reddit.com/r/vim/comments/1u2unzj/) · [r/devops](https://reddit.com/r/devops/comments/1u2vmyn/) · [r/LocalLLaMA](https://reddit.com/r/LocalLLaMA/comments/1u2v8pi/) · [r/Python](https://reddit.com/r/Python/comments/1u32g9l/) · [r/programming](https://reddit.com/r/programming/comments/1u32vz0/) · [r/MacApps](https://reddit.com/r/macapps/comments/1u33y7j/) · [r/SideProject](https://reddit.com/r/SideProject/comments/1u33zed/) · [r/swift](https://reddit.com/r/swift/comments/1u33zuw/) · [r/commandline](https://reddit.com/r/commandline/comments/1u3407d/)
 
 ## Built in public
 
