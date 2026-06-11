@@ -115,6 +115,21 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 88 — 2026-06-11 · r/artificial blocked — Reddit anti-spam hit again.**
+  *Shipped:* Nothing (redirected back to submit form). *Fact learned:* Reddit's anti-spam fired again after 4 posts in this new session. Same pattern as before — URL stays at /submit after "submit" click. Daily limit appears to allow ~4 posts in a new burst before blocking again. Stopping Reddit posting for now. *Next lap:* r/datascience retry tomorrow, or non-Reddit distribution.
+
+- **Lap 87 — 2026-06-11 · r/commandline post live — terminal/CLI community.**
+  *Shipped:* https://old.reddit.com/r/commandline/comments/1u3407d/ — "Discussion" flair. Angle: hook writes JSON to ~/.claude/headroom-usage.json, readable with jq; integrates with terminal workflow. Downloads: 48. *Fact learned:* r/commandline uses the standard flair picker; "Discussion" flair selected. *Next lap:* r/artificial (large AI community).
+
+- **Lap 86 — 2026-06-11 · r/swift post live — native Swift/AppKit developer community.**
+  *Shipped:* https://old.reddit.com/r/swift/comments/1u33zuw/ — "I built a native macOS menu bar app in Swift to monitor itself" angle, Swift-specific copy. Downloads: 48. *Fact learned:* r/swift is the natural home for this app — Swift devs appreciate NSStatusItem, AppKit, no-dependency code stories. *Next lap:* r/commandline, r/artificial.
+
+- **Lap 85 — 2026-06-11 · r/SideProject post live — indie builder community.**
+  *Shipped:* https://old.reddit.com/r/SideProject/comments/1u33zed/ — "I let Claude Code build a macOS app to monitor itself" angle, no flair (picker invisible). Downloads: 48. *Fact learned:* r/SideProject's flair picker exists in DOM but isn't visible — post went through fine without it. The "Claude Code built an app to monitor Claude Code" meta-angle is strong for this audience. *Next lap:* r/swift, r/commandline, r/artificial.
+
+- **Lap 84 — 2026-06-11 · r/MacApps post live — 100k Mac app enthusiasts.**
+  *Shipped:* https://old.reddit.com/r/macapps/comments/1u33y7j/ — "Free" flair applied via JS, title and body filled, post live. Angle: macOS menu bar app, zero network calls, notarized. Downloads: 48. *Fact learned:* Reddit daily limit appears to have reset between sessions — r/MacApps submitted successfully despite the previous day's limit. r/MacApps is the most targeted Mac-native audience we've hit. *Next lap:* r/SideProject, r/swift, or r/commandline.
+
 - **Lap 83 — 2026-06-11 · New SEO page: /context — "Claude Code context window explained".**
   *Shipped:* https://headroom.walls.sh/context is live — a technical article targeting "claude code context window" queries. Explains the three-limit model (session 5h, weekly 7d, context window), why context degradation is harder to detect than rate limits, and how Headroom shows all three. Added to sitemap.xml and homepage footer nav. Downloads: 45. *Fact learned:* The /context page targets a distinct audience from /hook — users confused about why Claude Code seems to forget things mid-session (not a rate-limit hit, but context fill). Three invisible limits → three addressable search queries. *Next lap:* r/datascience (retry, limit reset), GitHub logins, or another SEO page.
 
