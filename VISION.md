@@ -115,6 +115,12 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 71 — 2026-06-11 · r/javascript post live — 300k JS/Node developers.**
+  *Shipped:* r/javascript post live at https://old.reddit.com/r/javascript/comments/1u32hpy/ (300k subs, no flair — flair button not visible). Angle: Next.js/monorepo/TypeScript refactors hit session limits mid-build. Downloads: 41. *Fact learned:* r/javascript's flair button exists in the DOM but isn't visible — post submitted fine without flair. Front-end devs are a large Claude Code audience. *Next lap:* r/programming (6M — needs exceptional framing), or pivot to new SEO content.
+
+- **Lap 70 — 2026-06-11 · r/Python post live — 800k Python developers.**
+  *Shipped:* r/Python post live at https://old.reddit.com/r/Python/comments/1u32g9l/ (800k subs, Discussion flair). Angle: ML/data science/Django-FastAPI work hits session limits mid-long-task. JSON file architecture highlighted — shell users can pipe `~/.claude/headroom-usage.json` directly. Downloads: 41. *Fact learned:* r/Python has "Discussion" flair. Large Python communities likely have many Claude Code users given Python's dominance in ML and AI tooling. *Next lap:* r/javascript (300k) or r/programming (6M).
+
 - **Lap 69 — 2026-06-11 · r/bash post live — 60k shell users.**
   *Shipped:* r/bash post live at https://old.reddit.com/r/bash/comments/1u32edy/ (60k subs, "submission" flair). Angle: the Headroom hook architecture — a one-line hook in `~/.claude/settings.json` writes to `~/.claude/headroom-usage.json`; shell users can inspect/pipe the JSON directly. Downloads: 41. *Fact learned:* r/bash flair fell back to "submission" (no Tool/Discussion). The JSON file architecture resonates with shell users — they can `cat` the file, pipe it to `jq`, use it in their own scripts. *Next lap:* r/programming (6M subs — large audience but needs perfect framing) or Console.dev email (curated dev newsletter, high-quality reach).
 
