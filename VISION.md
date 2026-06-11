@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 79 — 2026-06-11 · r/docker post live — 100k container developers.**
+  *Shipped:* r/docker post live at https://old.reddit.com/r/docker/comments/1u32y5k/ (100k subs, no flair). Angle: Dockerfile/compose/k8s YAML generation sessions hit session limits. Downloads: 45. *Fact learned:* r/docker has no flair picker. This lap completes the ~18-subreddit distribution wave for this session. *Next lap:* New Hacker News submission for /hook article (different URL from original HN post), or r/machinelearning (500k).
+
 - **Lap 78 — 2026-06-11 · r/programming link post live — 6M subscribers, technical article.**
   *Shipped:* r/programming post live at https://old.reddit.com/r/programming/comments/1u32vz0/ (6M subs). Link post to `/hook` article — "How Claude Code's status line hook works — read rate limits locally without any API calls." This works because r/programming is link-only and the /hook article is a genuine technical piece, not a product pitch. Downloads: 45 (up 1 since last check). *Fact learned:* The /hook article URL unlocked r/programming — the largest subreddit we've hit. Technical article framing is correct for this audience. *Next lap:* Wait to see if r/programming converts (it may take hours), or continue with r/docker, r/devtools, or other developer communities.
 
