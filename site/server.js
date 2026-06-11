@@ -104,8 +104,9 @@ No analytics, no auto-updater, no phoning home. The source is small enough to re
 no dependencies.</div>
 
 <h2>What it shows</h2>
-<p>The menu bar title is the worse of your two usage meters — so it goes orange or red
-before a limit actually blocks you. The dropdown adds:</p>
+<p>The menu bar shows <strong>both</strong> usage meters at once: <code>CC 10%·65%</code> —
+session (5h) · weekly (7d) — color-coded orange or red as a limit approaches.
+The dropdown adds:</p>
 <ul style="color:#c9c6bd;padding-left:1.4em">
 <li>Session (5h) bar + countdown to reset</li>
 <li>Week (7d) bar + countdown to reset</li>
@@ -200,7 +201,7 @@ createServer((req, res) => {
 - Zero network calls — verified with nettop
 - Compatible with macOS 13+, universal binary (Apple Silicon + Intel)
 - Auto-wires itself on first launch, no manual configuration needed
-- Menu bar shows: CC 52% (the worse of the two meters, color-coded)
+- Menu bar shows: CC 10%·65% (session·weekly, both meters simultaneously, color-coded by the worse one)
 - Dropdown shows: session (5h) + weekly (7d) meters with reset countdowns, context window %, active model, session cost
 - Optional macOS notifications at configurable thresholds (default: 70% warn, 90% critical)
 - Pace forecast: shows "~2h 15m at pace" when usage rate would hit the limit before reset
@@ -329,6 +330,7 @@ li b{color:#e8e8e8}
 <div class="upcoming">
 <h3>Coming in v0.3.6 + v0.3.7 (on main, pending release)</h3>
 <ul>
+  <li><b>Dual display</b> — menu bar now shows both meters: <code style="font-size:12px;background:#2a2510;padding:1px 5px;border-radius:3px">CC 10%·65%</code> (session·weekly at a glance, no click needed)</li>
   <li><b>macOS notifications</b> — alerts at 70% and 90% when a window fills; configurable via <code style="font-size:12px;background:#2a2510;padding:1px 5px;border-radius:3px">~/.claude/headroom-prefs.json</code></li>
   <li><b>Pace forecast</b> — "~2h 15m at pace" in the meter caption when your usage rate would fill the window before reset</li>
   <li><b>Share Headroom…</b> — native macOS share sheet (Messages, Mail, AirDrop, copy link)</li>

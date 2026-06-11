@@ -27,9 +27,9 @@ enum Render {
     /// THE display decision — the one source of truth shared by the GUI and the
     /// --print harness, so what the harness verifies is exactly what users see.
     /// Liveness rule: a window whose reset has passed shows nil (rendered as "—"),
-    /// never its stale number. The menu bar shows the weekly %; the COLOR tracks
-    /// whichever LIVE window is closer to its limit, so an imminent 5h stop turns
-    /// the title red even on a calm week.
+    /// never its stale number. The menu bar shows both windows as "CC 9%·64%"
+    /// (session·weekly); the COLOR tracks whichever LIVE window is closer to its
+    /// limit, so an imminent 5h stop turns the title red even on a calm week.
     struct Decision {
         let title: String
         let tone: Tone
@@ -44,8 +44,10 @@ enum Render {
         let five = usage.fiveHour.isLive ? usage.fiveHour : nil
         let seven = usage.sevenDay.isLive ? usage.sevenDay : nil
         let levels = [five, seven].compactMap { $0?.utilization }
+        let fivePct  = five.map  { percent($0.utilization) } ?? "—"
+        let sevenPct = seven.map { percent($0.utilization) } ?? "—"
         return Decision(
-            title: "CC \(seven.map { percent($0.utilization) } ?? "—%")",
+            title: "CC \(fivePct)·\(sevenPct)",
             tone: levels.isEmpty ? .calm : Tone(utilization: levels.max()!),
             session: five,
             week: seven,

@@ -10,7 +10,7 @@ Headroom puts the number where ambient numbers belong:
 
 ![Headroom's dropdown — the app's own rendering with real data](docs/dropdown.png)
 
-- **Session (5h) and weekly (7d) utilization** as a live %, refreshed every minute
+- **Both meters at once in the menu bar** — `CC 10%·65%` shows session (5h) and weekly (7d) simultaneously, no click needed
 - **Context window fill** — a third bar so you can see how full your context is before coherence degrades
 - **Active model** shown in the status line — Sonnet 4.6, Opus, Fable, whatever you're running
 - **Session cost** — live dollar spend for the current session, from the same data Claude Code already tracks
