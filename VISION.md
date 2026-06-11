@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 116 — 2026-06-11 · New SEO page: /alfred — Alfred workflow for Claude Code usage.**
+  *Shipped:* https://headroom.walls.sh/alfred is live — targets "alfred claude code", "alfred workflow claude code usage" queries. Covers: quick keyword-to-bash approach, full Script Filter with Alfred JSON output (5 items: session, weekly, context, model, cost with reset countdowns), setup steps, and the ambient vs on-demand comparison. 21 SEO pages total. Downloads: 54. *Fact learned:* Both Alfred and Raycast read from the same headroom-usage.json file — the integration complexity is identical. The pages differ in Alfred's JSON output format vs Raycast's metadata comment approach. *Next lap:* r/macOS on Saturday June 13 (tomorrow). The 33 subreddit posts + 21 SEO pages are working — check downloads tomorrow morning for overnight conversion.
+
 - **Lap 115 — 2026-06-11 · New SEO page: /raycast — Raycast Script Command for Claude Code usage.**
   *Shipped:* https://headroom.walls.sh/raycast is live — targets "raycast claude code", "claude code raycast extension" queries. Full Raycast Script Command (compact mode + fullOutput detailed mode with reset countdowns), setup steps, keyboard shortcut instructions, and the ambient vs on-demand comparison (Headroom = always visible; Raycast = on-demand query). 20 SEO pages total. Downloads: 54. *Fact learned:* Raycast Script Commands are shell scripts — they can read the headroom-usage.json file directly with jq, making the integration trivial. This is a distinct value from Starship/tmux/zsh which are passive; Raycast is active (you invoke it). *Next lap:* Check if Reddit posts are converting (overnight sleep). Write /warp or /alfred pages. r/macOS Saturday June 13.
 

@@ -340,6 +340,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/compact</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/statusline</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/raycast</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://headroom.walls.sh/alfred</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>`);
   }
 
@@ -1874,6 +1875,162 @@ Your 5-hour Claude Code window is 92% full. Resets in 23m.</code></pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
+  }
+
+  if (url.pathname === "/alfred") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Usage in Alfred — Workflow Script for Session & Weekly %</title>
+<meta name="description" content="An Alfred Script Filter that shows Claude Code session and weekly usage from Headroom's local JSON file. Query on demand from Alfred's command bar.">
+<link rel="canonical" href="https://headroom.walls.sh/alfred">
+<meta property="og:title" content="Claude Code Usage in Alfred — Workflow Script for Session & Weekly %">
+<meta property="og:description" content="An Alfred Script Filter that shows Claude Code session and weekly usage from Headroom's local JSON file. Query on demand from Alfred's command bar.">
+<meta property="og:url" content="https://headroom.walls.sh/alfred">
+<meta property="og:type" content="website">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2rem;font-weight:700;margin:0 0 8px;line-height:1.2}
+  h2{font-size:1.2rem;font-weight:600;margin:40px 0 12px;color:var(--accent)}
+  p{margin:0 0 16px;color:var(--ink)}
+  code{font-family:"SF Mono",Menlo,monospace;font-size:.88em;background:var(--panel);padding:2px 6px;border-radius:4px}
+  pre{background:var(--panel);border:1px solid #2a2d36;border-radius:8px;padding:20px;overflow-x:auto;font-size:.88em;line-height:1.6;margin:0 0 24px}
+  .dim{color:var(--dim)}
+  .warn{color:var(--warn)}
+  .ok{color:var(--ok)}
+  .bad{color:var(--bad)}
+  .callout{background:var(--panel);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 20px;margin:0 0 24px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  nav{margin-bottom:40px}
+  footer{margin-top:64px;padding-top:24px;border-top:1px solid #23262f;color:var(--dim);font-size:.9em}
+</style>
+</head><body><main>
+<nav><a href="/">← Headroom</a></nav>
+
+<h1>Claude Code Usage in Alfred</h1>
+<p class="dim">An Alfred Script Filter workflow that reads Headroom's local JSON and displays your Claude Code session and weekly usage on demand.</p>
+
+<div class="callout">
+<strong>Prerequisites:</strong> Alfred with <a href="https://www.alfredapp.com/powerpack/">Powerpack</a> (for workflows) + Headroom running + <code>jq</code> (<code>brew install jq</code>).
+</div>
+
+<h2>Quick bash script (no workflow needed)</h2>
+
+<p>The simplest approach: add a keyword to Alfred that runs a bash script and shows output:</p>
+
+<p>In Alfred Preferences → Workflows → + → Templates → Essentials → "Keyword to Script":</p>
+
+<ul>
+  <li>Keyword: <code>cc</code> (or <code>claude</code>)</li>
+  <li>Script type: <code>/bin/bash</code></li>
+  <li>Script content:</li>
+</ul>
+
+<pre>FILE="$HOME/.claude/headroom-usage.json"
+[ ! -f "$FILE" ] && echo "Headroom not installed" && exit 0
+
+SESSION=$(jq '.sessionUsagePct | floor' "$FILE")
+WEEKLY=$(jq '.weeklyUsagePct | floor' "$FILE")
+CONTEXT=$(jq '.contextUsagePct | floor // empty' "$FILE")
+MODEL=$(jq -r '.modelName // "unknown"' "$FILE")
+COST=$(jq '.sessionCost // 0' "$FILE")
+
+if [ -n "$CONTEXT" ]; then
+  printf "Session: %d%%  Weekly: %d%%  Context: %d%%\nModel: %s  Cost: $%s" \
+    "$SESSION" "$WEEKLY" "$CONTEXT" "$MODEL" "$COST"
+else
+  printf "Session: %d%%  Weekly: %d%%\nModel: %s  Cost: $%s" \
+    "$SESSION" "$WEEKLY" "$MODEL" "$COST"
+fi</pre>
+
+<h2>Script Filter workflow (Alfred JSON output)</h2>
+
+<p>For a richer result that shows each metric as a separate Alfred result item:</p>
+
+<pre>#!/bin/bash
+FILE="$HOME/.claude/headroom-usage.json"
+
+if [ ! -f "$FILE" ]; then
+  echo '{"items":[{"title":"Headroom not installed","subtitle":"Install from headroom.walls.sh","valid":false}]}'
+  exit 0
+fi
+
+SESSION=$(jq '.sessionUsagePct | floor' "$FILE")
+WEEKLY=$(jq '.weeklyUsagePct | floor' "$FILE")
+CONTEXT=$(jq '.contextUsagePct | floor // "–"' "$FILE")
+MODEL=$(jq -r '.modelName // "unknown"' "$FILE")
+COST=$(jq '.sessionCost // 0' "$FILE")
+SESSION_RESET=$(jq '.sessionResetSec // 0 | . / 3600 | floor' "$FILE")
+WEEKLY_RESET=$(jq '.weeklyResetSec // 0 | . / 86400 | floor' "$FILE")
+
+cat <<JSON
+{
+  "items": [
+    {
+      "title": "Session: \${SESSION}%",
+      "subtitle": "5h window · resets in \${SESSION_RESET}h",
+      "arg": "\${SESSION}",
+      "valid": true
+    },
+    {
+      "title": "Weekly: \${WEEKLY}%",
+      "subtitle": "7d window · resets in \${WEEKLY_RESET}d",
+      "arg": "\${WEEKLY}",
+      "valid": true
+    },
+    {
+      "title": "Context: \${CONTEXT}%",
+      "subtitle": "Current conversation context fill",
+      "arg": "\${CONTEXT}",
+      "valid": true
+    },
+    {
+      "title": "Model: \${MODEL}",
+      "subtitle": "Active Claude model",
+      "arg": "\${MODEL}",
+      "valid": true
+    },
+    {
+      "title": "Cost: \\\$\${COST}",
+      "subtitle": "Session token cost",
+      "arg": "\${COST}",
+      "valid": true
+    }
+  ]
+}
+JSON</pre>
+
+<h2>Setup for Script Filter</h2>
+
+<ol>
+  <li>Alfred Preferences → Workflows → + → Blank Workflow</li>
+  <li>Add trigger: Inputs → Script Filter; set Keyword to <code>cc</code></li>
+  <li>Language: <code>/bin/bash</code>, Script: paste the JSON script above</li>
+  <li>Check "Alfred filters results" if you want to type-filter the items</li>
+</ol>
+
+<p>Pressing Enter on a result copies the value to the clipboard.</p>
+
+<h2>The always-on alternative</h2>
+
+<p>Alfred shows usage on demand when you invoke it. Headroom shows it always-on in the menu bar without any keypress. Both read the same file.</p>
+
+<p>If you live in Alfred, this script works well. If you want the usage visible without actively checking, Headroom's menu bar item is the simpler choice.</p>
+
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<p>→ <a href="/raycast">Raycast Script Command</a><br>
+→ <a href="/shell">Shell prompt integration</a><br>
+→ <a href="/hook">How the data source works</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/alfred">Alfred</a> · <a href="/raycast">Raycast</a> · <a href="/shell">Shell</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
   }
 
   if (url.pathname === "/raycast") {
