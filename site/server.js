@@ -25,7 +25,7 @@ function saveCount(n) {
 }
 let downloads = loadCount();
 
-const page = `<!doctype html><html lang="en"><head><meta charset="utf-8">
+const buildPage = (dlCount) => `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Headroom — Claude Code usage in your menu bar</title>
 <meta name="description" content="A free macOS menu bar app that shows your Claude Code session and weekly usage as a live %. Zero config, zero network calls — it reads the numbers Claude Code already renders.">
@@ -61,6 +61,11 @@ const page = `<!doctype html><html lang="en"><head><meta charset="utf-8">
   h2{margin-top:2.6em;font-size:1.2rem}
   p{color:#c9c6bd}
   .trust{background:var(--panel);border:1px solid #242936;border-radius:10px;padding:18px 22px;margin-top:1em}
+  .seenon{margin:2.2em 0 0;display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+  .seenon span{color:var(--dim);font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;margin-right:4px}
+  .seenon a{font-size:.82rem;background:var(--panel);border:1px solid #242936;border-radius:6px;padding:5px 10px;text-decoration:none;color:var(--dim)}
+  .seenon a:hover{color:var(--ink);border-color:#3a3f52}
+  .dlcount{color:var(--ok);font-weight:600}
   footer{margin-top:4em;color:var(--dim);font-size:.85rem}
   a{color:var(--accent)}
 </style></head><body><main>
@@ -79,6 +84,17 @@ signed &amp; notarized by Apple — double-click and it runs.</p>
 <p class="fine">Homebrew: <code>brew install --cask patwalls/tap/headroom</code></p>
 <p class="fine">No permission dialogs, no API key, no login — on first launch Headroom quietly
 wires itself into Claude Code's status line and the numbers are just there.</p>
+<p class="fine"><span class="dlcount">${dlCount} developer${dlCount === 1 ? "" : "s"}</span> have downloaded Headroom.</p>
+
+<div class="seenon">
+<span>Seen on</span>
+<a href="https://news.ycombinator.com/item?id=48485017" target="_blank" rel="noopener">Hacker News</a>
+<a href="https://reddit.com/r/ClaudeAI/comments/1u2m9vh/" target="_blank" rel="noopener">r/ClaudeAI</a>
+<a href="https://reddit.com/r/neovim/comments/1u2umfe/" target="_blank" rel="noopener">r/neovim</a>
+<a href="https://reddit.com/r/vim/comments/1u2unzj/" target="_blank" rel="noopener">r/vim</a>
+<a href="https://reddit.com/r/LocalLLaMA/comments/1u2v8pi/" target="_blank" rel="noopener">r/LocalLLaMA</a>
+<a href="https://reddit.com/r/devops/comments/1u2vmyn/" target="_blank" rel="noopener">r/devops</a>
+</div>
 
 <h2>Zero config — really</h2>
 <p>Claude Code already knows your usage — it renders it in its own status line. Headroom
@@ -750,7 +766,7 @@ Built in public · <a href="https://walls.sh">walls.sh Wall #003</a>
 
   if (url.pathname === "/") {
     res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
-    return res.end(page);
+    return res.end(buildPage(downloads));
   }
 
   res.writeHead(404, { "content-type": "application/json" });

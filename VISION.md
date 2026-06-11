@@ -115,6 +115,12 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 75 — 2026-06-11 · Landing page social proof: live download count + "Seen on" bar.**
+  *Shipped:* Landing page now shows "N developers have downloaded Headroom" (server-rendered, live count) + a "Seen on" bar with links to HN, r/ClaudeAI, r/neovim, r/vim, r/LocalLLaMA, r/devops. Deployed to Railway. Downloads: 44. *Fact learned:* The `buildPage(downloads)` function pattern keeps the count fresh per request with no extra DB call. Social proof is now visible to every visitor — previously, 44 downloads and 15+ community posts were invisible. *Next lap:* r/typescript, or check if any new downloads came in from the wave.
+
+- **Lap 74 — 2026-06-11 · r/golang post live — 100k Go developers.**
+  *Shipped:* r/golang post live at https://old.reddit.com/r/golang/comments/1u32mty/ (100k subs, no flair available). Architecture angle: hook → local JSON → poll, with `jq` pipeline example. Downloads: 44. *Fact learned:* r/golang has no flair categories — form rendered without a flair picker. Checked all open awesome-list PRs — none merged yet (PRs to jaywcjlove/awesome-mac, mahseema/awesome-ai-tools, steven2358/awesome-generative-ai, etc. all still open). *Next lap:* r/typescript or landing page conversion improvement.
+
 - **Lap 73 — 2026-06-11 · r/rust post live — 100k Rust developers.**
   *Shipped:* r/rust post live at https://old.reddit.com/r/rust/comments/1u32kyq/ (100k subs, "seeking help & advice" flair — not ideal but posted). Architecture angle: hook → local file → poll, versus naive API polling. Downloads: 44. *Fact learned:* r/rust auto-selected "seeking help & advice" flair — the sub's flair options don't include "Discussion" or "Tools". The zero-network-call architecture story resonates with Rust's culture of correctness and minimal side effects. *Next lap:* schedule r/macOS for Saturday June 13, or r/golang.
 
