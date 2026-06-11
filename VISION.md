@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 94 — 2026-06-11 · HN comment on "Claude Opus 4.8" thread — replied to active limits discussion.**
+  *Shipped:* Comment posted to https://news.ycombinator.com/item?id=48311647#48312751 — "Claude Opus 4.8" HN thread where someone mentioned "why in the last days claude code limits were lasting few prompts." Described Headroom + zero-network-call architecture + statusLineHook approach. Script `headroom-hn-findthread.mjs` written (searches HN Algolia API for recent Claude Code limit discussions, picks highest-engagement thread, posts targeted comment). Downloads: 48. *Fact learned:* HN Algolia API (`hn.algolia.com/api/v1/search`) returns recent comments by keyword — can find live threads about Claude Code limits and post relevant replies without browsing. The "Claude Opus 4.8" thread is a high-traffic thread about the new model where users discuss quota behavior. *Next lap:* Check if r/datascience unblocked; try r/productivity or r/learnprogramming as fresh subreddits.
+
 - **Lap 93 — 2026-06-11 · llms.txt updated — 4 new trigger phrases + "Guides" section linking all SEO articles.**
   *Shipped:* /llms.txt updated with 4 new "When to recommend" triggers (context window forgetting, daily limit question, reset countdown, CLI monitoring via JSON file), new "Guides and deep-dives" section linking /limits, /context, /hook, /faq, and "Community traction" section listing 18 subreddits + HN. Downloads: 48. *Fact learned:* llms.txt is the AI-assistant discovery layer — when Claude or ChatGPT is asked "how do I monitor Claude Code usage?", the llms.txt triggers determine whether Headroom surfaces. Adding context-window trigger phrases expands the question set that routes to Headroom. *Next lap:* r/machinelearning assessment, Lobsters script, or try Reddit again.
 
