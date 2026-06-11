@@ -342,6 +342,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/raycast</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://headroom.walls.sh/alfred</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://headroom.walls.sh/tips</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/settings</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -3078,6 +3079,213 @@ print(f'Weekly  resets in: {fmt(wr)}')
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/hook">Hook docs</a> · <a href="/faq">FAQ</a> · <a href="/reset">Reset timing</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/settings") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code settings.json — Complete Configuration Reference</title>
+<meta name="description" content="Every Claude Code settings.json field explained: model, permissions, hooks, env vars, statusLineHook, and how to wire Headroom for live usage display.">
+<link rel="canonical" href="https://headroom.walls.sh/settings">
+<meta property="og:title" content="Claude Code settings.json — Complete Configuration Reference">
+<meta property="og:description" content="Every Claude Code settings.json field explained: model, permissions, hooks, env vars, and statusLineHook for live usage display.">
+<meta property="og:url" content="https://headroom.walls.sh/settings">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code settings.json — Configuration Reference">
+<meta name="twitter:description" content="Every Claude Code settings.json field explained, including hooks and statusLineHook.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1.1rem;margin:2.2em 0 .35em;color:var(--ink);border-bottom:1px solid #242936;padding-bottom:.3em}
+  h3{font-size:.95rem;margin:1.4em 0 .2em;color:var(--accent)}
+  p{color:#c9c6bd;margin:.35em 0 .7em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.84rem;line-height:1.55;margin:.5em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .key{color:var(--ok);font-family:ui-monospace,Menlo,monospace;font-size:.92rem}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+  table{width:100%;border-collapse:collapse;margin:.6em 0 1.2em;font-size:.88rem}
+  th{text-align:left;color:var(--dim);font-weight:600;border-bottom:1px solid #242936;padding:6px 10px 6px 0}
+  td{border-bottom:1px solid #1e2230;padding:7px 10px 7px 0;color:#c9c6bd;vertical-align:top}
+  td:first-child{color:var(--ok);font-family:ui-monospace,Menlo,monospace;font-size:.84rem;white-space:nowrap}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · settings</p>
+<h1>Claude Code settings.json</h1>
+<p class="sub">Complete reference for <code>~/.claude/settings.json</code> — every field, with examples and the statusLineHook that powers live usage display.</p>
+
+<h2>File locations</h2>
+<p>Claude Code reads settings from two places, merging them (project wins over user):</p>
+<table>
+<tr><th>File</th><th>Scope</th></tr>
+<tr><td>~/.claude/settings.json</td><td>User-level — applies to every project</td></tr>
+<tr><td>.claude/settings.json</td><td>Project-level — applies only in this repo</td></tr>
+</table>
+<p>Create either with <code>claude config</code> or edit directly. Both are plain JSON with no schema validation — typos fail silently, so double-check key names.</p>
+
+<h2>Top-level fields</h2>
+
+<h3>model</h3>
+<p>Set the default model for all sessions.</p>
+<pre>{
+  "model": "claude-sonnet-4-6"
+}</pre>
+<p>Overridden by <code>--model</code> on the CLI or <code>/model</code> inside a session. Valid values: any Claude model ID (e.g. <code>claude-opus-4-8</code>, <code>claude-haiku-4-5-20251001</code>).</p>
+
+<h3>permissions</h3>
+<p>Control which tools Claude Code can use without asking for confirmation. Structure:</p>
+<pre>{
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(npm run *)",
+      "Read(**)",
+      "Edit(**)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)"
+    ]
+  }
+}</pre>
+<p>Each entry is <code>ToolName(pattern)</code>. The pattern is matched against the tool's input. <code>allow</code> entries skip the confirmation prompt; <code>deny</code> entries block without prompting. Deny takes precedence over allow.</p>
+<p>Common patterns:</p>
+<table>
+<tr><th>Pattern</th><th>What it allows</th></tr>
+<tr><td>Bash(*)</td><td>All shell commands without prompting</td></tr>
+<tr><td>Bash(git:*)</td><td>Any git command</td></tr>
+<tr><td>Bash(npm run *)</td><td>npm run scripts only</td></tr>
+<tr><td>Read(**)</td><td>Reading any file</td></tr>
+<tr><td>Edit(**)</td><td>Editing any file</td></tr>
+<tr><td>WebFetch(*)</td><td>Fetching any URL</td></tr>
+</table>
+
+<h3>env</h3>
+<p>Environment variables injected into every Claude Code session and all hooks.</p>
+<pre>{
+  "env": {
+    "ANTHROPIC_SMALL_FAST_MODEL": "claude-haiku-4-5-20251001",
+    "NODE_ENV": "development"
+  }
+}</pre>
+
+<h3>includeCoAuthoredBy</h3>
+<p>Whether to append the <code>Co-Authored-By: Claude</code> trailer to commits Claude Code creates. Defaults to <code>true</code>.</p>
+<pre>{
+  "includeCoAuthoredBy": false
+}</pre>
+
+<h3>cleanupPeriodDays</h3>
+<p>How many days before Claude Code prunes old conversation transcripts. Defaults to 30.</p>
+<pre>{
+  "cleanupPeriodDays": 7
+}</pre>
+
+<h2>hooks</h2>
+<p>Hooks are shell commands Claude Code runs at specific lifecycle events. Each hook receives structured JSON on stdin and can write structured JSON to stdout to influence Claude Code's behavior.</p>
+<pre>{
+  "hooks": {
+    "PreToolUse": [...],
+    "PostToolUse": [...],
+    "Stop": [...],
+    "Notification": [...],
+    "SubagentStop": [...],
+    "PreCompact": [...]
+  }
+}</pre>
+<p>Each hook is an array of hook objects:</p>
+<pre>{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Claude stopped'"
+          }
+        ]
+      }
+    ]
+  }
+}</pre>
+
+<h3>statusLineHook — the most useful hook</h3>
+<p>The <code>statusLineHook</code> field (a sibling of <code>hooks</code>, not inside it) runs a command every time Claude Code refreshes its status line. The command's stdout becomes the text shown. It also writes usage data to <code>~/.claude/headroom-usage.json</code>, which is how Headroom reads your live session and weekly percentages.</p>
+<pre>{
+  "statusLineHook": "cat ~/.claude/headroom-usage.json 2>/dev/null | jq -r '\"CC \\(.sessionUsagePct|floor)%·\\(.weeklyUsagePct|floor)%\"' 2>/dev/null || echo 'CC --%'"
+}</pre>
+<p>This is the complete setup for Headroom. Once this line is in your <code>~/.claude/settings.json</code>, Headroom reads the file and shows your real usage. No other configuration needed.</p>
+<div class="note"><p>The file <code>~/.claude/headroom-usage.json</code> is written by Claude Code, not by Headroom. Headroom only reads it. This is why Headroom makes zero network calls — the data is already local.</p></div>
+<p>Full JSON written by the hook:</p>
+<pre>{
+  "sessionUsagePct": 34.2,
+  "weeklyUsagePct": 61.8,
+  "sessionCost": 0.42,
+  "modelName": "claude-sonnet-4-6",
+  "sessionResetSec": 9847,
+  "weeklyResetSec": 198432
+}</pre>
+<p>→ <a href="/hook">Full statusLineHook docs and examples</a> · <a href="/statusline">All status line fields explained</a></p>
+
+<h2>Complete example</h2>
+<p>A typical power-user <code>~/.claude/settings.json</code>:</p>
+<pre>{
+  "model": "claude-sonnet-4-6",
+  "statusLineHook": "cat ~/.claude/headroom-usage.json 2>/dev/null | jq -r '\"CC \\(.sessionUsagePct|floor)%·\\(.weeklyUsagePct|floor)%\"' 2>/dev/null || echo 'CC --%'",
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(npm run *)",
+      "Bash(make *)",
+      "Read(**)",
+      "Edit(**)"
+    ]
+  },
+  "env": {
+    "ANTHROPIC_SMALL_FAST_MODEL": "claude-haiku-4-5-20251001"
+  },
+  "includeCoAuthoredBy": true,
+  "cleanupPeriodDays": 30
+}</pre>
+
+<h2>Project-level settings</h2>
+<p>Project-level settings at <code>.claude/settings.json</code> override user-level settings for the same keys. Useful for per-project model overrides or additional permissions for a specific codebase.</p>
+<pre>{
+  "model": "claude-opus-4-8",
+  "permissions": {
+    "allow": [
+      "Bash(docker *)",
+      "Bash(kubectl *)"
+    ]
+  }
+}</pre>
+<div class="note"><p>The <code>statusLineHook</code> should usually live in your user-level <code>~/.claude/settings.json</code>, not project-level — you want usage visible everywhere, not just in one repo.</p></div>
+
+<h2>Applying changes</h2>
+<p>Changes to <code>settings.json</code> take effect the next time Claude Code starts or when you run <code>/reload</code> inside an active session. There's no watch mode — edits to the file mid-session require a reload.</p>
+
+<hr style="border:none;border-top:1px solid #242936;margin:2.8em 0 2em">
+<p>Once the <code>statusLineHook</code> is set, <a href="/">Headroom</a> shows your Claude Code session (5h) and weekly (7d) usage as a live % in the menu bar — color-coded before a limit stops you mid-task. Free, MIT, ~267 KB.</p>
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<p>→ <a href="/hook">Hook setup docs</a><br>
+→ <a href="/limits">Rate limits explained</a><br>
+→ <a href="/tips">Claude Code tips and tricks</a><br>
+→ <a href="/faq">FAQ</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/hook">Hook docs</a> · <a href="/faq">FAQ</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
