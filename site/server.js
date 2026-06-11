@@ -337,6 +337,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/session</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/weekly</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/brew</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/compact</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -1871,6 +1872,114 @@ Your 5-hour Claude Code window is 92% full. Resets in 23m.</code></pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
+  }
+
+  if (url.pathname === "/compact") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code /compact — Extend Your Session Before the Limit Hits</title>
+<meta name="description" content="The /compact command summarizes your conversation context to reduce token usage. Learn when to use it, how it affects your session %, and how to watch for the right moment with Headroom.">
+<link rel="canonical" href="https://headroom.walls.sh/compact">
+<meta property="og:title" content="Claude Code /compact — Extend Your Session Before the Limit Hits">
+<meta property="og:description" content="The /compact command summarizes your conversation context to reduce token usage. Learn when to use it, how it affects your session %, and how to watch for the right moment with Headroom.">
+<meta property="og:url" content="https://headroom.walls.sh/compact">
+<meta property="og:type" content="website">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2rem;font-weight:700;margin:0 0 8px;line-height:1.2}
+  h2{font-size:1.2rem;font-weight:600;margin:40px 0 12px;color:var(--accent)}
+  p{margin:0 0 16px;color:var(--ink)}
+  code{font-family:"SF Mono",Menlo,monospace;font-size:.88em;background:var(--panel);padding:2px 6px;border-radius:4px}
+  pre{background:var(--panel);border:1px solid #2a2d36;border-radius:8px;padding:20px;overflow-x:auto;font-size:.88em;line-height:1.6;margin:0 0 24px}
+  .dim{color:var(--dim)}
+  .warn{color:var(--warn)}
+  .ok{color:var(--ok)}
+  .bad{color:var(--bad)}
+  .callout{background:var(--panel);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 20px;margin:0 0 24px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  nav{margin-bottom:40px}
+  footer{margin-top:64px;padding-top:24px;border-top:1px solid #23262f;color:var(--dim);font-size:.9em}
+</style>
+</head><body><main>
+<nav><a href="/">← Headroom</a></nav>
+
+<h1>Claude Code /compact</h1>
+<p class="dim">The command that summarizes your conversation to extend your session — and why knowing your usage % before running it matters.</p>
+
+<div class="callout">
+<strong>What /compact does:</strong> Asks Claude to summarize the current conversation context into a condensed form. The summary replaces the full conversation history. This reduces the context window % (<code>contextUsagePct</code>) immediately and lowers token usage per future request, indirectly extending how long you can work before hitting the session limit.
+</div>
+
+<h2>When to run /compact</h2>
+
+<p>The right time is <strong>before the context window fills up</strong>, not after it forces a compaction. Watch for these signals:</p>
+
+<ul>
+  <li><strong>Context % above 70%</strong> — Headroom shows <code>contextUsagePct</code> as the third number in v0.3.5 (<code>CC 23%·41%·<span class="warn">74%</span></code>). Amber at this point means a natural compaction soon.</li>
+  <li><strong>Session % climbing fast</strong> — If your session % is rising quickly, the context is large and each request is expensive. Compact early to slow the burn.</li>
+  <li><strong>Before a long task</strong> — If you're about to start a 45-minute refactor and you're at 40% session, compact first to maximize your headroom for the task.</li>
+</ul>
+
+<h2>The /compact + session limit relationship</h2>
+
+<p>Each Claude Code request burns a fixed cost for your prompt (your question) plus a variable cost for the context (the conversation so far). A long context means every request is expensive, even short ones.</p>
+
+<p>After <code>/compact</code>:</p>
+<ul>
+  <li>The context window drops significantly (fewer tokens in the summary vs. the full history)</li>
+  <li>Each subsequent request is cheaper (smaller context prefix)</li>
+  <li>The session % rises slower — the same work now fits more into the session window</li>
+</ul>
+
+<h2>Check your context % from the command line</h2>
+
+<pre><span class="dim"># See all three usage meters at once</span>
+jq '{sessionUsagePct, weeklyUsagePct, contextUsagePct}' ~/.claude/headroom-usage.json</pre>
+
+<p>The <code>contextUsagePct</code> field shows how full the current context window is (0–100%). When this is high, each request burns more from the session budget. When it's low (after /compact), requests are cheaper.</p>
+
+<h2>The compact workflow</h2>
+
+<pre><span class="dim"># 1. Check where you are before compacting</span>
+jq '{session: .sessionUsagePct, context: .contextUsagePct}' ~/.claude/headroom-usage.json
+
+<span class="dim"># 2. Run /compact in Claude Code (type it in the Claude Code prompt)</span>
+/compact
+
+<span class="dim"># 3. Verify the context % dropped</span>
+jq '.contextUsagePct' ~/.claude/headroom-usage.json</pre>
+
+<h2>What /compact loses and keeps</h2>
+
+<p>After compaction, Claude has a summary of what happened — it knows what files were touched, what decisions were made, what the current task is. It doesn't have the exact wording of every turn.</p>
+
+<p>This is fine for most work. Where it matters: if you were in the middle of debugging a subtle issue and relied on Claude remembering an exact error message or stack trace, the summary might not capture that detail. In those cases, compact at a logical break point (task done, file saved, test passing) rather than mid-investigation.</p>
+
+<h2>Auto-compact</h2>
+
+<p>Claude Code can be set to compact automatically when the context approaches a threshold. Check your Claude Code settings for the auto-compact option. Whether you use auto or manual, the key is that you don't hit the hard limit mid-task — either approach works; manual gives you more control over timing.</p>
+
+<h2>Headroom shows all three meters</h2>
+
+<p>Headroom's menu bar item shows session % and weekly %. Version 0.3.5 adds the context % as a third number. The dropdown shows all three with reset countdowns.</p>
+
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<p>Or <a href="/download">download directly</a>. Free, MIT, ~267 KB.</p>
+
+<p>→ <a href="/session">5-hour session limit guide</a><br>
+→ <a href="/context">Context window % explained</a><br>
+→ <a href="/limits">Full rate limits guide</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/session">Session limit</a> · <a href="/compact">Compact guide</a> · <a href="/context">Context window</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
   }
 
   if (url.pathname === "/brew") {

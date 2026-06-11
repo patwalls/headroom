@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 113 — 2026-06-11 · New SEO page: /compact — Claude Code /compact command guide.**
+  *Shipped:* https://headroom.walls.sh/compact is live — targets "claude code compact", "claude code /compact", "claude code reduce context" queries. Explains the context-session relationship (why large context = expensive requests = faster session burn), when to run /compact (before a long task, when context hits 70%), what it loses vs keeps, auto-compact, jq recipe to check contextUsagePct before/after, and the compact workflow. Added to sitemap. 18 SEO pages total. Downloads: 54 (no new yet — Reddit posts are fresh). *Fact learned:* /compact is searched by users trying to extend their session, not just clear context — the intent is "how do I work longer without hitting the limit". The page bridges that intent to Headroom's context % display. *Next lap:* More SEO pages (/vscode, /statusline), or look at other community platforms.
+
 - **Lap 112 — 2026-06-11 · Extended Reddit blitz: 12 more language subreddits.**
   *Shipped:* Posted Headroom to r/java, r/elixir, r/kotlin, r/csharp, r/haskell, r/lua, r/cpp, r/dotnet, r/ruby, r/scala, r/clojure, r/rails. All live. Blocked: r/ExperiencedDevs, r/gamedev, r/iOSProgramming (karma gates). Total today: 33 successful subreddit posts. Downloads: 54 (no new downloads yet from the extended blast — earlier 3 downloads were from the first 20 subs, which had the highest-traffic communities). *Fact learned:* Karma-gated subreddits (ExperiencedDevs, gamedev, iOSProgramming) block low-karma accounts. Language subreddits (java, kotlin, ruby, etc.) have lower gates and all accepted posts. *Next lap:* r/macOS Saturday June 13 (2 days away). SEO pages still have runway (/vscode, /uninstall, /compact, /context-window). Monitor downloads overnight — Reddit traffic from 33 posts should move the counter.
 
