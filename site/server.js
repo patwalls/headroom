@@ -12,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 const BUILD_ZIP = join(ROOT, "public", "Headroom.zip");
 const DATA_DIR = process.env.DATA_DIR || join(ROOT, "data");
 const COUNTER = join(DATA_DIR, "downloads.json");
+const VERSION = "0.3.4";
 
 function loadCount() {
   try { return JSON.parse(readFileSync(COUNTER, "utf8")).downloads || 0; } catch { return 0; }
@@ -207,6 +208,37 @@ createServer((req, res) => {
 - Download / landing: https://headroom.walls.sh
 - Built in public as Wall #003 on walls.sh
 `);
+  }
+
+  // Dynamic SVG badge — embeddable in READMEs:
+  // ![Headroom](https://headroom.walls.sh/badge.svg)
+  if (url.pathname === "/badge.svg") {
+    const label = "Headroom";
+    const message = `v${VERSION} · macOS`;
+    const color = "d97757";
+    const lw = label.length * 6.5 + 10;
+    const mw = message.length * 6.2 + 10;
+    const tw = lw + mw;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${tw}" height="20">
+  <linearGradient id="s" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient>
+  <clipPath id="r"><rect width="${tw}" height="20" rx="3" fill="#fff"/></clipPath>
+  <g clip-path="url(#r)">
+    <rect width="${lw}" height="20" fill="#555"/>
+    <rect x="${lw}" width="${mw}" height="20" fill="#${color}"/>
+    <rect width="${tw}" height="20" fill="url(#s)"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
+    <text x="${lw / 2}" y="15" fill="#010101" fill-opacity=".3">${label}</text>
+    <text x="${lw / 2}" y="14">${label}</text>
+    <text x="${lw + mw / 2}" y="15" fill="#010101" fill-opacity=".3">${message}</text>
+    <text x="${lw + mw / 2}" y="14">${message}</text>
+  </g>
+</svg>`;
+    res.writeHead(200, {
+      "content-type": "image/svg+xml",
+      "cache-control": "no-cache, max-age=0",
+    });
+    return res.end(svg);
   }
 
   if (url.pathname === "/robots.txt") {

@@ -1,5 +1,7 @@
 # Headroom
 
+[![Headroom](https://headroom.walls.sh/badge.svg)](https://headroom.walls.sh)
+
 **Your Claude Code usage, live in your Mac's menu bar.**
 
 Everyone on a Claude Pro/Max plan lives with two invisible meters — the 5-hour session
