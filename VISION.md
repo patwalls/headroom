@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 60 — 2026-06-11 · onmymenubar.app submitted — curated macOS menu bar apps directory.**
+  *Shipped:* Submitted Headroom to onmymenubar.app. Tally "Thanks for completing this form!" confirmation in screenshot. Downloads: 31. *Fact learned:* onmymenubar.app embeds a Tally.so form via iframe (id="iFrameResizer0"). Main page has zero `input`/`textarea` elements — any selector on `page` finds nothing. Fix: `page.frameLocator('iframe[src*="tally.so"]')` then fill by `aria-label`. Tally form had only 3 fields: App Name, Website Link, Your Email (no description or GitHub). *Next lap:* r/commandline, r/emacs, or more distribution channels.
+
 - **Lap 59 — 2026-06-11 · r/vim post live — 230k subscribers, Discussion flair.**
   *Shipped:* r/vim post live at https://old.reddit.com/r/vim/comments/1u2unzj/ (230k subscribers). Used the proven post-flair fix (button.flairselect-btn → hidden inputs directly). Discussion flair set from first run. Downloads: 31. *Fact learned:* r/vim also has `button.flairselect-btn` and `#newlink-flair-dropdown` — the same post-flair pattern works across all subreddits. The flair approach is now a reliable, reusable pattern. *Next lap:* onmymenubar.app form submission (no login needed), or r/terminal.
 
