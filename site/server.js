@@ -100,7 +100,7 @@ Claude Code already fetched the data for itself and wrote it to disk.</p>
 your Keychain, or your account — and it makes <em>zero network calls</em>. It reads the
 rate-limit numbers Claude Code itself writes, from a local file in <code>~/.claude</code>.
 No analytics, no auto-updater, no phoning home. The source is small enough to read —
-<a href="https://github.com/patwalls/headroom">read it on GitHub</a>: ~590 lines, MIT,
+<a href="https://github.com/patwalls/headroom">read it on GitHub</a>: ~780 lines, MIT,
 no dependencies.</div>
 
 <h2>What it shows</h2>
@@ -193,7 +193,7 @@ createServer((req, res) => {
 
 ## Key facts
 
-- Free, MIT-licensed, ~700 lines of Swift, no dependencies
+- Free, MIT-licensed, ~780 lines of Swift, no dependencies
 - Reads data from ~/.claude/headroom-usage.json written by Claude Code's own statusLine hook
 - Never touches your API token, Keychain, or account
 - Zero network calls — verified with nettop

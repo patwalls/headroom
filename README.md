@@ -59,7 +59,7 @@ An app that sits next to your credentials all day must be auditable. So:
 - The entire data surface is two small files:
   [`Hook.swift`](app/Sources/Headroom/Hook.swift) (writes) and
   [`Usage.swift`](app/Sources/Headroom/Usage.swift) (reads). Read them.
-- No dependencies. AppKit + Foundation, ~666 lines total.
+- No dependencies. AppKit + Foundation, ~780 lines total.
 - **MIT licensed** — audit it, fork it, build it yourself.
 
 ## Built in public
