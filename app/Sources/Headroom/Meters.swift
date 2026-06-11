@@ -31,7 +31,7 @@ final class MeterMenuView: NSView {
         needsDisplay = true
     }
 
-    func update(_ window: Usage.Window?, now: Date = Date()) {
+    func update(_ window: Usage.Window?, windowDuration: TimeInterval = 0, now: Date = Date()) {
         guard let window else { needsDisplay = true; return }
         percentText = Render.percent(window.utilization)
         fraction = CGFloat(min(max(window.utilization / 100, 0), 1))
@@ -40,11 +40,14 @@ final class MeterMenuView: NSView {
         case .amber: fill = .systemOrange
         case .red: fill = .systemRed
         }
+        var parts: [String] = []
         if let resetsAt = window.resetsAt {
-            caption = "resets in \(Render.countdown(from: now, to: resetsAt)) (\(Render.clock.string(from: resetsAt)))"
-        } else {
-            caption = ""
+            parts.append("resets in \(Render.countdown(from: now, to: resetsAt)) (\(Render.clock.string(from: resetsAt)))")
         }
+        if let forecast = Render.paceForecast(window: window, windowDuration: windowDuration, now: now) {
+            parts.append(forecast)
+        }
+        caption = parts.joined(separator: "  ·  ")
         needsDisplay = true
     }
 

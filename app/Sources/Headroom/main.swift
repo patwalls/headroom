@@ -34,8 +34,8 @@ if CommandLine.arguments.contains("--print") {
     if let cost = usage.sessionCost { print("parsed: cost=$\(String(format: "%.2f", cost))") }
     let d = Render.decide(usage)
     print("render: title=\"\(d.title)\" tone=\(d.tone.rawValue)")
-    print("render: session=\"\(d.session.map { Render.line($0) } ?? "— (window reset — open Claude Code)")\"")
-    print("render: week=\"\(d.week.map { Render.line($0) } ?? "— (window reset — open Claude Code)")\"")
+    print("render: session=\"\(d.session.map { Render.line($0, windowDuration: Render.sessionWindowDuration) } ?? "— (window reset — open Claude Code)")\"")
+    print("render: week=\"\(d.week.map { Render.line($0, windowDuration: Render.weekWindowDuration) } ?? "— (window reset — open Claude Code)")\"")
     if let ctx = d.context { print("render: context=\"\(Render.percent(ctx))\"") }
     if let model = d.modelName { print("render: model=\"\(model)\"") }
     if let cost = d.sessionCost { print("render: cost=\"\(Render.cost(cost))\"") }
@@ -180,8 +180,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         // One shared display decision (Render.decide) — what --print verifies is
         // exactly what renders here. Rolled-over windows come back nil → "—".
         let d = Render.decide(usage)
-        if let five = d.session { sessionMeter.update(five) } else { sessionMeter.awaiting("window reset — open Claude Code") }
-        if let seven = d.week { weeklyMeter.update(seven) } else { weeklyMeter.awaiting("window reset — open Claude Code") }
+        if let five = d.session { sessionMeter.update(five, windowDuration: Render.sessionWindowDuration) } else { sessionMeter.awaiting("window reset — open Claude Code") }
+        if let seven = d.week { weeklyMeter.update(seven, windowDuration: Render.weekWindowDuration) } else { weeklyMeter.awaiting("window reset — open Claude Code") }
         // Context window: show the bar only when Claude Code gave us a number. resetsAt nil
         // → no countdown caption (it resets when a new session starts, which we can't see).
         if let context = d.context {

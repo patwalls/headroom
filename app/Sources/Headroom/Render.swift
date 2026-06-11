@@ -62,13 +62,41 @@ enum Render {
         String(format: "$%.2f", usd)
     }
 
-    /// "14% — resets in 2h 1m (7:40 PM)"
-    static func line(_ window: Usage.Window, now: Date = Date()) -> String {
+    /// "14% — resets in 2h 1m (7:40 PM) · ~1h 30m at pace"
+    static func line(_ window: Usage.Window, windowDuration: TimeInterval = 0, now: Date = Date()) -> String {
         var text = percent(window.utilization)
         if let resetsAt = window.resetsAt {
             text += " — resets in \(countdown(from: now, to: resetsAt)) (\(clock.string(from: resetsAt)))"
         }
+        if let forecast = paceForecast(window: window, windowDuration: windowDuration, now: now) {
+            text += " · \(forecast)"
+        }
         return text
+    }
+
+    static let sessionWindowDuration: TimeInterval = 5 * 3600
+    static let weekWindowDuration:    TimeInterval = 7 * 24 * 3600
+
+    // "~2h 15m at pace" when you're on track to fill the window before it resets.
+    // Returns nil when the data is too noisy, the pace is slow enough not to matter,
+    // or the meter is already nearly full (no warning left to give).
+    static func paceForecast(window: Usage.Window, windowDuration: TimeInterval, now: Date = Date()) -> String? {
+        guard let resetsAt = window.resetsAt,
+              window.utilization > 5, window.utilization < 95,
+              windowDuration > 0 else { return nil }
+        let elapsed = now.timeIntervalSince(resetsAt.addingTimeInterval(-windowDuration))
+        guard elapsed > 60 else { return nil }  // need at least 1 minute of signal
+        let pacePerSecond = window.utilization / (elapsed * 100)  // fraction of window per second
+        guard pacePerSecond > 0 else { return nil }
+        let secondsToFull = (100 - window.utilization) / 100 / pacePerSecond
+        let secondsUntilReset = resetsAt.timeIntervalSince(now)
+        // Show only when: pace implies hitting the limit before reset (with 15% margin),
+        // the fill would happen within 12h (distant forecasts aren't useful), and it's at
+        // least 15 minutes away (don't clutter a meter that's already basically full).
+        guard secondsToFull < secondsUntilReset * 0.85,
+              secondsToFull < 12 * 3600,
+              secondsToFull > 900 else { return nil }
+        return "~\(countdown(from: now, to: now.addingTimeInterval(secondsToFull))) at pace"
     }
 
     static func countdown(from: Date, to: Date) -> String {
