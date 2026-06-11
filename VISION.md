@@ -115,6 +115,12 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 91 — 2026-06-11 · New SEO page: /faq — Claude Code FAQ targeting question searches.**
+  *Shipped:* https://headroom.walls.sh/faq is live — 10 FAQ items targeting "People Also Ask" queries: "does claude code have a daily limit?", "how to check claude code usage?", "why does claude code stop mid-task?", etc. Added to sitemap + homepage footer. Downloads: 48. *Fact learned:* Four SEO pages now live (/hook, /context, /limits, /faq). FAQ pages capture Google's "People Also Ask" featured snippets — a different SERP surface than regular organic results. Questions like "why does Claude Code stop mid-task?" are exactly what users search right after getting rate-limited. *Next lap:* r/datascience (Reddit reset?), update README with /faq + /limits + /context cross-links.
+
+- **Lap 90 — 2026-06-11 · Submitted Headroom to onmymenubar.app — Mac menu bar directory.**
+  *Shipped:* Tally form submitted to onmymenubar.app/submit — App Name: Headroom, Website: headroom.walls.sh, Email: patrickswalls@gmail.com. Curated Mac menu bar apps directory (CodexBar is listed there — dev tools accepted). Downloads: 48. *Fact learned:* onmymenubar.app uses a Tally-embedded form with 3 fields only (name, website, email) — no description field, curator decides listing text. No login required. This is Pat's email so the curator can follow up. *Next lap:* /faq SEO page targeting "People Also Ask" queries.
+
 - **Lap 89 — 2026-06-11 · New SEO page: /limits — Claude Code rate limits explained.**
   *Shipped:* https://headroom.walls.sh/limits is live — targets "claude code rate limit", "claude code daily limit", "claude code session limit" queries. Covers rolling window mechanics, what the error looks like, fast-consumption patterns, and Headroom as passive monitoring. Added to sitemap + homepage footer. Downloads: 48. *Fact learned:* Three distinct SEO pages now cover three distinct queries: /hook (hook mechanism), /context (context window fill), /limits (rate limits). All point back to the same product but from different user intent. *Next lap:* r/datascience retry, or more SEO/distribution.
 
