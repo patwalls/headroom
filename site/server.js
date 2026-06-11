@@ -123,7 +123,8 @@ poll isn't a meter. The menu bar is where ambient numbers belong.</p>
 <footer>Built in public — <a href="https://walls.sh">walls.sh</a> · Wall #003 ·
 <a href="https://github.com/patwalls/headroom">source</a> ·
 <a href="/changelog">changelog</a> ·
-<a href="/guide">guide</a></footer>
+<a href="/guide">guide</a> ·
+<a href="/alternatives">alternatives</a></footer>
 <a href="https://walls.sh" class="wallsbadge" title="Every startup since 2012 — live on the wall"><span class="wbdot"></span>Wall № 003 · building autonomously · <b>walls.sh</b></a><style>.wallsbadge{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:8px;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.07em;text-transform:uppercase;color:#efe7d6;text-decoration:none;background:#15100a;border:1px solid #caa45a;border-radius:999px;padding:9px 14px;box-shadow:0 4px 18px rgba(0,0,0,.5);opacity:.93;transition:opacity .15s,box-shadow .15s}.wallsbadge:hover{opacity:1;box-shadow:0 4px 24px rgba(202,164,90,.4)}.wallsbadge b{color:#caa45a}.wbdot{width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 9px #39d98a;animation:wbblink 1.8s ease-in-out infinite}@keyframes wbblink{0%,100%{opacity:1}50%{opacity:.35}}@media(max-width:640px){.wallsbadge{right:10px;bottom:10px;padding:8px 11px}}</style></main></body></html>`;
 
 createServer((req, res) => {
@@ -282,6 +283,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://headroom.walls.sh/changelog</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/guide</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/alternatives</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -386,6 +388,195 @@ li b{color:#e8e8e8}
 <a class="cta" href="/download">Download v${VERSION} — free</a>
 <a class="ghlink" href="https://github.com/patwalls/headroom/releases">All GitHub releases →</a>
 </div>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/alternatives") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Headroom vs. CCSeva, ccusage, ClaudeBar — Claude Code usage monitor comparison</title>
+<meta name="description" content="Comparing Headroom with CCSeva, ccusage, ClaudeBar, Claude-Code-Usage-Monitor, and SessionWatcher. Which Claude Code usage tool fits your workflow?">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://headroom.walls.sh/alternatives">
+<meta property="og:title" content="Claude Code usage monitor comparison — Headroom vs. alternatives">
+<meta property="og:description" content="Headroom vs. CCSeva, ccusage, ClaudeBar, and more. See which Claude Code usage monitoring tool fits your workflow.">
+<meta property="og:url" content="https://headroom.walls.sh/alternatives">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:780px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}
+nav a:hover{color:#e8e4da}
+h1{font-size:clamp(22px,4vw,34px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+h2{font-size:20px;font-weight:600;margin:48px 0 12px;color:#fff}
+h3{font-size:17px;font-weight:600;margin:32px 0 6px;color:#ccc}
+p{margin:0 0 14px;color:#c9c6bd}
+ul{color:#c9c6bd;padding-left:1.4em;margin:0 0 18px}
+li{margin-bottom:6px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:#1e1e1e;padding:2px 5px;border-radius:3px;color:#e8e4da}
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px}
+th{text-align:left;padding:10px 14px;background:#1a1a1a;color:#caa45a;font-weight:600;border-bottom:1px solid #2a2a2a}
+td{padding:10px 14px;border-bottom:1px solid #1e1e1e;color:#c9c6bd;vertical-align:top}
+tr:last-child td{border-bottom:none}
+.yes{color:#39d98a}
+.no{color:#888}
+.partial{color:#caa45a}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;vertical-align:middle;margin-left:6px}
+.pill-headroom{background:#1a2a1a;color:#39d98a}
+.card{background:#111;border:1px solid #222;border-radius:10px;padding:20px 24px;margin:20px 0}
+.card h3{margin-top:0;color:#fff}
+.cta{display:inline-block;background:#caa45a;color:#0d0d0d;font-weight:700;font-size:16px;padding:14px 28px;border-radius:8px;text-decoration:none;margin:28px 0 8px}
+.cta:hover{background:#d4b06a}
+.sub{font-size:14px;color:#666;margin:4px 0 0}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid #222;font-size:13px;color:#555}
+footer a{color:#888;text-decoration:none}
+footer a:hover{color:#e8e4da}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← Headroom</a></nav>
+
+<h1>Claude Code usage monitors — Headroom vs. the alternatives</h1>
+<p style="color:#888;font-size:14px;margin-bottom:32px">Last updated June 2026</p>
+
+<p>There are several ways to monitor Claude Code's session (5h) and weekly (7d) usage limits.
+This page is an honest comparison of the main options so you can pick the right tool for your workflow.</p>
+
+<h2>Quick comparison</h2>
+
+<table>
+<thead><tr>
+<th>Tool</th><th>Where it shows</th><th>Network calls</th><th>API token needed</th><th>Platform</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Headroom</strong> <span class="pill pill-headroom">this app</span></td>
+<td>macOS menu bar</td>
+<td class="yes">None</td>
+<td class="yes">No</td>
+<td>macOS</td>
+</tr>
+<tr>
+<td>CCSeva</td>
+<td>macOS menu bar + charts</td>
+<td class="no">API polling</td>
+<td class="no">Yes</td>
+<td>macOS</td>
+</tr>
+<tr>
+<td>ClaudeBar</td>
+<td>macOS menu bar</td>
+<td class="no">API polling</td>
+<td class="no">Yes</td>
+<td>macOS</td>
+</tr>
+<tr>
+<td>ccusage</td>
+<td>Terminal CLI</td>
+<td class="yes">None (local JSONL)</td>
+<td class="yes">No</td>
+<td>macOS / Linux</td>
+</tr>
+<tr>
+<td>Claude-Code-Usage-Monitor</td>
+<td>Terminal dashboard</td>
+<td class="yes">None (local JSONL)</td>
+<td class="yes">No</td>
+<td>macOS / Linux</td>
+</tr>
+<tr>
+<td>SessionWatcher</td>
+<td>Menu bar + web dashboard</td>
+<td class="no">API polling</td>
+<td class="no">Yes</td>
+<td>macOS / multi-provider</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Tool-by-tool breakdown</h2>
+
+<div class="card">
+<h3>Headroom — zero-network ambient monitor</h3>
+<p><strong>Best for:</strong> Claude Code users who want an always-visible ambient indicator
+with zero configuration and zero trust concerns.</p>
+<p><strong>How it works:</strong> Installs a tiny hook into Claude Code's status line. Claude Code
+writes its own rate-limit data to <code>~/.claude/headroom-usage.json</code>. Headroom reads
+that file — it makes no network calls at all. Your API token never touches it.</p>
+<p><strong>What it shows:</strong> Session % · Weekly % · Context window fill · Active model ·
+Session cost · Reset countdowns · Pace forecast · Threshold notifications</p>
+<p><strong>Tradeoffs:</strong> macOS-only. Claude Code-specific. No usage history or charts.
+If you need charts or multi-provider coverage, see CCSeva or SessionWatcher.</p>
+</div>
+
+<div class="card">
+<h3>CCSeva — rich charts and history</h3>
+<p><strong>Best for:</strong> Users who want visual usage history, cost breakdowns over time,
+and don't mind providing an API token.</p>
+<p><strong>How it works:</strong> Polls the Anthropic API using your API token. Stores history
+locally and renders charts showing usage over days/weeks.</p>
+<p><strong>Tradeoffs:</strong> Requires API token setup. Makes periodic network requests.
+Less lightweight than Headroom but has significantly more historical data and visualization.</p>
+</div>
+
+<div class="card">
+<h3>ClaudeBar — multi-model menu bar</h3>
+<p><strong>Best for:</strong> Users who use multiple AI providers (Claude, Codex, Gemini)
+and want a single menu bar item for all of them.</p>
+<p><strong>How it works:</strong> Polls multiple APIs. Requires credentials for each provider.</p>
+<p><strong>Tradeoffs:</strong> More complex setup. API credentials required. Broader scope
+than Headroom.</p>
+</div>
+
+<div class="card">
+<h3>ccusage — terminal cost reporter</h3>
+<p><strong>Best for:</strong> Developers who want historical cost and token analysis in the
+terminal. Different purpose from Headroom.</p>
+<p><strong>How it works:</strong> Reads Claude Code's local JSONL files to reconstruct
+historical usage, cost breakdowns, and burn rate charts.</p>
+<p><strong>Tradeoffs:</strong> Not a live monitor — you run it on demand to see history.
+No menu bar presence. Great complement to Headroom: use Headroom for live ambient
+monitoring, ccusage for historical analysis.</p>
+</div>
+
+<div class="card">
+<h3>Claude-Code-Usage-Monitor — terminal dashboard</h3>
+<p><strong>Best for:</strong> Developers who want a rich terminal dashboard with burn rate
+predictions and session analytics, cross-platform.</p>
+<p><strong>How it works:</strong> Reads local JSONL files. Renders a full-screen terminal
+dashboard with usage history, burn rate projections, and cost tracking.</p>
+<p><strong>Tradeoffs:</strong> Requires an open terminal window — not ambient like Headroom.
+8k+ stars on GitHub; active project. Use it for deep analysis, Headroom for the menu bar.</p>
+</div>
+
+<h2>When to use which</h2>
+<ul>
+<li><strong>You want to see your usage without opening anything:</strong> Headroom</li>
+<li><strong>You want pretty charts and usage history:</strong> CCSeva</li>
+<li><strong>You use Claude + other AI providers:</strong> ClaudeBar or SessionWatcher</li>
+<li><strong>You want historical cost breakdowns in the terminal:</strong> ccusage</li>
+<li><strong>You want a full terminal dashboard with burn-rate predictions:</strong> Claude-Code-Usage-Monitor</li>
+<li><strong>Zero network calls is non-negotiable:</strong> Headroom or ccusage (both are purely local)</li>
+</ul>
+
+<p>Headroom and ccusage / Claude-Code-Usage-Monitor are complementary, not competing —
+many developers run Headroom in the menu bar for ambient live status and one of the
+JSONL-based tools for retrospective analysis.</p>
+
+<h2>Download Headroom</h2>
+
+<a href="/download" class="cta">Download Headroom — free, macOS 13+</a>
+<p class="sub">~267 KB · Zero network calls · Signed &amp; notarized</p>
+
+<p style="margin-top:16px">Or: <code>brew install --cask patwalls/tap/headroom</code></p>
+<p>Source: <a href="https://github.com/patwalls/headroom" style="color:#888">github.com/patwalls/headroom</a> (MIT)</p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/guide">install guide</a> ·
+<a href="/changelog">changelog</a> ·
+<a href="https://github.com/patwalls/headroom">source</a> ·
+Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
 </div></body></html>`);
   }
 
