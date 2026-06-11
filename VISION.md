@@ -115,6 +115,12 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 73 — 2026-06-11 · r/rust post live — 100k Rust developers.**
+  *Shipped:* r/rust post live at https://old.reddit.com/r/rust/comments/1u32kyq/ (100k subs, "seeking help & advice" flair — not ideal but posted). Architecture angle: hook → local file → poll, versus naive API polling. Downloads: 44. *Fact learned:* r/rust auto-selected "seeking help & advice" flair — the sub's flair options don't include "Discussion" or "Tools". The zero-network-call architecture story resonates with Rust's culture of correctness and minimal side effects. *Next lap:* schedule r/macOS for Saturday June 13, or r/golang.
+
+- **Lap 72 — 2026-06-11 · r/programming blocked — link-only subreddit.**
+  *Shipped:* Nothing (script failed — textarea not found). *Fact learned:* r/programming only accepts link posts (URLs), not self-posts. `?selftext=true` in the URL doesn't override this. r/programming is removed from the distribution backlog. *Next lap:* r/rust (100k), r/golang (100k).
+
 - **Lap 71 — 2026-06-11 · r/javascript post live — 300k JS/Node developers.**
   *Shipped:* r/javascript post live at https://old.reddit.com/r/javascript/comments/1u32hpy/ (300k subs, no flair — flair button not visible). Angle: Next.js/monorepo/TypeScript refactors hit session limits mid-build. Downloads: 41. *Fact learned:* r/javascript's flair button exists in the DOM but isn't visible — post submitted fine without flair. Front-end devs are a large Claude Code audience. *Next lap:* r/programming (6M — needs exceptional framing), or pivot to new SEO content.
 
