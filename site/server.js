@@ -336,6 +336,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/starship</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/session</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/weekly</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/brew</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -1870,6 +1871,134 @@ Your 5-hour Claude Code window is 92% full. Resets in 23m.</code></pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
+  }
+
+  if (url.pathname === "/brew") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Install Headroom via Homebrew — brew install --cask patwalls/tap/headroom</title>
+<meta name="description" content="Full guide to installing Headroom via Homebrew on macOS — tap setup, install command, verification, troubleshooting, and how to update or uninstall.">
+<link rel="canonical" href="https://headroom.walls.sh/brew">
+<meta property="og:title" content="Install Headroom via Homebrew — brew install --cask patwalls/tap/headroom">
+<meta property="og:description" content="Full guide to installing Headroom via Homebrew on macOS — tap setup, install command, verification, troubleshooting, and how to update or uninstall.">
+<meta property="og:url" content="https://headroom.walls.sh/brew">
+<meta property="og:type" content="website">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2rem;font-weight:700;margin:0 0 8px;line-height:1.2}
+  h2{font-size:1.2rem;font-weight:600;margin:40px 0 12px;color:var(--accent)}
+  p{margin:0 0 16px;color:var(--ink)}
+  code{font-family:"SF Mono",Menlo,monospace;font-size:.88em;background:var(--panel);padding:2px 6px;border-radius:4px}
+  pre{background:var(--panel);border:1px solid #2a2d36;border-radius:8px;padding:20px;overflow-x:auto;font-size:.88em;line-height:1.6;margin:0 0 24px}
+  .dim{color:var(--dim)}
+  .warn{color:var(--warn)}
+  .ok{color:var(--ok)}
+  .bad{color:var(--bad)}
+  .callout{background:var(--panel);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 20px;margin:0 0 24px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  nav{margin-bottom:40px}
+  footer{margin-top:64px;padding-top:24px;border-top:1px solid #23262f;color:var(--dim);font-size:.9em}
+</style>
+</head><body><main>
+<nav><a href="/">← Headroom</a></nav>
+
+<h1>Install Headroom via Homebrew</h1>
+<p class="dim">One command. No API key, no permissions dialog, no configuration.</p>
+
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<p>That's it. Headroom appears in your menu bar immediately.</p>
+
+<h2>What this command does</h2>
+
+<p>Homebrew casks install macOS GUI applications. The command above:</p>
+<ol>
+  <li>Adds the <code>patwalls/tap</code> third-party tap (only on first install — Homebrew caches it)</li>
+  <li>Downloads the signed + notarized Headroom.zip (~267 KB)</li>
+  <li>Moves <code>Headroom.app</code> to <code>/Applications</code></li>
+  <li>Launches the app</li>
+</ol>
+
+<p>The app hooks itself into Claude Code's status line (via <code>~/.claude/settings.json</code>) during first launch, then shows the usage % in your macOS menu bar.</p>
+
+<h2>Prerequisites</h2>
+
+<ul>
+  <li><strong>Homebrew</strong> — install at <a href="https://brew.sh">brew.sh</a> if you don't have it</li>
+  <li><strong>macOS 13 Ventura or later</strong></li>
+  <li><strong>Claude Code installed and running</strong> — Headroom reads the data Claude Code writes; it shows <code>CC —%</code> placeholders until the first Claude Code status line fires</li>
+</ul>
+
+<h2>Verify the installation</h2>
+
+<pre><span class="dim"># Check the app is installed</span>
+brew list --cask | grep headroom
+
+<span class="dim"># Check the version</span>
+brew info --cask patwalls/tap/headroom
+
+<span class="dim"># Check the hook was installed (should show statusLineHook)</span>
+cat ~/.claude/settings.json | grep statusLineHook
+
+<span class="dim"># Check the data file is being written</span>
+cat ~/.claude/headroom-usage.json</pre>
+
+<h2>The tap: patwalls/tap</h2>
+
+<p>Headroom is distributed through a third-party Homebrew tap at <code>github.com/patwalls/homebrew-tap</code>. Homebrew taps are just GitHub repositories with cask formulas. The tap is added automatically when you run the install command.</p>
+
+<p>To add the tap manually (without installing):</p>
+
+<pre>brew tap patwalls/tap</pre>
+
+<h2>Update Headroom</h2>
+
+<pre>brew upgrade --cask headroom</pre>
+
+<p>Or upgrade all your casks at once:</p>
+
+<pre>brew upgrade --cask</pre>
+
+<p>Headroom doesn't auto-update — Homebrew is the update mechanism.</p>
+
+<h2>Uninstall</h2>
+
+<pre><span class="dim"># Remove the app</span>
+brew uninstall --cask headroom
+
+<span class="dim"># Optionally remove the hook from settings.json</span>
+<span class="dim"># Open ~/.claude/settings.json and remove the statusLineHook key</span>
+
+<span class="dim"># Optionally remove the data file</span>
+rm ~/.claude/headroom-usage.json</pre>
+
+<h2>Troubleshooting</h2>
+
+<p><strong>"cannot be opened because Apple cannot check it for malicious software"</strong> — This should not happen with the notarized build, but if it does: go to System Preferences → Privacy & Security → open anyway. Or: <code>xattr -dr com.apple.quarantine /Applications/Headroom.app</code>.</p>
+
+<p><strong>Menu bar shows <code>CC —%</code></strong> — Headroom is running but hasn't seen a Claude Code status line update yet. Open Claude Code and run any command; the % should appear within a few seconds. Or check that the hook is installed: <code>cat ~/.claude/settings.json | grep statusLineHook</code>.</p>
+
+<p><strong>Formula not found / tap error</strong> — Run <code>brew update</code> first to refresh tap indexes, then retry the install.</p>
+
+<p><strong>Already installed a previous version from a .zip</strong> — Move the old <code>Headroom.app</code> to Trash, then run the Homebrew command. Homebrew will install cleanly.</p>
+
+<h2>Manual download (alternative)</h2>
+
+<p>If you prefer not to use Homebrew: <a href="/download">download Headroom.zip directly</a>. Unzip it and drag <code>Headroom.app</code> to your Applications folder.</p>
+
+<p>→ <a href="/guide">Getting started guide</a><br>
+→ <a href="/hook">How the statusLineHook works</a><br>
+→ <a href="/faq">FAQ</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/brew">Homebrew install</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
   }
 
   if (url.pathname === "/weekly") {

@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 111 — 2026-06-11 · New SEO page: /brew — Homebrew installation guide.**
+  *Shipped:* https://headroom.walls.sh/brew is live — targets "brew install headroom", "homebrew claude code monitor", "patwalls tap homebrew" queries. Deep-dive: what the install command does step-by-step, prerequisites, verification commands (brew list, info, statusLineHook check, data file check), the tap structure, update/uninstall commands, and troubleshooting (quarantine, CC—%, formula not found, manual download fallback). 17 SEO pages total. Downloads: 54. *Fact learned:* The Homebrew install command is the primary discovery path from Reddit posts (every post includes `brew install --cask patwalls/tap/headroom`). A page that answers "what does this command do" and "how do I verify it worked" captures exactly those installs. *Next lap:* Write new Reddit scripts for untried language subs (r/java, r/cpp, r/haskell, r/elixir, r/kotlin). r/macOS Saturday June 13.
+
 - **Lap 110 — 2026-06-11 · New SEO page: /weekly — Claude Code 7-day weekly limit explained.**
   *Shipped:* https://headroom.walls.sh/weekly is live — targets "claude code 7 day limit", "claude code weekly cap", "claude code weekly limit reset" queries. Explains the slow-drain nature of the 7-day window (old requests fall off over days, not minutes), jq recipe to convert weeklyResetSec to days, the pace forecast feature, strategies for staying under the cap. Emphasizes this is the limit that "ruins your week" — higher urgency to monitor than the session limit. 16 SEO pages total. Downloads: 54 (up from 53 — Reddit blitz working). *Fact learned:* Downloads went from 50→54 in about 1 hour after the 20-subreddit Reddit blitz. Per-subreddit limit reset means we can re-post to previously-blocked subs tomorrow. *Next lap:* r/macOS Saturday June 13. More SEO pages (/brew, /install, /vscode). Check download momentum tomorrow.
 
