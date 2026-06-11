@@ -205,6 +205,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     private func checkNotifications(_ d: Render.Decision) {
+        let prefs = Prefs.load()
         func check(meter: String, window: Usage.Window?, threshold: Double, windowLabel: String, windowDuration: String) {
             let key = "\(meter).\(Int(threshold))"
             guard let window else { notifiedKeys.remove(key); return }
@@ -213,7 +214,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 notifiedKeys.insert(key)
                 let pct = Int(window.utilization.rounded())
                 let timeNote = window.resetsAt.map { "Resets in \(Render.countdown(from: Date(), to: $0))." } ?? ""
-                let lvl = threshold >= 90 ? "critical" : "warning"
+                let lvl = threshold >= prefs.sessionCritAt && meter == "session" ? "critical"
+                        : threshold >= prefs.weekCritAt    && meter == "week"    ? "critical"
+                        : "warning"
                 sendNotification(
                     id: key,
                     title: "\(windowLabel) at \(pct)% — \(lvl)",
@@ -224,10 +227,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             }
         }
 
-        check(meter: "session", window: d.session, threshold: 70, windowLabel: "Session", windowDuration: "5-hour")
-        check(meter: "session", window: d.session, threshold: 90, windowLabel: "Session", windowDuration: "5-hour")
-        check(meter: "week",    window: d.week,    threshold: 70, windowLabel: "Weekly",  windowDuration: "7-day")
-        check(meter: "week",    window: d.week,    threshold: 90, windowLabel: "Weekly",  windowDuration: "7-day")
+        check(meter: "session", window: d.session, threshold: prefs.sessionWarnAt, windowLabel: "Session", windowDuration: "5-hour")
+        check(meter: "session", window: d.session, threshold: prefs.sessionCritAt, windowLabel: "Session", windowDuration: "5-hour")
+        check(meter: "week",    window: d.week,    threshold: prefs.weekWarnAt,    windowLabel: "Weekly",  windowDuration: "7-day")
+        check(meter: "week",    window: d.week,    threshold: prefs.weekCritAt,    windowLabel: "Weekly",  windowDuration: "7-day")
     }
 
     private func sendNotification(id: String, title: String, body: String) {
