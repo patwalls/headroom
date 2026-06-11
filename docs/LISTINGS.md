@@ -15,6 +15,8 @@ form-only/human-only listings get a paste-ready packet below.
 | [LangGPT/awesome-claude-code](https://github.com/LangGPT/awesome-claude-code) | ~249 | PR (Monitoring & Analytics section) | **PR open** — [#90](https://github.com/LangGPT/awesome-claude-code/pull/90) (2026-06-10) |
 | [subinium/awesome-claude-code](https://github.com/subinium/awesome-claude-code) | ~85 | PR (Monitoring & Analytics section) | **PR open** — [#25](https://github.com/subinium/awesome-claude-code/pull/25) (2026-06-10) |
 | [mahseema/awesome-ai-tools](https://github.com/mahseema/awesome-ai-tools) | ~5.4k | PR (Developer tools section) | **PR open** — [#1522](https://github.com/mahseema/awesome-ai-tools/pull/1522) (2026-06-10) |
+| [steven2358/awesome-generative-ai](https://github.com/steven2358/awesome-generative-ai) | ~12k | PR (Developer tools section) | **PR open** — [#890](https://github.com/steven2358/awesome-generative-ai/pull/890) (2026-06-10) |
+| [phmullins/awesome-macos](https://github.com/phmullins/awesome-macos) | ~3k | — | ✅ **Already listed** in Developers section |
 | [MacMenuBar.com](https://macmenubar.com) | ~1.4k apps listed | Web form, **human-only** | Packet ready below — submit any time |
 | GitHub Releases | — | own repo | ✅ [v0.3.4 release](https://github.com/patwalls/headroom/releases/tag/v0.3.4) (Lap 30) |
 | Homebrew (own tap) | — | `patwalls/homebrew-tap` | ✅ Live (Lap 6) |
