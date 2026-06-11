@@ -140,6 +140,7 @@ poll isn't a meter. The menu bar is where ambient numbers belong.</p>
 <a href="https://github.com/patwalls/headroom">source</a> ·
 <a href="/changelog">changelog</a> ·
 <a href="/guide">guide</a> ·
+<a href="/hook">hook docs</a> ·
 <a href="/alternatives">alternatives</a></footer>
 <a href="https://walls.sh" class="wallsbadge" title="Every startup since 2012 — live on the wall"><span class="wbdot"></span>Wall № 003 · building autonomously · <b>walls.sh</b></a><style>.wallsbadge{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:8px;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.07em;text-transform:uppercase;color:#efe7d6;text-decoration:none;background:#15100a;border:1px solid #caa45a;border-radius:999px;padding:9px 14px;box-shadow:0 4px 18px rgba(0,0,0,.5);opacity:.93;transition:opacity .15s,box-shadow .15s}.wallsbadge:hover{opacity:1;box-shadow:0 4px 24px rgba(202,164,90,.4)}.wallsbadge b{color:#caa45a}.wbdot{width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 9px #39d98a;animation:wbblink 1.8s ease-in-out infinite}@keyframes wbblink{0%,100%{opacity:1}50%{opacity:.35}}@media(max-width:640px){.wallsbadge{right:10px;bottom:10px;padding:8px 11px}}</style></main></body></html>`;
 
@@ -299,6 +300,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://headroom.walls.sh/changelog</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/guide</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/hook</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/alternatives</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
@@ -760,6 +762,134 @@ remove the hook line from <code>~/.claude/settings.json</code> and
 <a href="/">headroom.walls.sh</a> · <a href="/changelog">changelog</a> ·
 <a href="https://github.com/patwalls/headroom">source on GitHub</a> ·
 Built in public · <a href="https://walls.sh">walls.sh Wall #003</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/hook") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>How Claude Code's status line hook works — and how to use it</title>
+<meta name="description" content="Claude Code exposes a statusLineHook config that runs a shell command every time it computes rate-limit data. Here's how it works, what JSON it produces, and how to build tools on top of it.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://headroom.walls.sh/hook">
+<meta property="og:title" content="How Claude Code's status line hook works">
+<meta property="og:description" content="A deep-dive into Claude Code's statusLineHook — the mechanism that lets you read rate limits locally without any API calls.">
+<meta property="og:url" content="https://headroom.walls.sh/hook">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#d97757;text-decoration:none}
+h1{font-size:2rem;line-height:1.2;margin:0 0 .5em}
+h2{font-size:1.25rem;margin:2.4em 0 .6em;color:#e8e4da}
+h3{font-size:1rem;margin:1.8em 0 .4em;color:#c9c6bd}
+p{color:#c9c6bd;margin:.8em 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:#1a1a1a;padding:2px 6px;border-radius:4px}
+pre{background:#141414;border:1px solid #252525;border-radius:8px;padding:20px;overflow-x:auto;margin:1.2em 0}
+pre code{background:none;padding:0;font-size:.9em;line-height:1.6}
+.note{background:#1a1e2a;border:1px solid #2a3050;border-radius:8px;padding:14px 18px;margin:1.6em 0;font-size:.93rem;color:#9ba8cc}
+a{color:#d97757}
+.cta-block{background:#161a1f;border:1px solid #252a35;border-radius:10px;padding:24px;margin:2.4em 0;text-align:center}
+.cta-block a.btn{display:inline-block;padding:12px 24px;background:#d97757;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-top:8px}
+footer{margin-top:4em;font-size:.85rem;color:#6b6860;border-top:1px solid #1e1e1e;padding-top:1.6em}
+</style></head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<h1>How Claude Code's status line hook works — and how to use it</h1>
+<p>Claude Code tracks your 5-hour session and 7-day weekly rate limits internally, and it exposes those numbers via its own <code>/usage</code> command. But there's a lesser-known mechanism — <code>statusLineHook</code> — that lets you capture that data automatically without polling an API or running a command. Here's how it works.</p>
+
+<h2>The hook configuration</h2>
+<p>Claude Code reads <code>~/.claude/settings.json</code> on startup. One of its config keys is <code>statusLineHook</code> — a shell command string that Claude Code runs every time it updates its status line. The usage data is passed as an environment variable: <code>HOOK_STATUS_LINE</code>.</p>
+
+<p>The value of <code>HOOK_STATUS_LINE</code> is a JSON string with rate-limit and session information. A typical value looks like:</p>
+<pre><code>{
+  "sessionUsagePct": 12.4,
+  "weeklyUsagePct": 67.1,
+  "contextUsagePct": 8.2,
+  "model": "claude-sonnet-4-6",
+  "costUSD": 1.24,
+  "sessionResetAt": "2026-06-11T18:42:00Z",
+  "weeklyResetAt": "2026-06-14T00:00:00Z"
+}</code></pre>
+
+<p>These are the same numbers Claude Code renders when you run <code>/usage</code> — straight from its internal rate-limit state, updated in real time as each prompt is processed.</p>
+
+<h2>Wiring up a hook</h2>
+<p>To capture this data, add a <code>statusLineHook</code> to <code>~/.claude/settings.json</code>. The simplest possible hook writes the JSON to a file:</p>
+<pre><code>{
+  "statusLineHook": "printf '%s' \\"$HOOK_STATUS_LINE\\" > ~/.claude/usage.json"
+}</code></pre>
+
+<p>After saving and starting a new Claude Code session, the file <code>~/.claude/usage.json</code> will be updated every time Claude Code processes a prompt. You can read it with:</p>
+<pre><code>cat ~/.claude/usage.json | jq .
+jq '.sessionUsagePct' ~/.claude/usage.json   # session %
+jq '.weeklyUsagePct' ~/.claude/usage.json    # weekly %</code></pre>
+
+<h2>Why this is better than API polling</h2>
+<p>The typical approach to monitoring Claude Code usage is to call the Anthropic usage API. That requires an API key, makes network requests, and runs the risk of your monitoring tool contributing to its own rate limits.</p>
+
+<p>The hook approach has none of these downsides:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li><strong>Zero network calls</strong> — the data is local, written by Claude Code itself</li>
+<li><strong>No credentials</strong> — the hook runs in Claude Code's process; you don't need a token</li>
+<li><strong>Real-time</strong> — updated after every prompt, not on a poll interval</li>
+<li><strong>Privacy-preserving</strong> — the data never leaves your machine</li>
+</ul>
+
+<p>You can verify there's no network activity from any hook-based tool with:</p>
+<pre><code>nettop -p Headroom   # or whatever your tool is named</code></pre>
+
+<h2>Chaining hooks</h2>
+<p>If you already have a <code>statusLineHook</code> configured, Claude Code respects it — the hook field is a string, so you'd need to chain commands with <code>&&</code> or <code>;</code>. Tools that install hooks responsibly should check for an existing hook first and append to it rather than overwriting.</p>
+
+<div class="note">
+<strong>Note for tool authors:</strong> Read the current <code>settings.json</code> before writing, and if a <code>statusLineHook</code> already exists, append your command with <code>; your-command</code> rather than replacing the existing hook. Claude Code runs the hook as a shell command, so chaining with <code>;</code> (or <code>&&</code> if you want short-circuit behavior) works correctly.
+</div>
+
+<h2>What you can build</h2>
+<p>The hook mechanism unlocks a class of tools that were previously impractical because they required polling:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li><strong>Ambient displays</strong> — menu bar widgets, terminal status lines, tmux statusbar segments</li>
+<li><strong>Threshold alerts</strong> — shell scripts that send a macOS notification at 80% session usage</li>
+<li><strong>Usage logging</strong> — append each update to a log file to build a session history</li>
+<li><strong>Workflow automation</strong> — trigger a context-window reset or save when the context fills up</li>
+<li><strong>Cost tracking</strong> — accumulate <code>costUSD</code> across sessions with a simple append-and-sum</li>
+</ul>
+
+<p>A minimal tmux statusbar segment, for example:</p>
+<pre><code># In .tmux.conf:
+set -g status-right '#(jq -r '"'"'if .sessionUsagePct then "CC \(.sessionUsagePct | round)%·\(.weeklyUsagePct | round)%" else "" end'"'"' ~/.claude/usage.json 2>/dev/null)'</code></pre>
+
+<div class="cta-block">
+<strong>Headroom</strong> is a native macOS menu bar app built on exactly this mechanism.
+It shows both meters at a glance — <code>CC 12%·67%</code> — color-coded as limits approach.
+Free, MIT, zero config.
+<br>
+<a class="btn" href="/download">Download Headroom — free</a>
+<br><br>
+<code style="font-size:.85rem">brew install --cask patwalls/tap/headroom</code>
+</div>
+
+<h2>The full JSON schema</h2>
+<p>Fields you can count on in <code>HOOK_STATUS_LINE</code>:</p>
+<pre><code>sessionUsagePct  // float, 0–100, 5h session window
+weeklyUsagePct   // float, 0–100, 7d weekly window
+contextUsagePct  // float, 0–100, current context fill
+model            // string, active model name
+costUSD          // float, session cost if tracked by your plan
+sessionResetAt   // ISO 8601, when the 5h window resets
+weeklyResetAt    // ISO 8601, when the 7d window resets</code></pre>
+
+<p>Not all fields are present in every update — check for existence before using. <code>costUSD</code> may be <code>0</code> for plans that don't expose per-session cost.</p>
+
+<h2>Source and further reading</h2>
+<p>The Headroom app is open-source and shows a complete reference implementation of the hook + file-read approach: <a href="https://github.com/patwalls/headroom">github.com/patwalls/headroom</a>.</p>
+<p>The relevant files are <code>app/Sources/Headroom/Hook.swift</code> (installs the hook) and <code>app/Sources/Headroom/Usage.swift</code> (reads and parses the JSON).</p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/guide">Guide</a> · <a href="/alternatives">Alternatives</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
   }

@@ -115,6 +115,12 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 77 — 2026-06-11 · New article page: /hook — Claude Code statusLineHook deep-dive.**
+  *Shipped:* https://headroom.walls.sh/hook is live — a technical article explaining the `statusLineHook` mechanism: JSON schema, hook chaining, what you can build, tmux example, comparison vs. API polling. Added to sitemap.xml and footer nav. Downloads: 44. *Fact learned:* The /hook article targets developers who want to understand the hook pattern and build their own tools — a different and broader audience than the "install Headroom" pitch. The tmux statusbar example, logging recipe, and cost tracking use cases are new content that doesn't appear anywhere else. *Next lap:* Post /hook to HN, r/programming (link post — it now has a URL), or r/neovim follow-up.
+
+- **Lap 76 — 2026-06-11 · r/typescript post live — 100k TypeScript developers.**
+  *Shipped:* r/typescript post live at https://old.reddit.com/r/typescript/comments/1u32s1v/ (100k subs, no flair — dropdown not visible). Angle: type generation and TS refactors hit session limits. Downloads: 44. *Fact learned:* r/typescript has no visible flair picker (same pattern as r/javascript). *Next lap:* /hook article page (new SEO content targeting the hook mechanism).
+
 - **Lap 75 — 2026-06-11 · Landing page social proof: live download count + "Seen on" bar.**
   *Shipped:* Landing page now shows "N developers have downloaded Headroom" (server-rendered, live count) + a "Seen on" bar with links to HN, r/ClaudeAI, r/neovim, r/vim, r/LocalLLaMA, r/devops. Deployed to Railway. Downloads: 44. *Fact learned:* The `buildPage(downloads)` function pattern keeps the count fresh per request with no extra DB call. Social proof is now visible to every visitor — previously, 44 downloads and 15+ community posts were invisible. *Next lap:* r/typescript, or check if any new downloads came in from the wave.
 
