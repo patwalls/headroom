@@ -146,6 +146,7 @@ poll isn't a meter. The menu bar is where ambient numbers belong.</p>
 <a href="/faq">FAQ</a> ·
 <a href="/notifications">notifications</a> ·
 <a href="/cost">session cost</a> ·
+<a href="/shell">shell prompt</a> ·
 <a href="/alternatives">alternatives</a></footer>
 <a href="https://walls.sh" class="wallsbadge" title="Every startup since 2012 — live on the wall"><span class="wbdot"></span>Wall № 003 · building autonomously · <b>walls.sh</b></a><style>.wallsbadge{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:8px;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.07em;text-transform:uppercase;color:#efe7d6;text-decoration:none;background:#15100a;border:1px solid #caa45a;border-radius:999px;padding:9px 14px;box-shadow:0 4px 18px rgba(0,0,0,.5);opacity:.93;transition:opacity .15s,box-shadow .15s}.wallsbadge:hover{opacity:1;box-shadow:0 4px 24px rgba(202,164,90,.4)}.wallsbadge b{color:#caa45a}.wbdot{width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 9px #39d98a;animation:wbblink 1.8s ease-in-out infinite}@keyframes wbblink{0%,100%{opacity:1}50%{opacity:.35}}@media(max-width:640px){.wallsbadge{right:10px;bottom:10px;padding:8px 11px}}</style></main></body></html>`;
 
@@ -328,6 +329,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/alternatives</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/notifications</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/cost</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/shell</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -1276,6 +1278,163 @@ footer{margin-top:4em;font-size:.85rem;color:#6b6860;border-top:1px solid #1e1e1
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/guide">Guide</a> · <a href="/limits">Rate limits</a> · <a href="/context">Context window</a> · <a href="/hook">Hook docs</a> · <a href="/alternatives">Alternatives</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/shell") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Claude Code usage in your shell prompt — zsh, bash, fish snippets</title>
+<meta name="description" content="Show Claude Code session and weekly usage % directly in your zsh, bash, or fish shell prompt. Copy-paste snippets that read ~/.claude/headroom-usage.json — no API key, no polling.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://headroom.walls.sh/shell">
+<meta property="og:title" content="Claude Code usage in your shell prompt">
+<meta property="og:description" content="Copy-paste snippets to show Claude Code session/weekly % in your zsh, bash, or fish prompt — reads the same local file Headroom uses.">
+<meta property="og:url" content="https://headroom.walls.sh/shell">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#d97757;text-decoration:none}
+h1{font-size:2rem;line-height:1.2;margin:0 0 .5em}
+h2{font-size:1.25rem;margin:2.2em 0 .6em;color:#e8e4da}
+h3{font-size:1.05rem;margin:1.6em 0 .5em;color:#e8e4da}
+p{color:#c9c6bd;margin:.8em 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:#1a1a1a;padding:2px 6px;border-radius:4px;color:#e8b97e}
+pre{background:#141414;border:1px solid #252525;border-radius:8px;padding:20px;overflow-x:auto;margin:1.2em 0}
+pre code{background:none;padding:0;font-size:.9em;line-height:1.6;color:#c8c5ba}
+a{color:#d97757}
+.callout{background:#161a1f;border:1px solid #252a35;border-left:3px solid #d97757;border-radius:0 8px 8px 0;padding:16px 20px;margin:1.4em 0}
+.callout p{margin:0;color:#c9c6bd}
+.shell-example{background:#0a0a0a;border:1px solid #222;border-radius:8px;padding:16px 20px;margin:1.2em 0;font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+.prompt{color:#5db85d}
+.dim{color:#555}
+.cta-block{background:#161a1f;border:1px solid #252a35;border-radius:10px;padding:24px;margin:2.4em 0;text-align:center}
+.cta-block a.btn{display:inline-block;padding:12px 24px;background:#d97757;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-top:8px}
+footer{margin-top:4em;font-size:.85rem;color:#6b6860;border-top:1px solid #1e1e1e;padding-top:1.6em}
+</style></head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<h1>Claude Code usage in your shell prompt</h1>
+<p>If you use Claude Code heavily, you may want your terminal prompt to show the current session and weekly usage — so you see the numbers before running <code>/usage</code>, without switching to the menu bar. These snippets read <code>~/.claude/headroom-usage.json</code> and embed the values directly in your prompt.</p>
+
+<div class="callout"><p>These snippets work whether or not you have Headroom installed — they read the same local file. The file is written by Claude Code's statusLine hook, which Headroom installs automatically. If you don't have Headroom, <a href="/hook">install the hook manually</a>.</p></div>
+
+<h2>Prerequisites: install the hook</h2>
+<p>The file <code>~/.claude/headroom-usage.json</code> is written by a statusLine hook in <code>~/.claude/settings.json</code>. Installing Headroom wires this automatically. Or wire it manually:</p>
+<pre><code># Add to ~/.claude/settings.json under "statusLine"
+{
+  "statusLine": "jq -rc '. + {statusLineOutput: \"CC \\(.sessionUsagePct | round)%·\\(.weeklyUsagePct | round)%\"}' | tee ~/.claude/headroom-usage.json | jq -rc '.statusLineOutput'"
+}</code></pre>
+<p>After adding this, open Claude Code once and the file appears at <code>~/.claude/headroom-usage.json</code>.</p>
+
+<h2>Zsh — RPROMPT (right-side prompt)</h2>
+<p>Add Claude Code usage to the right side of your prompt. Right-prompts are unobtrusive: they don't affect copy-paste, and zsh hides them when a command is long enough to reach them.</p>
+<pre><code># ~/.zshrc — add Claude Code usage to RPROMPT
+function _cc_usage() {
+  local f="$HOME/.claude/headroom-usage.json"
+  [[ -f "$f" ]] || return
+  local session weekly
+  session=$(jq -r '.sessionUsagePct // empty | round | tostring + "%"' "$f" 2>/dev/null)
+  weekly=$(jq -r '.weeklyUsagePct // empty | round | tostring + "%"' "$f" 2>/dev/null)
+  [[ -n "$session" && -n "$weekly" ]] && echo "CC $session·$weekly"
+}
+RPROMPT='$(_cc_usage)'</code></pre>
+
+<div class="shell-example">
+<div class="dim">~/projects/myapp on main</div>
+<span class="prompt">❯ </span><span style="color:#c8c5ba">git status</span><span style="float:right;color:#888">CC 23%·67%</span>
+</div>
+
+<h2>Zsh — left prompt (PS1)</h2>
+<pre><code># ~/.zshrc — inline at the end of your PS1
+function _cc_inline() {
+  local f="$HOME/.claude/headroom-usage.json"
+  [[ -f "$f" ]] || return
+  local s w
+  s=$(jq -r '.sessionUsagePct // empty | round' "$f" 2>/dev/null)
+  w=$(jq -r '.weeklyUsagePct // empty | round' "$f" 2>/dev/null)
+  [[ -n "$s" && -n "$w" ]] && echo " [CC $s%·$w%]"
+}
+PS1='%n@%m %~$(_cc_inline) %# '</code></pre>
+
+<h2>Bash — PS1</h2>
+<pre><code># ~/.bashrc — add to PS1
+_cc_usage_bash() {
+  local f="$HOME/.claude/headroom-usage.json"
+  [ -f "$f" ] || return
+  local s w
+  s=$(jq -r '.sessionUsagePct // empty | . + 0.5 | floor | tostring' "$f" 2>/dev/null)
+  w=$(jq -r '.weeklyUsagePct // empty | . + 0.5 | floor | tostring' "$f" 2>/dev/null)
+  [ -n "$s" ] && [ -n "$w" ] && echo " CC:$s%·$w%"
+}
+PS1='\\u@\\h \\w$(\\$(_cc_usage_bash)) \\$ '</code></pre>
+
+<h2>Fish shell</h2>
+<pre><code># ~/.config/fish/functions/fish_right_prompt.fish
+function fish_right_prompt
+  set f "$HOME/.claude/headroom-usage.json"
+  test -f $f; or return
+  set s (jq -r '.sessionUsagePct // empty | round | tostring + "%"' $f 2>/dev/null)
+  set w (jq -r '.weeklyUsagePct // empty | round | tostring + "%"' $f 2>/dev/null)
+  if test -n "$s" -a -n "$w"
+    echo -n "CC $s·$w"
+  end
+end</code></pre>
+
+<h2>Color-coded version (zsh RPROMPT)</h2>
+<p>Add color to match Headroom's amber/red thresholds:</p>
+<pre><code># ~/.zshrc — color-coded RPROMPT
+function _cc_color() {
+  local f="$HOME/.claude/headroom-usage.json"
+  [[ -f "$f" ]] || return
+  local s w pct color
+  s=$(jq -r '.sessionUsagePct // 0 | round' "$f" 2>/dev/null)
+  w=$(jq -r '.weeklyUsagePct // 0 | round' "$f" 2>/dev/null)
+  [[ -z "$s" || -z "$w" ]] && return
+  # Use the higher of the two for coloring
+  pct=$(( s > w ? s : w ))
+  if   (( pct >= 90 )); then color="%F{red}"
+  elif (( pct >= 70 )); then color="%F{yellow}"
+  else                       color="%F{green}"
+  fi
+  echo "\${color}CC \${s}%·\${w}%%f"
+}
+RPROMPT='$(_cc_color)'</code></pre>
+
+<h2>One-liner for scripts</h2>
+<p>Pull both values in a single <code>jq</code> call:</p>
+<pre><code># Compact: "23%·67%"
+jq -r '[.sessionUsagePct, .weeklyUsagePct] | map(. + 0.5 | floor | tostring + "%") | join("·")' ~/.claude/headroom-usage.json
+
+# Key-value for alerting scripts
+jq -r '"session=\\(.sessionUsagePct | round)% week=\\(.weeklyUsagePct | round)%"' ~/.claude/headroom-usage.json</code></pre>
+
+<h2>Starship prompt</h2>
+<p>If you use <a href="https://starship.rs">Starship</a>, add a custom module to <code>~/.config/starship.toml</code>:</p>
+<pre><code>[custom.cc_usage]
+command = """jq -r '["CC", (.sessionUsagePct|round|tostring)+"%", "·", (.weeklyUsagePct|round|tostring)+"%"] | join(" ")' ~/.claude/headroom-usage.json 2>/dev/null"""
+when = 'test -f ~/.claude/headroom-usage.json'
+format = "[$output]($style) "
+style = "yellow"</code></pre>
+
+<div class="cta-block">
+<p><strong>Headroom</strong> shows the same numbers as a native macOS menu bar app — always visible, color-coded, with reset countdowns. No terminal, no jq required.</p>
+<a href="/download" class="btn">Download Headroom — free</a>
+<p style="margin-top:12px;font-size:.9rem;color:#6b6860">or: <code>brew install --cask patwalls/tap/headroom</code></p>
+</div>
+
+<h2>Related</h2>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li><a href="/hook">How the hook works</a> — the statusLineHook and full JSON schema</li>
+<li><a href="/limits">Rate limits explained</a> — the 5h session and 7d weekly windows</li>
+<li><a href="/cost">Session cost tracking</a> — jq recipes for logging spend</li>
+</ul>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/hook">Hook docs</a> · <a href="/limits">Rate limits</a> · <a href="/cost">Cost</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
