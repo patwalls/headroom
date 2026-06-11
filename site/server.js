@@ -331,6 +331,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/cost</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/shell</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/tmux</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://headroom.walls.sh/model</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>`);
   }
 
@@ -1274,6 +1275,114 @@ footer{margin-top:4em;font-size:.85rem;color:#6b6860;border-top:1px solid #1e1e1
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/guide">Guide</a> · <a href="/limits">Rate limits</a> · <a href="/context">Context window</a> · <a href="/hook">Hook docs</a> · <a href="/alternatives">Alternatives</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/model") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Which model is Claude Code using? See it in your menu bar</title>
+<meta name="description" content="Headroom shows your active Claude Code model (Sonnet, Opus, Fable) in the dropdown — updated automatically, no terminal needed. Here's what the model indicator tells you.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://headroom.walls.sh/model">
+<meta property="og:title" content="Which model is Claude Code using? See it in your menu bar">
+<meta property="og:description" content="Headroom shows the active Claude Code model name in its dropdown — Sonnet 4.6, Opus 4.8, Fable 5. Updated automatically from the same data /usage reads.">
+<meta property="og:url" content="https://headroom.walls.sh/model">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#d97757;text-decoration:none}
+h1{font-size:2rem;line-height:1.2;margin:0 0 .5em}
+h2{font-size:1.25rem;margin:2.2em 0 .6em;color:#e8e4da}
+h3{font-size:1.05rem;margin:1.6em 0 .5em;color:#e8e4da}
+p{color:#c9c6bd;margin:.8em 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:#1a1a1a;padding:2px 6px;border-radius:4px;color:#e8b97e}
+pre{background:#141414;border:1px solid #252525;border-radius:8px;padding:20px;overflow-x:auto;margin:1.2em 0}
+pre code{background:none;padding:0;font-size:.9em;line-height:1.6;color:#c8c5ba}
+a{color:#d97757}
+.callout{background:#161a1f;border:1px solid #252a35;border-left:3px solid #d97757;border-radius:0 8px 8px 0;padding:16px 20px;margin:1.4em 0}
+.callout p{margin:0;color:#c9c6bd}
+.model-badge{display:inline-block;background:#1e2030;border:1px solid #252a40;border-radius:6px;padding:4px 12px;font-family:ui-monospace,Menlo,monospace;font-size:.88em;color:#8ba3f0;margin:4px 4px 4px 0}
+.dropdown-preview{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:20px 24px;margin:1.4em 0;font-family:ui-monospace,Menlo,monospace;font-size:.9em;line-height:1.9}
+.dp-row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #242424;padding:6px 0;font-size:.88em}
+.dp-row:last-child{border-bottom:none}
+.dp-name{color:#888}
+.dp-val{color:#c8c5ba}
+.cta-block{background:#161a1f;border:1px solid #252a35;border-radius:10px;padding:24px;margin:2.4em 0;text-align:center}
+.cta-block a.btn{display:inline-block;padding:12px 24px;background:#d97757;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-top:8px}
+footer{margin-top:4em;font-size:.85rem;color:#6b6860;border-top:1px solid #1e1e1e;padding-top:1.6em}
+</style></head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<h1>Which model is Claude Code using right now?</h1>
+<p>Claude Code can run on different models depending on your plan, the task type, or your explicit selection. Headroom shows the active model name in the dropdown — updated every 15 seconds from the same data source as <code>/usage</code>.</p>
+
+<div class="callout"><p>The model name comes from Claude Code's own statusLine data — the same JSON it writes for the <code>/usage</code> command. No API call, no guessing. What Headroom shows is exactly what Claude Code reports.</p></div>
+
+<h2>What you see in Headroom</h2>
+<p>Open the Headroom dropdown (click the menu bar title). The bottom row shows the active model and last-updated time:</p>
+
+<div class="dropdown-preview">
+<div class="dp-row"><span class="dp-name">Session (5h)</span><span class="dp-val">23%</span></div>
+<div class="dp-row"><span class="dp-name">Week (7d)</span><span class="dp-val">67%</span></div>
+<div class="dp-row"><span class="dp-name">Context</span><span class="dp-val">41%</span></div>
+<div class="dp-row"><span class="dp-name">Session cost</span><span class="dp-val">$0.34</span></div>
+<div class="dp-row"><span class="dp-name" style="color:#666">claude-sonnet-4-6 · Updated 2:41 PM</span></div>
+</div>
+
+<h2>Model names you might see</h2>
+<p>Claude Code reports the model ID it's currently using. Common model IDs:</p>
+
+<div style="margin:1.2em 0">
+<span class="model-badge">claude-sonnet-4-6</span>
+<span class="model-badge">claude-opus-4-8</span>
+<span class="model-badge">claude-fable-5</span>
+<span class="model-badge">claude-haiku-4-5</span>
+<span class="model-badge">claude-sonnet-3-7</span>
+</div>
+
+<p>Claude Code Pro and Max plans default to Sonnet. Opus and Fable are available in specific modes (like Claude Code's "ultracode" or extended thinking). The model shown is the <em>current</em> model, which can change mid-conversation if Claude Code switches context.</p>
+
+<h2>Why the model matters for limits</h2>
+<p>Different models consume your session and weekly windows at different rates. A long Opus or Fable session burns the 5-hour session window faster than the equivalent Sonnet session (Opus/Fable use more tokens per response). Seeing the model name alongside the usage % helps you understand why a session is burning fast.</p>
+
+<h2>Read the model name from the command line</h2>
+<p>The model name is in <code>~/.claude/headroom-usage.json</code>:</p>
+<pre><code># Current model
+jq -r '.modelName // "not available"' ~/.claude/headroom-usage.json
+
+# Full status line
+jq -r '"Model: " + (.modelName // "unknown") + " | Session: " + ((.sessionUsagePct // 0) | round | tostring) + "% | Weekly: " + ((.weeklyUsagePct // 0) | round | tostring) + "%"' ~/.claude/headroom-usage.json</code></pre>
+
+<h2>When the model isn't shown</h2>
+<p>If Headroom's dropdown shows no model name, it means Claude Code hasn't written that field to the JSON yet (common on first launch or after a fresh install). Use Claude Code normally and it will appear within one exchange.</p>
+
+<h2>Check your model in Claude Code directly</h2>
+<p>You can always check the model in Claude Code itself:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li>Run <code>/model</code> in Claude Code to see and change the current model</li>
+<li>Run <code>/usage</code> — the output includes the current model context</li>
+</ul>
+<p>Headroom shows the same model that <code>/usage</code> reports, updated automatically without running the command.</p>
+
+<div class="cta-block">
+<p><strong>Headroom</strong> shows your current model alongside session and weekly usage — always visible, zero config. Free native macOS app.</p>
+<a href="/download" class="btn">Download Headroom — free</a>
+<p style="margin-top:12px;font-size:.9rem;color:#6b6860">or: <code>brew install --cask patwalls/tap/headroom</code></p>
+</div>
+
+<h2>Related</h2>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+<li><a href="/limits">Rate limits explained</a> — how session and weekly windows work</li>
+<li><a href="/cost">Session cost</a> — track spending per session</li>
+<li><a href="/hook">How the hook works</a> — the JSON schema Headroom reads</li>
+</ul>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/cost">Session cost</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
