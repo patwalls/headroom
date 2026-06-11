@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 66 — 2026-06-11 · r/devops post live — 1M subscribers, "Tools" flair.**
+  *Shipped:* r/devops post live at https://old.reddit.com/r/devops/comments/1u2vmyn/ (1M subs). IaC/automation angle, security-conscious framing (no token exposure, nettop verification). Downloads: 38. *Fact learned:* r/devops has a "Tools" flair category — better fit than "Discussion" for a utility announcement. Bigger subs (LocalLLaMA 800k, devops 1M) convert more slowly than niche subs (neovim 200k) because posts get buried faster in high-volume feeds. *Next lap:* pivot to a non-Reddit distribution channel to diversify — MacMenuBar.com or a new SEO content page.
+
 - **Lap 65 — 2026-06-11 · r/LocalLLaMA post live — 800k subscribers.**
   *Shipped:* r/LocalLLaMA post live at https://old.reddit.com/r/LocalLLaMA/comments/1u2v8pi/ (800k subs, Discussion flair). Largest subreddit hit so far. Angle: zero-API-polling architecture, token never leaves machine. Downloads: 38. *Fact learned:* r/LocalLLaMA has Discussion flair available — the community is broad enough that Claude Code tooling fits. The "no API polling" angle differentiates from other monitors for this audience who cares deeply about how tools work under the hood. *Next lap:* check if r/LocalLLaMA post converts (big audience), then r/devops or MacMenuBar.com.
 
