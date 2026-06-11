@@ -332,6 +332,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/shell</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/tmux</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://headroom.walls.sh/model</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://headroom.walls.sh/reset</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -1866,6 +1867,120 @@ Your 5-hour Claude Code window is 92% full. Resets in 23m.</code></pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
+  }
+
+  if (url.pathname === "/reset") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>When Does Claude Code Rate Limit Reset? — Headroom</title>
+<meta name="description" content="Claude Code has two separate rate-limit windows: a 5-hour session window and a 7-day rolling weekly cap. Learn exactly when each resets and how to see your countdown.">
+<link rel="canonical" href="https://headroom.walls.sh/reset">
+<meta property="og:title" content="When Does Claude Code Rate Limit Reset? — Headroom">
+<meta property="og:description" content="Claude Code has two separate rate-limit windows: a 5-hour session window and a 7-day rolling weekly cap. Learn exactly when each resets and how to see your countdown.">
+<meta property="og:url" content="https://headroom.walls.sh/reset">
+<meta property="og:type" content="website">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2rem;font-weight:700;margin:0 0 8px;line-height:1.2}
+  h2{font-size:1.2rem;font-weight:600;margin:40px 0 12px;color:var(--accent)}
+  p{margin:0 0 16px;color:var(--ink)}
+  code{font-family:"SF Mono",Menlo,monospace;font-size:.88em;background:var(--panel);padding:2px 6px;border-radius:4px}
+  pre{background:var(--panel);border:1px solid #2a2d36;border-radius:8px;padding:20px;overflow-x:auto;font-size:.88em;line-height:1.6;margin:0 0 24px}
+  .dim{color:var(--dim)}
+  .warn{color:var(--warn)}
+  .ok{color:var(--ok)}
+  .bad{color:var(--bad)}
+  .callout{background:var(--panel);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 20px;margin:0 0 24px}
+  table{width:100%;border-collapse:collapse;margin:0 0 24px}
+  th,td{text-align:left;padding:10px 14px;border-bottom:1px solid #23262f}
+  th{color:var(--dim);font-weight:500;font-size:.9em}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  nav{margin-bottom:40px}
+  footer{margin-top:64px;padding-top:24px;border-top:1px solid #23262f;color:var(--dim);font-size:.9em}
+</style>
+</head><body><main>
+<nav><a href="/">← Headroom</a></nav>
+
+<h1>When Does Claude Code Rate Limit Reset?</h1>
+<p class="dim">Claude Code has two separate limit windows. They reset independently, and neither resets at a fixed clock time.</p>
+
+<div class="callout">
+<strong>Short answer:</strong> The <span class="warn">5-hour session window</span> resets 5 hours after your oldest in-window request. The <span class="bad">7-day weekly cap</span> resets 7 days after your oldest in-week request. Both are <em>rolling windows</em>, not "every Monday" or "every night."
+</div>
+
+<h2>The two windows explained</h2>
+
+<table>
+  <thead><tr><th>Window</th><th>Duration</th><th>How it resets</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Session</strong></td><td>5 hours</td><td>Rolling: oldest request in the window falls off after 5h from when it was made</td></tr>
+    <tr><td><strong>Weekly</strong></td><td>7 days</td><td>Rolling: oldest request falls off after 7 days from when it was made</td></tr>
+  </tbody>
+</table>
+
+<p>Because the windows are rolling, there's no single "reset time." If you're at 100% session usage and your oldest session request was made 4h50m ago, you have ~10 minutes to wait. The reset is continuous, not a cron job.</p>
+
+<h2>How to see your exact countdown</h2>
+
+<p>Headroom shows both countdowns live in the menu bar dropdown:</p>
+
+<pre><span class="ok">Session</span>   23%  ████░░░░░░  resets in 3h 12m
+<span class="warn">Weekly</span>    74%  ███████░░░  resets in 4d 9h</pre>
+
+<p>When you're near a limit, the status bar changes color — amber at 70%, red at 90%. You see the pressure before the hard stop, not after.</p>
+
+<p>Without Headroom, the only way to check is the <code>/usage</code> command inside Claude Code — a command you have to remember to run, in an interface you have to switch to.</p>
+
+<h2>Check the reset time from the command line</h2>
+
+<p>Once Headroom is installed, the countdown is also in the local JSON file:</p>
+
+<pre><span class="dim"># See both countdowns as seconds-until-reset</span>
+cat ~/.claude/headroom-usage.json | python3 -c "
+import json,sys,time
+d=json.load(sys.stdin)
+sr=d.get('sessionResetSec',0)
+wr=d.get('weeklyResetSec',0)
+def fmt(s): h,r=divmod(int(s),3600); m=r//60; return f'{h}h {m}m' if h else f'{m}m'
+print(f'Session resets in: {fmt(sr)}')
+print(f'Weekly  resets in: {fmt(wr)}')
+"</pre>
+
+<p>Or with jq (raw seconds, useful for scripting):</p>
+
+<pre>jq '{sessionResetSec,weeklyResetSec}' ~/.claude/headroom-usage.json</pre>
+
+<h2>Why did it stop me mid-task?</h2>
+
+<p>Claude Code enforces both limits independently. You can hit the session window at any point in a work session — not just after 5 straight hours. The window counts from when each request was <em>sent</em>, not from when you opened Claude Code. A morning burst + an afternoon burst can combine to fill the window by 3pm even though neither alone was heavy.</p>
+
+<p>The weekly cap works the same way: it's not "all the tokens I used this calendar week." It's a rolling 7-day window anchored to when each request was made.</p>
+
+<h2>Strategy while waiting for a reset</h2>
+
+<p>If you hit the session window (5h): you usually don't have to wait the full 5 hours. The window is rolling — requests from 4h45m ago fall off in 15 minutes. Watch the Headroom countdown.</p>
+
+<p>If you hit the weekly cap: you're waiting days, not hours. This is the one to avoid by watching the weekly % number. Headroom shows the weekly % in the status bar at all times; the amber threshold at 70% is your "start planning" signal.</p>
+
+<h2>Install Headroom — see both countdowns always</h2>
+
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<p>Or <a href="/download">download directly</a>. Free, MIT, ~267 KB. No API key, no login — it reads the same numbers Claude Code already computes.</p>
+
+<p>→ <a href="/limits">Full guide to Claude Code rate limits</a><br>
+→ <a href="/notifications">Set up threshold alerts</a><br>
+→ <a href="/faq">FAQ</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/hook">Hook docs</a> · <a href="/faq">FAQ</a> · <a href="/reset">Reset timing</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
   }
 
   if (url.pathname === "/") {
