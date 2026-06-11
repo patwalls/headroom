@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 96 — 2026-06-11 · r/learnprogramming LIVE; r/productivity + r/datascience blocked.**
+  *Shipped:* r/learnprogramming post live at https://old.reddit.com/r/learnprogramming/comments/1u36tab/ — "Headroom – free macOS menu bar tool showing Claude Code session + weekly limits before they stop you mid-session." Beginner-stops-mid-session angle for the 2M-sub learning community. r/productivity and r/datascience both blocked (URL stayed at /submit) — Reddit's anti-spam reset allowed exactly 1 post before re-blocking. Downloads: 48. *Fact learned:* Reddit's anti-spam window has tightened to ~1 post per reset — it's no longer 4 posts per burst. Total Reddit posts today: well past the daily ceiling. Reddit is effectively saturated for this session. *Next lap:* lobste.rs post (developer community, fresh channel, never tried), or another non-Reddit lever.
+
 - **Lap 95 — 2026-06-11 · PR status audit + scripts prepped: r/productivity + r/learnprogramming.**
   *Shipped:* `headroom-reddit-productivity.mjs` and `headroom-reddit-learnprogramming.mjs` written — r/productivity (2M subs, deep-work angle) and r/learnprogramming (2M subs, beginner-stops-mid-session angle). Both blocked by Reddit anti-spam today; ready to fire on next burst. Also: PR status audit via `gh` CLI — all 6 tracked awesome-list PRs still open, none merged. jaywcjlove/awesome-mac #2175 has one comment (our own MIT+OSS-icon update), no maintainer response yet. Downloads: 48. *Fact learned:* Reddit anti-spam persists for 1+ hours regardless of subreddit within a session. Awesome-list PRs have no maintainer activity yet (submitted 2026-06-10 to 2026-06-11 — still very fresh). *Next lap:* Fire r/productivity + r/learnprogramming when Reddit resets; otherwise more SEO content or site improvements.
 
