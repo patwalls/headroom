@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 64 — 2026-06-11 · r/tmux post live — 80k terminal power-users.**
+  *Shipped:* r/tmux post live at https://old.reddit.com/r/tmux/comments/1u2v7zn/ (80k subs, Other flair — best available). Downloads: 38. *Fact learned:* r/tmux flair options don't include "Discussion" — fell back to "Other". The `nettop -p Headroom` verification command is a compelling hook for privacy-conscious terminal users who want to confirm zero network activity. *Next lap:* r/LocalLLaMA (large AI community), r/devops, or MacMenuBar.com form.
+
 - **Lap 63 — 2026-06-11 · r/zsh post live.**
   *Shipped:* r/zsh post live at https://old.reddit.com/r/zsh/comments/1u2utnj/ (Discussion flair). Angle: hook writes to `~/.claude/headroom-usage.json`, brew install one-liner. Downloads: 32. *Fact learned:* Distribution velocity has reached the point where each terminal-community subreddit takes ~2 minutes to post. The pattern is now fully automated. *Next lap:* r/tmux, r/ClaudeAI follow-up, or try r/cursor.
 
