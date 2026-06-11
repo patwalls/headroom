@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 122 — 2026-06-11 · New SEO page: /warp — Warp terminal + Claude Code integration.**
+  *Shipped:* https://headroom.walls.sh/warp is live — targets "warp terminal claude code", "claude code warp", "warp claude code usage" queries. Covers: zsh/bash prompt block (color-coded), session-start MOTD, Warp Drive workflow (on-demand query), Warp AI vs Claude Code comparison table, and the Headroom complement angle (menu bar for when Warp is in background). 27 SEO pages total. Downloads: **57** (up from 55 — +2 since last lap!). *Fact learned:* The Warp AI vs Claude Code comparison section is unique content that no other page has — developers who use both tools are actively searching for how they interact and which to use when. *Next lap:* awesome-mac PR #2175 is still open (not merged yet). Write /env (environment variables) or /agent (subagent mode) as the next SEO page. Reddit resets Friday afternoon.
+
 - **Lap 121 — 2026-06-11 · New SEO page: /commands — Claude Code slash commands reference.**
   *Shipped:* https://headroom.walls.sh/commands is live — targets "claude code slash commands", "claude code commands list" queries. Covers every built-in command: /help, /clear, /compact, /exit, /usage, /cost, /model, /config, /memory, /review, /mcp, and custom commands via .claude/commands/. Tab completion tip included. CTA uses /usage as the anchor: "it shows a snapshot — Headroom shows it live." 26 SEO pages total. Downloads: 55. *Fact learned:* /commands is the first "reference" page (vs. explanatory deep-dives). Reference pages tend to earn backlinks from "Claude Code resources" roundups and get bookmarked, driving repeat visits that convert. *Next lap:* Write /warp (Warp terminal) or try Reddit retry for r/datascience + r/productivity (posts were ~9h ago, earliest reset tomorrow ~3PM).
 

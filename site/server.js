@@ -346,6 +346,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/mcp</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/log</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/commands</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/warp</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>`);
   }
 
@@ -3082,6 +3083,135 @@ print(f'Weekly  resets in: {fmt(wr)}')
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/hook">Hook docs</a> · <a href="/faq">FAQ</a> · <a href="/reset">Reset timing</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/warp") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Warp Terminal + Claude Code — Usage Status Integration</title>
+<meta name="description" content="Show Claude Code session and weekly usage in Warp terminal: status prompt block, MOTD snippet, and how Headroom complements Warp AI for Claude Code users.">
+<link rel="canonical" href="https://headroom.walls.sh/warp">
+<meta property="og:title" content="Warp Terminal + Claude Code — Usage Status Integration">
+<meta property="og:description" content="Add Claude Code usage to your Warp prompt block, set up a session-start MOTD, and understand when to use Warp AI vs Claude Code.">
+<meta property="og:url" content="https://headroom.walls.sh/warp">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Warp Terminal + Claude Code Integration">
+<meta name="twitter:description" content="Show Claude Code usage in your Warp prompt block and MOTD — no extra deps beyond jq.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1.1rem;margin:2.2em 0 .35em;color:var(--ink);border-bottom:1px solid #242936;padding-bottom:.3em}
+  h3{font-size:.95rem;margin:1.4em 0 .25em;color:var(--accent)}
+  p{color:#c9c6bd;margin:.35em 0 .7em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.84rem;line-height:1.55;margin:.5em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:1em 0}
+  .compare-box{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 16px}
+  .compare-box h4{margin:0 0 .4em;font-size:.9rem;color:var(--ink)}
+  .compare-box p{margin:0;font-size:.85rem;color:var(--dim)}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · warp</p>
+<h1>Warp + Claude Code usage</h1>
+<p class="sub">Add Claude Code session and weekly usage to your Warp terminal — as a prompt status line, a session-start notice, or a menu bar indicator alongside Warp AI.</p>
+
+<h2>The data source</h2>
+<p>When you have the <a href="/hook">statusLineHook</a> configured, Claude Code writes your current usage to <code>~/.claude/headroom-usage.json</code> on every status-line refresh. All the integrations below read from this file — no extra processes, no polling Anthropic's API.</p>
+
+<h2>Option 1 — Prompt block (PS1 / PROMPT)</h2>
+<p>Warp uses your shell's PS1/PROMPT (zsh, bash, fish). The simplest approach: add a Claude Code usage badge to your existing prompt.</p>
+
+<h3>zsh — add to ~/.zshrc</h3>
+<pre>cc_usage() {
+  local f="$HOME/.claude/headroom-usage.json"
+  [[ -f "$f" ]] || return
+  local s w
+  s=$(jq -r '.sessionUsagePct | floor' "$f" 2>/dev/null) || return
+  w=$(jq -r '.weeklyUsagePct | floor' "$f" 2>/dev/null) || return
+  if   (( s >= 90 )); then echo "%F{red}CC $\{s}%·$\{w}%%f "
+  elif (( s >= 70 )); then echo "%F{yellow}CC $\{s}%·$\{w}%%f "
+  else                     echo "%F{green}CC $\{s}%·$\{w}%%f "
+  fi
+}
+PROMPT='$(cc_usage)%~ %# '</pre>
+<p>This shows <code>CC 34%·61%</code> in green, amber at 70%, red at 90%, before your path.</p>
+
+<h3>bash — add to ~/.bashrc</h3>
+<pre>cc_usage() {
+  local f="$HOME/.claude/headroom-usage.json"
+  [[ -f "$f" ]] || return
+  local s w
+  s=$(jq -r '.sessionUsagePct | floor' "$f" 2>/dev/null) || return
+  w=$(jq -r '.weeklyUsagePct | floor' "$f" 2>/dev/null) || return
+  printf 'CC %s%%·%s%% ' "$s" "$w"
+}
+PS1='$(cc_usage)\w \$ '</pre>
+
+<h2>Option 2 — Session-start MOTD</h2>
+<p>Show current usage once when a new Warp window or pane opens — a quick reminder before you start work.</p>
+<pre># Add to ~/.zshrc (or ~/.bashrc)
+claude_motd() {
+  local f="$HOME/.claude/headroom-usage.json"
+  [[ -f "$f" ]] || return
+  local s w sr wr model
+  s=$(jq -r '.sessionUsagePct | floor' "$f")
+  w=$(jq -r '.weeklyUsagePct | floor' "$f")
+  sr=$(jq -r '.sessionResetSec / 3600 | . * 10 | floor / 10' "$f")
+  wr=$(jq -r '.weeklyResetSec / 86400 | . * 10 | floor / 10' "$f")
+  model=$(jq -r '.modelName // "unknown"' "$f")
+  printf '╌╌ Claude Code  session %s%%  weekly %s%%  [%sh / %sd  %s]\n' \
+    "$s" "$w" "$sr" "$wr" "$model"
+}
+claude_motd</pre>
+<p>Output on window open:</p>
+<pre>╌╌ Claude Code  session 34%  weekly 61%  [2.7h / 2.1d  claude-sonnet-4-6]</pre>
+
+<h2>Option 3 — Warp Drive workflow (query on demand)</h2>
+<p>Warp Drive workflows let you run a command from the Warp command palette. Create one at <strong>Warp → Warp Drive → New Workflow</strong>:</p>
+<pre>Name: Claude Code Usage
+Command: cat ~/.claude/headroom-usage.json | jq '{session: "\(.sessionUsagePct | floor)%", weekly: "\(.weeklyUsagePct | floor)%", cost: "$\(.sessionCost)", model: .modelName, session_resets_in: "\(.sessionResetSec / 3600 * 10 | floor / 10)h", weekly_resets_in: "\(.weeklyResetSec / 86400 * 10 | floor / 10)d"}'</pre>
+<p>Trigger it from the palette (<kbd>Ctrl+R</kbd> → search "Claude") when you want a quick status check.</p>
+
+<h2>Warp AI vs Claude Code — using both</h2>
+<p>Warp has its own built-in AI for terminal help. Claude Code is a separate tool for larger coding tasks. They serve different use cases and different rate limits:</p>
+<div class="compare">
+  <div class="compare-box">
+    <h4>Warp AI</h4>
+    <p>Inline terminal suggestions, command explanations, one-shot fixes. Warp's own model and quota.</p>
+  </div>
+  <div class="compare-box">
+    <h4>Claude Code</h4>
+    <p>Multi-file refactors, long sessions, project-level reasoning. Anthropic quota (5h session + 7d week).</p>
+  </div>
+</div>
+<p>The session/weekly rate limits tracked by the integrations above apply only to Claude Code — not to Warp AI. If you primarily use Claude Code from within Warp, the prompt block or MOTD gives you limit visibility without leaving the terminal.</p>
+<div class="note"><p>All integrations read from <code>~/.claude/headroom-usage.json</code> — a local file Claude Code writes. Zero network calls, no Anthropic token access.</p></div>
+
+<h2>Menu bar instead of terminal</h2>
+<p>For persistent, always-visible usage without a terminal window open, <a href="/">Headroom</a> adds a Claude Code meter to your macOS menu bar. It reads the same local file — color-coded, with a dropdown showing reset countdowns and pace forecast.</p>
+<pre>brew install --cask patwalls/tap/headroom</pre>
+<p>Warp prompt block and Headroom complement each other: the prompt shows usage in-context while you're in the terminal; Headroom shows it globally when Warp is in the background.</p>
+
+<p>→ <a href="/shell">Shell prompt guide (zsh, bash, fish)</a><br>
+→ <a href="/tmux">tmux status bar integration</a><br>
+→ <a href="/starship">Starship module</a><br>
+→ <a href="/hook">statusLineHook setup</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/shell">Shell</a> · <a href="/tmux">tmux</a> · <a href="/starship">Starship</a> · <a href="/limits">Rate limits</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
