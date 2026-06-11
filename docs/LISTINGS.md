@@ -134,3 +134,16 @@ Script ready: `CONFIRM=1 node ~/code/agent-browser/tasks/headroom-awesome-claude
 Script ready: `CONFIRM=1 node ~/code/agent-browser/tasks/headroom-megalist-issue.mjs`
 - Request adding Headroom to Developer Utilities section (alphabetically between Graphite and Icon Finder)
 - Stars: 109, but specifically a menu bar megalist — high fit
+
+## open-saas-directory/awesome-native-macosx-apps PR (agent-browser, needs GitHub login)
+
+Script ready: `CONFIRM=1 node ~/code/agent-browser/tasks/headroom-native-macos-list.mjs`
+- Adds to Menu Bar Apps section between "Hand Mirror" and "Hidden Bar" (alphabetical: He < Hi)
+- Stars: 1,230
+
+## Maciek-roboblog/Claude-Code-Usage-Monitor issue (agent-browser, needs GitHub login)
+
+Script ready: `CONFIRM=1 node ~/code/agent-browser/tasks/headroom-ccmonitor-issue.mjs`
+- Suggests adding "Related Tools" section to their README, mentioning Headroom's different architecture (status-line hook → utilization %, vs. their JSONL approach → cost/token history)
+- Stars: 8,181 (top Claude Code usage monitor on GitHub)
+- Context: their PR #215 is adding a macOS menu bar companion — Headroom is the complementary tool with different data source and focus
