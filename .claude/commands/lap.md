@@ -109,6 +109,8 @@ End by stating: what shipped, the fact learned, and the lap you'll likely run ne
 Before ending the lap, re-read this wall's entry in `~/code/walls/registry.json`. If this
 lap — or any earlier one — satisfied an open `todo` item (especially `owner: "you"` items
 whose blocker has since cleared), mark it `done: true` with a dated note, and sweep for
-related items the same work satisfied. Then commit + push the walls repo. The wall is
+related items the same work satisfied. Then commit + push the walls repo — push IS the
+publish (the dashboard reads git main at runtime, live in ~30s); never `railway up` the
+walls service for data-only changes. The wall is
 Pat's source of truth; a stale "needs you" item burns his attention on solved problems
 (the LinkedIn incident, 2026-06-11: shipped in Lap 107, still listed as needing him).
