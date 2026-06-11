@@ -339,6 +339,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/brew</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/compact</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/statusline</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/raycast</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>`);
   }
 
@@ -1873,6 +1874,145 @@ Your 5-hour Claude Code window is 92% full. Resets in 23m.</code></pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
+  }
+
+  if (url.pathname === "/raycast") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Usage in Raycast — Script Command for Session & Weekly %</title>
+<meta name="description" content="A Raycast Script Command that shows your Claude Code session and weekly usage from Headroom's local JSON file. No API calls, always current.">
+<link rel="canonical" href="https://headroom.walls.sh/raycast">
+<meta property="og:title" content="Claude Code Usage in Raycast — Script Command for Session & Weekly %">
+<meta property="og:description" content="A Raycast Script Command that shows your Claude Code session and weekly usage from Headroom's local JSON file. No API calls, always current.">
+<meta property="og:url" content="https://headroom.walls.sh/raycast">
+<meta property="og:type" content="website">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2rem;font-weight:700;margin:0 0 8px;line-height:1.2}
+  h2{font-size:1.2rem;font-weight:600;margin:40px 0 12px;color:var(--accent)}
+  p{margin:0 0 16px;color:var(--ink)}
+  code{font-family:"SF Mono",Menlo,monospace;font-size:.88em;background:var(--panel);padding:2px 6px;border-radius:4px}
+  pre{background:var(--panel);border:1px solid #2a2d36;border-radius:8px;padding:20px;overflow-x:auto;font-size:.88em;line-height:1.6;margin:0 0 24px}
+  .dim{color:var(--dim)}
+  .warn{color:var(--warn)}
+  .ok{color:var(--ok)}
+  .bad{color:var(--bad)}
+  .callout{background:var(--panel);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 20px;margin:0 0 24px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  nav{margin-bottom:40px}
+  footer{margin-top:64px;padding-top:24px;border-top:1px solid #23262f;color:var(--dim);font-size:.9em}
+</style>
+</head><body><main>
+<nav><a href="/">← Headroom</a></nav>
+
+<h1>Claude Code Usage in Raycast</h1>
+<p class="dim">A Script Command that reads Headroom's local JSON and shows your Claude Code session + weekly % on demand from Raycast.</p>
+
+<div class="callout">
+<strong>Prerequisites:</strong> <a href="https://raycast.com">Raycast</a> installed + Headroom running (writes <code>~/.claude/headroom-usage.json</code>). Requires <code>jq</code> — install with <code>brew install jq</code>.
+</div>
+
+<h2>The Script Command</h2>
+
+<p>Raycast Script Commands are shell scripts with special comment metadata. Save this as <code>~/raycast-scripts/claude-usage.sh</code>:</p>
+
+<pre>#!/bin/bash
+
+# Required parameters:
+# @raycast.schemaVersion 1
+# @raycast.title Claude Code Usage
+# @raycast.mode compact
+# @raycast.packageName Developer Tools
+
+# Optional parameters:
+# @raycast.icon 🧠
+# @raycast.description Show Claude Code session and weekly usage from Headroom
+
+FILE="$HOME/.claude/headroom-usage.json"
+
+if [ ! -f "\$FILE" ]; then
+  echo "No data — is Headroom installed?"
+  exit 0
+fi
+
+SESSION=$(jq '.sessionUsagePct | floor' "\$FILE" 2>/dev/null)
+WEEKLY=$(jq '.weeklyUsagePct | floor' "\$FILE" 2>/dev/null)
+CONTEXT=$(jq '.contextUsagePct | floor // empty' "\$FILE" 2>/dev/null)
+MODEL=$(jq -r '.modelName // "unknown"' "\$FILE" 2>/dev/null)
+COST=$(jq '.sessionCost // 0' "\$FILE" 2>/dev/null)
+
+if [ -z "\$SESSION" ]; then
+  echo "Waiting for Claude Code data…"
+  exit 0
+fi
+
+if [ -n "\$CONTEXT" ]; then
+  echo "CC \${SESSION}%·\${WEEKLY}%·\${CONTEXT}% | \$MODEL | \$\$\${COST}"
+else
+  echo "CC \${SESSION}%·\${WEEKLY}% | \$MODEL | \$\$\${COST}"
+fi</pre>
+
+<h2>Setup</h2>
+
+<ol>
+  <li>Save the script to <code>~/raycast-scripts/claude-usage.sh</code></li>
+  <li>Make it executable: <code>chmod +x ~/raycast-scripts/claude-usage.sh</code></li>
+  <li>In Raycast: open Settings → Extensions → Script Commands → Add Directory → pick <code>~/raycast-scripts/</code></li>
+  <li>Search for "Claude Code Usage" in Raycast — it will appear as a command</li>
+</ol>
+
+<h2>Detailed view (list mode)</h2>
+
+<p>For a full breakdown with reset countdowns, use <code>@raycast.mode fullOutput</code>:</p>
+
+<pre>#!/bin/bash
+
+# @raycast.schemaVersion 1
+# @raycast.title Claude Code Usage (Detailed)
+# @raycast.mode fullOutput
+# @raycast.packageName Developer Tools
+# @raycast.icon 🧠
+# @raycast.description Full Claude Code usage breakdown with reset times
+
+FILE="$HOME/.claude/headroom-usage.json"
+[ ! -f "\$FILE" ] && echo "Headroom not installed or Claude Code not running." && exit 0
+
+jq -r '
+  "Session:  " + (.sessionUsagePct | floor | tostring) + "%" +
+    (if .sessionResetSec then " (resets in " + (.sessionResetSec / 3600 | floor | tostring) + "h " + ((.sessionResetSec % 3600) / 60 | floor | tostring) + "m)" else "" end),
+  "Weekly:   " + (.weeklyUsagePct  | floor | tostring) + "%" +
+    (if .weeklyResetSec then " (resets in " + (.weeklyResetSec / 86400 | floor | tostring) + "d " + ((.weeklyResetSec % 86400) / 3600 | floor | tostring) + "h)" else "" end),
+  (if .contextUsagePct then "Context:  " + (.contextUsagePct | floor | tostring) + "%" else empty end),
+  "Model:    " + (.modelName // "unknown"),
+  "Cost:     $" + ((.sessionCost // 0) | tostring)
+' "\$FILE"</pre>
+
+<h2>Set a keyboard shortcut</h2>
+
+<p>In Raycast Settings → Extensions → Script Commands → Claude Code Usage → set a hotkey like <kbd>⌘⌥U</kbd> to pull up usage without leaving your current app.</p>
+
+<h2>The always-on alternative</h2>
+
+<p>The Raycast Script Command shows usage on demand. Headroom shows it always-on in the menu bar — you can see it at a glance without opening Raycast. Both read from the same file.</p>
+
+<p>If you want the ambient view (without opening Raycast each time), Headroom is the right tool. If you prefer Raycast as your control center and want to query usage there, this script works well.</p>
+
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<p>→ <a href="/shell">Shell prompt integration</a><br>
+→ <a href="/starship">Starship integration</a><br>
+→ <a href="/tmux">tmux integration</a><br>
+→ <a href="/hook">How the data source works</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/raycast">Raycast</a> · <a href="/shell">Shell</a> · <a href="/starship">Starship</a> · <a href="/tmux">tmux</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
   }
 
   if (url.pathname === "/statusline") {

@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 115 — 2026-06-11 · New SEO page: /raycast — Raycast Script Command for Claude Code usage.**
+  *Shipped:* https://headroom.walls.sh/raycast is live — targets "raycast claude code", "claude code raycast extension" queries. Full Raycast Script Command (compact mode + fullOutput detailed mode with reset countdowns), setup steps, keyboard shortcut instructions, and the ambient vs on-demand comparison (Headroom = always visible; Raycast = on-demand query). 20 SEO pages total. Downloads: 54. *Fact learned:* Raycast Script Commands are shell scripts — they can read the headroom-usage.json file directly with jq, making the integration trivial. This is a distinct value from Starship/tmux/zsh which are passive; Raycast is active (you invoke it). *Next lap:* Check if Reddit posts are converting (overnight sleep). Write /warp or /alfred pages. r/macOS Saturday June 13.
+
 - **Lap 114 — 2026-06-11 · New SEO page: /statusline — Claude Code status line explained.**
   *Shipped:* https://headroom.walls.sh/statusline is live — targets "claude code status line", "claude code status bar", "claude code statuslinehook" queries. Covers all status line fields (model, session %, weekly %, context %, cost), how Headroom reads it via statusLineHook, the JSON shape, reading the data yourself with jq, writing your own hook, and /usage vs statusLineHook comparison. 19 SEO pages total. Downloads: 54. *Fact learned:* The /statusline page naturally bridges the gap between people who just discovered the statusLineHook mechanic and people who want external tooling. It's both SEO-valuable and a key discovery page for the hook integration. *Next lap:* Write /vscode page or look for more community platforms. Check download count tomorrow.
 
