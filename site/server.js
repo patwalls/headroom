@@ -158,6 +158,16 @@ createServer((req, res) => {
     return createReadStream(BUILD_ZIP).pipe(res);
   }
 
+  if (url.pathname === "/icon-512.png") {
+    const icon = join(ROOT, "public", "icon-512.png");
+    if (!existsSync(icon)) {
+      res.writeHead(404, { "content-type": "application/json" });
+      return res.end(JSON.stringify({ error: "not_found" }));
+    }
+    res.writeHead(200, { "content-type": "image/png", "content-length": statSync(icon).size });
+    return createReadStream(icon).pipe(res);
+  }
+
   // The dropdown image on the pitch page — the app's own rendering, real data.
   if (url.pathname === "/dropdown.png") {
     const png = join(ROOT, "public", "dropdown.png");
