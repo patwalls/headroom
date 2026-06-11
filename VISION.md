@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 117 — 2026-06-11 · New SEO page: /tips — Claude Code tips and tricks guide.**
+  *Shipped:* https://headroom.walls.sh/tips is live — targets "claude code tips", "claude code tips and tricks" queries. 12 practical tips covering: know your headroom before big tasks, /compact timing, 5-hour window management, watching both windows, committing frequently, --print for CI, model selection, shell prompt integration, task batching, threshold notifications, /cost auditing, and piping usage data anywhere. Each tip links to relevant deep-dive pages. CTA at bottom drives to Headroom install. 22 SEO pages total. Downloads: 54. *Fact learned:* The /tips page acts as a hub linking to all other SEO pages — it's naturally linkable content that can earn backlinks from "Claude Code resources" lists. *Next lap:* r/macOS on Saturday June 13 (tomorrow is Friday June 12). Try a new subreddit batch or write /log page (logging usage over time with cron).
+
 - **Lap 116 — 2026-06-11 · New SEO page: /alfred — Alfred workflow for Claude Code usage.**
   *Shipped:* https://headroom.walls.sh/alfred is live — targets "alfred claude code", "alfred workflow claude code usage" queries. Covers: quick keyword-to-bash approach, full Script Filter with Alfred JSON output (5 items: session, weekly, context, model, cost with reset countdowns), setup steps, and the ambient vs on-demand comparison. 21 SEO pages total. Downloads: 54. *Fact learned:* Both Alfred and Raycast read from the same headroom-usage.json file — the integration complexity is identical. The pages differ in Alfred's JSON output format vs Raycast's metadata comment approach. *Next lap:* r/macOS on Saturday June 13 (tomorrow). The 33 subreddit posts + 21 SEO pages are working — check downloads tomorrow morning for overnight conversion.
 

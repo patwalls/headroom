@@ -341,6 +341,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/statusline</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/raycast</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://headroom.walls.sh/alfred</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://headroom.walls.sh/tips</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -3077,6 +3078,130 @@ print(f'Weekly  resets in: {fmt(wr)}')
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/hook">Hook docs</a> · <a href="/faq">FAQ</a> · <a href="/reset">Reset timing</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/tips") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Tips and Tricks — Power User Guide</title>
+<meta name="description" content="12 practical Claude Code tips: manage rate limits, track usage, use /compact at the right time, set up shell indicators, and batch work across sessions.">
+<link rel="canonical" href="https://headroom.walls.sh/tips">
+<meta property="og:title" content="Claude Code Tips and Tricks — Power User Guide">
+<meta property="og:description" content="12 practical tips for Claude Code power users: rate limit management, context hygiene, shell integration, cost control, and session planning.">
+<meta property="og:url" content="https://headroom.walls.sh/tips">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code Tips and Tricks — Power User Guide">
+<meta name="twitter:description" content="12 practical tips for Claude Code power users.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.2rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.5em}
+  h2{font-size:1.15rem;margin:2.2em 0 .4em;color:var(--ink)}
+  h2 .num{color:var(--accent);font-family:ui-monospace,Menlo,monospace;font-size:.95rem;margin-right:.5em}
+  p{color:#c9c6bd;margin:.4em 0 .8em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.85rem;line-height:1.5;margin:.6em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .tip{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:14px 18px;margin:1em 0}
+  .tip p{margin:0;color:#c9c6bd;font-size:.95rem}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · tips</p>
+<h1>Claude Code tips and tricks</h1>
+<p class="sub">12 practical habits for power users — from rate limit management to context hygiene and shell integration.</p>
+
+<h2><span class="num">01</span> Always know your headroom before a big task</h2>
+<p>Claude Code has two invisible limits: a <strong>5-hour session window</strong> and a <strong>7-day rolling weekly cap</strong>. Both stop you cold with no warning mid-task. Before you start a long refactor, check where you stand:</p>
+<pre>cat ~/.claude/headroom-usage.json | jq '{session: .sessionUsagePct, weekly: .weeklyUsagePct, resetIn: .sessionResetSec}'</pre>
+<p>Or run <code>/usage</code> inside any Claude Code session for the same numbers. If you're above 80% on either, consider finishing or queuing the task for after a reset.</p>
+<div class="tip"><p><strong>Headroom</strong> keeps both meters visible at all times in your menu bar — color-coded green → amber at 70% → red at 90%. <a href="/">Install it free</a>.</p></div>
+
+<h2><span class="num">02</span> Use /compact before long tasks, not after you're stuck</h2>
+<p>Claude Code's context window is separate from your rate limit. When context fills up, Claude Code auto-compacts — but mid-task compaction can lose important state. Run <code>/compact</code> yourself when:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+  <li>You're about to pivot to a new subtask</li>
+  <li>The session has been going 30+ minutes</li>
+  <li>You're seeing slower, less precise responses</li>
+</ul>
+<p>Compaction summarizes completed work but preserves your open tasks and current goal. Your rate limit meters don't change — only context gets cleaned.</p>
+<p>→ <a href="/compact">Full guide to /compact</a></p>
+
+<h2><span class="num">03</span> Time your sessions around the 5-hour window</h2>
+<p>The session window is a <strong>rolling 5 hours</strong> — it doesn't reset at midnight. The earliest tokens you sent this session expire 5 hours after they were sent, gradually freeing capacity. If you hit 100% and need to work immediately, the reset isn't all-or-nothing:</p>
+<pre>cat ~/.claude/headroom-usage.json | jq '.sessionResetSec / 60 | floor | "\(.) minutes until oldest tokens expire"'</pre>
+<p>Starting a session in the morning gives you a clean 5-hour window. Late-night sessions often inherit usage from evening work.</p>
+<p>→ <a href="/session">Deep dive: 5-hour session window</a></p>
+
+<h2><span class="num">04</span> Watch both windows, not just the one you hit</h2>
+<p>Most people notice the 5-hour session limit first — it hits fast. But the <strong>7-day weekly cap</strong> is the real trap: it drains slowly over a week and you won't notice until Thursday when you need to ship. Heavy Monday work can leave you rate-limited by Wednesday.</p>
+<pre>cat ~/.claude/headroom-usage.json | jq '{weekly: .weeklyUsagePct, weeklyResetDays: (.weeklyResetSec / 86400 | . * 10 | floor / 10)}'</pre>
+<p>→ <a href="/weekly">Deep dive: 7-day weekly window</a></p>
+
+<h2><span class="num">05</span> Commit frequently — Claude Code's memory is the session</h2>
+<p>Claude Code maintains state within a session, but a new session starts fresh. Commit your work often so if you have to let a session expire, you're not rebuilding context from scratch. Good git hygiene doubles as Claude Code hygiene.</p>
+<pre>git add -p && git commit -m "wip: checkpoint before context reset"</pre>
+
+<h2><span class="num">06</span> Use --print for scripts and CI</h2>
+<p>Don't wrap Claude Code in expect or interactive hacks for automation. The <code>--print</code> flag outputs the response to stdout and exits — perfect for CI pipelines, shell scripts, or one-shot queries:</p>
+<pre>claude --print "Summarize the changes in this diff: $(git diff HEAD~1)"</pre>
+<p>Combine with <code>--model</code> to use a cheaper model for scripted tasks and preserve your limit budget for interactive work.</p>
+
+<h2><span class="num">07</span> Check the model before a big session</h2>
+<p>Claude Code defaults to a capable model, but different models have different costs and speed profiles. A long refactor session on Sonnet burns budget faster than the same session on a lighter model. Check what you're on:</p>
+<pre>cat ~/.claude/headroom-usage.json | jq '.modelName'</pre>
+<p>Switch with <code>/model</code> inside a session. Use a lighter model for exploration; escalate to a heavier model for the final implementation pass.</p>
+<p>→ <a href="/model">Model selection guide</a></p>
+
+<h2><span class="num">08</span> Add usage to your shell prompt</h2>
+<p>The same data that Headroom shows in the menu bar is available for your shell prompt. A one-liner that shows session % in your PS1:</p>
+<pre>export PS1='$(jq -r "\"CC \(.sessionUsagePct|floor)%\"" ~/.claude/headroom-usage.json 2>/dev/null || echo "CC --") $ '</pre>
+<p>For Starship users, there's a full custom module that color-codes based on thresholds. For tmux, there's a status-bar integration.</p>
+<p>→ <a href="/starship">Starship module</a> · <a href="/tmux">tmux status bar</a> · <a href="/shell">Shell prompt guide</a></p>
+
+<h2><span class="num">09</span> Batch similar tasks to reduce context overhead</h2>
+<p>Each new session starts with zero context, which is both a reset and a cost. When you have a set of similar tasks (e.g., adding tests to multiple files), batch them into one session instead of starting fresh for each. Claude Code can hold multiple files and tasks in context simultaneously — use that.</p>
+<pre>claude "Add unit tests to src/auth.ts, src/session.ts, and src/user.ts — all three"</pre>
+
+<h2><span class="num">10</span> Set threshold notifications so limits don't surprise you</h2>
+<p>macOS's native notification system can fire when your usage crosses a threshold. A LaunchAgent that checks every 5 minutes and fires a notification when session usage crosses 80%:</p>
+<pre>cat ~/.claude/headroom-usage.json | jq -r 'if .sessionUsagePct > 80 then "warn" else "ok" end'</pre>
+<p>→ <a href="/notifications">Full threshold notification setup</a></p>
+
+<h2><span class="num">11</span> Use /cost to audit expensive sessions</h2>
+<p>Run <code>/cost</code> inside any session to see the token breakdown for that conversation. If a session is burning through budget faster than expected, <code>/cost</code> often reveals a file that's being re-read on every turn or a long context window that should have been compacted.</p>
+<p>→ <a href="/cost">Cost tracking guide</a></p>
+
+<h2><span class="num">12</span> Pipe usage data anywhere with jq</h2>
+<p>The <code>~/.claude/headroom-usage.json</code> file (written by Claude Code's <code>statusLineHook</code>) is plain JSON. You can pipe it anywhere — Raycast, Alfred, a shell prompt, a tmux bar, a cron alert, a web dashboard:</p>
+<pre>cat ~/.claude/headroom-usage.json
+# {
+#   "sessionUsagePct": 34.2,
+#   "weeklyUsagePct": 61.8,
+#   "sessionCost": 0.42,
+#   "modelName": "claude-sonnet-4-6",
+#   "sessionResetSec": 9847,
+#   "weeklyResetSec": 198432
+# }</pre>
+<p>→ <a href="/hook">Hook setup</a> · <a href="/raycast">Raycast Script Command</a> · <a href="/alfred">Alfred workflow</a></p>
+
+<hr style="border:none;border-top:1px solid #242936;margin:3em 0 2em">
+
+<h2 style="margin-top:0">One app that implements tips 01, 04, and 07 for you</h2>
+<p><a href="/">Headroom</a> is a free macOS menu bar app that keeps your Claude Code session (5h) and weekly (7d) usage visible at all times — color-coded before a limit stops you. No config, no API key, no network calls. It reads the same local file the tips above use.</p>
+<pre>brew install --cask patwalls/tap/headroom</pre>
+<p>Or <a href="/download">download directly</a>. Free, MIT, ~267 KB, native Swift, signed + notarized.</p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="/reset">Reset timing</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
