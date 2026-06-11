@@ -46,8 +46,10 @@ enum Render {
         let levels = [five, seven].compactMap { $0?.utilization }
         let fivePct  = five.map  { percent($0.utilization) } ?? "—"
         let sevenPct = seven.map { percent($0.utilization) } ?? "—"
+        // Append context window % when available: "CC 23%·67%·41%"
+        let ctxSuffix = usage.contextUsed.map { "·\(percent($0))" } ?? ""
         return Decision(
-            title: "CC \(fivePct)·\(sevenPct)",
+            title: "CC \(fivePct)·\(sevenPct)\(ctxSuffix)",
             tone: levels.isEmpty ? .calm : Tone(utilization: levels.max()!),
             session: five,
             week: seven,

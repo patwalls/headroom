@@ -378,14 +378,9 @@ li b{color:#e8e8e8}
 <p class="sub">Every version of Headroom, newest first. <a href="https://github.com/patwalls/headroom/releases" style="color:#888">GitHub releases →</a></p>
 
 <div class="upcoming">
-<h3>Coming in v0.3.6 + v0.3.7 (on main, pending release)</h3>
+<h3>Coming in v0.3.5 (on main, pending bundle)</h3>
 <ul>
-  <li><b>Dual display</b> — menu bar now shows both meters: <code style="font-size:12px;background:#2a2510;padding:1px 5px;border-radius:3px">CC 10%·65%</code> (session·weekly at a glance, no click needed)</li>
-  <li><b>macOS notifications</b> — alerts at 70% and 90% when a window fills; configurable via <code style="font-size:12px;background:#2a2510;padding:1px 5px;border-radius:3px">~/.claude/headroom-prefs.json</code></li>
-  <li><b>Pace forecast</b> — "~2h 15m at pace" in the meter caption when your usage rate would fill the window before reset</li>
-  <li><b>Share Headroom…</b> — native macOS share sheet (Messages, Mail, AirDrop, copy link)</li>
-  <li><b>Copy Stats</b> — ⌘C copies your current session/week/context/model/cost to the clipboard as plain text</li>
-  <li><b>Open Claude Code</b> — menu item to jump directly to Claude Code from the menu bar</li>
+  <li><b>Context % in the menu bar title</b> — the title will show all three meters: <code style="font-size:12px;background:#2a2510;padding:1px 5px;border-radius:3px">CC 23%·67%·41%</code> (session · weekly · context). See your context fill without opening the dropdown.</li>
 </ul>
 </div>
 
