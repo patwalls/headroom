@@ -343,6 +343,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/alfred</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://headroom.walls.sh/tips</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/settings</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/mcp</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -3079,6 +3080,233 @@ print(f'Weekly  resets in: {fmt(wr)}')
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/hook">Hook docs</a> · <a href="/faq">FAQ</a> · <a href="/reset">Reset timing</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/mcp") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code MCP Setup — Model Context Protocol Configuration Guide</title>
+<meta name="description" content="How to configure MCP servers in Claude Code: settings.json mcpServers syntax, filesystem, GitHub, and custom servers. Plus the statusLineHook that shows live usage.">
+<link rel="canonical" href="https://headroom.walls.sh/mcp">
+<meta property="og:title" content="Claude Code MCP Setup — Model Context Protocol Configuration Guide">
+<meta property="og:description" content="Configure MCP servers in Claude Code: mcpServers syntax, filesystem, GitHub, custom servers, and the statusLineHook for live usage display.">
+<meta property="og:url" content="https://headroom.walls.sh/mcp">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code MCP Setup Guide">
+<meta name="twitter:description" content="Configure MCP servers in Claude Code's settings.json, with examples for filesystem, GitHub, and custom servers.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1.1rem;margin:2.2em 0 .35em;color:var(--ink);border-bottom:1px solid #242936;padding-bottom:.3em}
+  h3{font-size:.95rem;margin:1.4em 0 .25em;color:var(--accent)}
+  p{color:#c9c6bd;margin:.35em 0 .7em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.84rem;line-height:1.55;margin:.5em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+  table{width:100%;border-collapse:collapse;margin:.6em 0 1.2em;font-size:.88rem}
+  th{text-align:left;color:var(--dim);font-weight:600;border-bottom:1px solid #242936;padding:6px 10px 6px 0}
+  td{border-bottom:1px solid #1e2230;padding:7px 10px 7px 0;color:#c9c6bd;vertical-align:top}
+  td:first-child{color:var(--ok);font-family:ui-monospace,Menlo,monospace;font-size:.84rem;white-space:nowrap}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · mcp</p>
+<h1>Claude Code MCP setup</h1>
+<p class="sub">Configure Model Context Protocol servers in Claude Code — the <code>mcpServers</code> block in <code>settings.json</code>, transport types, scopes, and common examples.</p>
+
+<h2>What MCP gives Claude Code</h2>
+<p>Model Context Protocol (MCP) is how Claude Code talks to external tools and data sources beyond its built-in capabilities. An MCP server is a process (local or remote) that exposes tools, resources, and prompts. Claude Code calls these tools the same way it calls its own built-in tools — transparently, mid-session.</p>
+<p>Common uses: read files outside the project tree, query databases, fetch GitHub issues, run browser automation, hit internal APIs, read Slack channels, manage calendar events.</p>
+
+<h2>Where to configure MCP</h2>
+<p>MCP servers go in the <code>mcpServers</code> block of <code>settings.json</code>. Two scopes:</p>
+<table>
+<tr><th>File</th><th>Scope</th></tr>
+<tr><td>~/.claude/settings.json</td><td>User-level — available in every project</td></tr>
+<tr><td>.claude/settings.json</td><td>Project-level — only in this repo</td></tr>
+</table>
+<p>Both files can have <code>mcpServers</code>. Claude Code merges them; project-level wins for the same server name.</p>
+
+<h2>mcpServers syntax</h2>
+<p>Each key in <code>mcpServers</code> is the server's display name. The value specifies how to launch it:</p>
+<pre>{
+  "mcpServers": {
+    "my-server": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/path/to/server.js"],
+      "env": {
+        "MY_API_KEY": "..."
+      }
+    }
+  }
+}</pre>
+
+<h3>Transport types</h3>
+<table>
+<tr><th>type</th><th>When to use</th></tr>
+<tr><td>stdio</td><td>Local process — most common. Claude Code spawns it, communicates over stdin/stdout.</td></tr>
+<tr><td>sse</td><td>Remote server over HTTP Server-Sent Events. Use for shared team servers or hosted MCP services.</td></tr>
+</table>
+
+<h3>stdio fields</h3>
+<table>
+<tr><th>Field</th><th>Description</th></tr>
+<tr><td>command</td><td>Executable to run (node, python, npx, uvx, etc.)</td></tr>
+<tr><td>args</td><td>Array of arguments</td></tr>
+<tr><td>env</td><td>Environment variables for the server process</td></tr>
+<tr><td>cwd</td><td>Working directory (defaults to the project root)</td></tr>
+</table>
+
+<h3>sse fields</h3>
+<table>
+<tr><th>Field</th><th>Description</th></tr>
+<tr><td>url</td><td>The SSE endpoint URL</td></tr>
+<tr><td>headers</td><td>HTTP headers (e.g. Authorization)</td></tr>
+</table>
+
+<h2>Common MCP server examples</h2>
+
+<h3>Filesystem (read files anywhere)</h3>
+<pre>{
+  "mcpServers": {
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/you/Documents"]
+    }
+  }
+}</pre>
+<p>Gives Claude Code read/write access to <code>/Users/you/Documents</code> and below. Pass multiple paths as additional args.</p>
+
+<h3>GitHub</h3>
+<pre>{
+  "mcpServers": {
+    "github": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_..."
+      }
+    }
+  }
+}</pre>
+<p>Lets Claude Code read issues, PRs, and code from GitHub repos.</p>
+
+<h3>Postgres</h3>
+<pre>{
+  "mcpServers": {
+    "postgres": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost/mydb"]
+    }
+  }
+}</pre>
+
+<h3>Brave Search</h3>
+<pre>{
+  "mcpServers": {
+    "brave-search": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+      "env": {
+        "BRAVE_API_KEY": "..."
+      }
+    }
+  }
+}</pre>
+
+<h3>Remote SSE server</h3>
+<pre>{
+  "mcpServers": {
+    "internal-tools": {
+      "type": "sse",
+      "url": "https://mcp.yourcompany.com/sse",
+      "headers": {
+        "Authorization": "Bearer ..."
+      }
+    }
+  }
+}</pre>
+
+<h3>Custom local server (Python)</h3>
+<pre>{
+  "mcpServers": {
+    "my-tools": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "my_mcp_server"],
+      "env": {
+        "DATABASE_URL": "sqlite:///~/data.db"
+      }
+    }
+  }
+}</pre>
+
+<h2>Managing MCP servers at runtime</h2>
+<p>Inside any Claude Code session:</p>
+<table>
+<tr><th>Command</th><th>What it does</th></tr>
+<tr><td>/mcp</td><td>List connected MCP servers and their status</td></tr>
+<tr><td>/mcp restart &lt;name&gt;</td><td>Restart a specific server</td></tr>
+</table>
+<p>Server failures are shown inline when Claude Code tries to use a tool from a disconnected server — it won't silently skip them.</p>
+
+<h2>Scoping MCP to a project</h2>
+<p>Put project-specific servers (internal APIs, local scripts) in the repo's <code>.claude/settings.json</code> and commit it. Team members who clone the repo get the same MCP configuration. Keep credentials in environment variables, not in the committed file.</p>
+<pre># .claude/settings.json (committed)
+{
+  "mcpServers": {
+    "our-api": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["scripts/mcp-server.js"]
+    }
+  }
+}
+
+# .env (gitignored)
+OUR_API_KEY=...</pre>
+
+<h2>Adding the statusLineHook while you're in settings.json</h2>
+<p>The <code>statusLineHook</code> field lives alongside <code>mcpServers</code> in the same <code>~/.claude/settings.json</code>. Once set, it writes your Claude Code session (5h) and weekly (7d) usage to a local file every status-line refresh — which is what <a href="/">Headroom</a> reads to show your live usage in the menu bar.</p>
+<pre>{
+  "statusLineHook": "cat ~/.claude/headroom-usage.json 2>/dev/null | jq -r '\"CC \\(.sessionUsagePct|floor)%·\\(.weeklyUsagePct|floor)%\"' 2>/dev/null || echo 'CC --%'",
+  "mcpServers": {
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/you"]
+    }
+  }
+}</pre>
+<p>One file, two features: MCP tools + live usage display. No extra config.</p>
+<div class="note"><p>The <code>statusLineHook</code> writes usage data that Headroom reads. Headroom makes zero network calls — it never touches your Anthropic token or API key.</p></div>
+
+<hr style="border:none;border-top:1px solid #242936;margin:2.8em 0 2em">
+<p><a href="/">Headroom</a> shows your Claude Code session (5h) and weekly (7d) usage as a live % in the menu bar. Free, MIT, ~267 KB, signed + notarized.</p>
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<p>→ <a href="/settings">Full settings.json reference</a><br>
+→ <a href="/hook">statusLineHook docs</a><br>
+→ <a href="/limits">Rate limits explained</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/hook">Hook docs</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
