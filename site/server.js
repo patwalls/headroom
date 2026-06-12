@@ -377,6 +377,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/api</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/react</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/svelte</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/vue</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -8291,6 +8292,130 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #e5e5e5;color:#666;fo
 <hr>
 <p>→ <a href="/typescript">Claude Code for TypeScript</a><br>
 → <a href="/react">Claude Code for React</a><br>
+→ <a href="/test">Writing tests with Claude Code</a><br>
+→ <a href="/vscode">Claude Code + VS Code</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/vue") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code for Vue.js — components, Pinia, Composition API, and testing</title>
+<meta name="description" content="Use Claude Code to build Vue 3 components, write Composition API composables, migrate Options API to Composition API, manage state with Pinia, and run Vitest test loops.">
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:740px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.6}
+h1{font-size:2rem;font-weight:700;margin-bottom:.3em}
+h2{font-size:1.25rem;font-weight:600;margin-top:2em}
+pre{background:#f5f5f5;padding:14px 16px;border-radius:6px;overflow-x:auto;font-size:.9rem;line-height:1.5}
+code{background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:.9em}
+.cta-box{background:#f0f7ff;border:1px solid #bcd;border-radius:8px;padding:20px 24px;margin:2em 0}
+.brew{background:#1e1e1e;color:#a8ff78;padding:12px 16px;border-radius:6px;font-family:monospace;font-size:.95rem;margin:10px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid #e5e5e5}
+th{font-weight:600;background:#f8f8f8}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #e5e5e5;color:#666;font-size:.9rem}
+</style>
+</head><body>
+<p><a href="/">← headroom.walls.sh</a></p>
+<h1>Claude Code for Vue.js</h1>
+<p>Claude Code handles Vue 3 work well — component generation, Composition API composables, Pinia stores, Options→Composition API migration, and test loops. It reads your existing components first and matches your conventions rather than imposing new ones.</p>
+
+<h2>CLAUDE.md for a Vue 3 project</h2>
+<pre>
+# Vue 3 App
+
+## Stack
+- Vue 3 + TypeScript + Vite
+- State: Pinia
+- Router: Vue Router 4
+- Styling: Tailwind CSS
+- Testing: Vitest + Vue Test Utils + Playwright
+
+## Commands
+- Dev: npm run dev
+- Test: npm test
+- E2E: npx playwright test
+- Typecheck: npx vue-tsc --noEmit
+- Lint: npm run lint
+
+## Conventions
+- Components in src/components/ — PascalCase .vue files
+- Composables in src/composables/ — useXxx.ts
+- Stores in src/stores/ — one store per domain (Pinia)
+- All components use \`<script setup lang="ts">\`
+- Props defined with defineProps<T>() generics, not options API
+- No inline styles — use Tailwind classes
+</pre>
+
+<h2>Generate a Vue component</h2>
+<pre>claude "create a DateRangePicker.vue component with script setup and TypeScript. Props: modelValue ({ start: Date | null, end: Date | null }), disabled (boolean, optional). Emits update:modelValue. Follow the patterns in src/components/."</pre>
+<p>Claude Code reads your existing components before writing — it matches whether you use <code>&lt;script setup&gt;</code>, how you define props, your emit style, and your CSS approach. The result is consistent with the rest of the codebase.</p>
+
+<h2>Write a Composition API composable</h2>
+<pre>claude "create a useIntersectionObserver composable in src/composables/. It takes a target ref and options, returns isVisible (ref boolean). Clean up the observer on unmount. Export TypeScript types."</pre>
+<pre>claude "create a useFetch composable: takes a URL and options, returns { data, error, loading, refetch }. Use Vue's ref and watch. Abort in-flight requests on URL change or unmount."</pre>
+<p>Composables are where Vue 3 shines — Claude Code generates them with correct lifecycle cleanup, typed return values, and consistent naming. Give it the return shape you want upfront.</p>
+
+<h2>Migrate Options API to Composition API</h2>
+<pre>claude "migrate src/components/UserProfile.vue from Options API to Composition API with script setup. Keep all props, emits, and behavior identical. Use TypeScript. Run the tests after."</pre>
+<p>Options API → Composition API is mechanical enough that Claude Code handles it reliably: data/computed/methods become refs/computed/functions, lifecycle hooks become onMounted/onUnmounted, and watchers become watch/watchEffect.</p>
+<p>For a whole codebase migration:</p>
+<pre>claude "migrate all components in src/components/ from Options API to Composition API with script setup and TypeScript. Do them one file at a time. Run vue-tsc --noEmit after each file."</pre>
+
+<h2>Pinia stores</h2>
+<pre>claude "create a useAuthStore in src/stores/auth.ts using Pinia's setup store syntax. State: user (User | null), token (string | null). Actions: login(credentials), logout, refreshToken. Getters: isAuthenticated, isAdmin. Persist token to localStorage."</pre>
+<p>Pinia's setup store syntax (vs. options syntax) is the modern approach — Claude Code defaults to it and generates stores with proper TypeScript types for state, getters, and actions.</p>
+<pre>claude "add a useCartStore that depends on useAuthStore — it should clear the cart on logout. Read useAuthStore's $subscribe or watch pattern to implement the cross-store dependency correctly."</pre>
+
+<h2>Vue Router patterns</h2>
+<pre>claude "add a navigation guard to router/index.ts that redirects unauthenticated users from any /dashboard/* route to /login. Read useAuthStore to check the auth state. Preserve the original destination in the redirect query param so we can send them back after login."</pre>
+<pre>claude "add lazy loading to all routes — import each component with a dynamic import so the bundle splits by route. Keep the router structure the same."</pre>
+
+<h2>TypeScript and vue-tsc</h2>
+<pre>claude "run npx vue-tsc --noEmit and fix all errors. Start with errors in src/components/ before moving to src/views/. For each error: read the component, understand the cause, fix it. Don't use @ts-ignore."</pre>
+<p><code>vue-tsc</code> is the correct verifier for Vue TypeScript — it type-checks <code>.vue</code> files including the template, catching template expression errors that plain <code>tsc</code> misses.</p>
+
+<h2>Write component tests</h2>
+<pre>claude "write Vitest + Vue Test Utils tests for DateRangePicker.vue. Cover: renders with null values, selects start date, selects end date, updates modelValue emit, disabled state prevents interaction, clears selection."</pre>
+<pre>claude "run the tests and fix any failures: npm test -- DateRangePicker"</pre>
+<p>Vue Test Utils' <code>mount()</code> + <code>trigger()</code> + <code>emitted()</code> API is well-understood by Claude Code. The two-step pattern — write tests then run-and-fix — works best for component tests because the failure output is specific enough to resolve precisely.</p>
+
+<h2>Playwright end-to-end tests</h2>
+<pre>claude "write a Playwright test for the login flow: enter email and password, submit, verify redirect to /dashboard, verify the user menu shows the email. Add a test for failed login: wrong password shows an error message."</pre>
+
+<h2>VeeValidate form validation</h2>
+<pre>claude "add VeeValidate + Zod validation to the registration form in src/views/Register.vue. Fields: email (valid email), password (min 8 chars, at least one number), confirmPassword (must match password). Show inline errors on blur. Disable submit while invalid."</pre>
+
+<h2>Monitor session budget during Vue work</h2>
+<p>A Vue Options→Composition API migration across 30+ components, with <code>vue-tsc</code> verification after each file, can use 30–40% of the 5-hour session window. Component test loops add up fast too.</p>
+
+<div class="cta-box">
+<h2>Headroom — track your session budget while vue-tsc runs</h2>
+<p>When Claude Code is migrating a Vue component tree or running a Vitest loop, your 5-hour session meter is moving. Headroom shows your Claude Code session (5h) and weekly (7d) utilization live in the macOS menu bar — color-coded from calm to amber to red. No token, no API key: it reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Start a Vue migration, check the menu bar — you'll know whether you can finish the full component tree in this session.</p>
+</div>
+
+<h2>Common Vue + Claude Code patterns</h2>
+<table>
+<tr><th>Task</th><th>Prompt pattern</th></tr>
+<tr><td>New component</td><td><code>create a [Name].vue with script setup + TS: props [spec], emits [spec]. Follow src/components/</code></td></tr>
+<tr><td>New composable</td><td><code>create a use[Name] composable: takes [args], returns [shape]. Clean up on unmount.</code></td></tr>
+<tr><td>Options → Composition</td><td><code>migrate [Component].vue to script setup + TS. Keep all behavior. Run vue-tsc after.</code></td></tr>
+<tr><td>Pinia store</td><td><code>create a use[Name]Store: state [shape], actions [list], getters [list]. Setup store syntax.</code></td></tr>
+<tr><td>Add tests</td><td><code>write Vue Test Utils tests for [Component]. Cover [cases]. Run: npm test -- [Component]</code></td></tr>
+</table>
+
+<hr>
+<p>→ <a href="/react">Claude Code for React</a><br>
+→ <a href="/typescript">Claude Code for TypeScript</a><br>
 → <a href="/test">Writing tests with Claude Code</a><br>
 → <a href="/vscode">Claude Code + VS Code</a></p>
 
