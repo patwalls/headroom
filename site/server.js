@@ -378,6 +378,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/react</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/svelte</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/vue</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/rust</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -8418,6 +8419,127 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #e5e5e5;color:#666;fo
 → <a href="/typescript">Claude Code for TypeScript</a><br>
 → <a href="/test">Writing tests with Claude Code</a><br>
 → <a href="/vscode">Claude Code + VS Code</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/rust") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code for Rust — borrow checker, lifetimes, cargo, and testing</title>
+<meta name="description" content="Use Claude Code to fix borrow checker errors, resolve lifetime issues, write Rust tests, and navigate cargo. Practical patterns for Rust developers.">
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:740px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.6}
+h1{font-size:2rem;font-weight:700;margin-bottom:.3em}
+h2{font-size:1.25rem;font-weight:600;margin-top:2em}
+pre{background:#f5f5f5;padding:14px 16px;border-radius:6px;overflow-x:auto;font-size:.9rem;line-height:1.5}
+code{background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:.9em}
+.cta-box{background:#f0f7ff;border:1px solid #bcd;border-radius:8px;padding:20px 24px;margin:2em 0}
+.brew{background:#1e1e1e;color:#a8ff78;padding:12px 16px;border-radius:6px;font-family:monospace;font-size:.95rem;margin:10px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid #e5e5e5}
+th{font-weight:600;background:#f8f8f8}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #e5e5e5;color:#666;font-size:.9rem}
+</style>
+</head><body>
+<p><a href="/">← headroom.walls.sh</a></p>
+<h1>Claude Code for Rust</h1>
+<p>Rust's compiler is unusually helpful — it names the exact variable, lifetime, and rule violated in every error. Claude Code reads those errors precisely and fixes them iteratively without guessing. This page covers the patterns that work best.</p>
+
+<h2>CLAUDE.md for a Rust project</h2>
+<pre>
+# Rust Project
+
+## Commands
+- Build: cargo build
+- Test: cargo test
+- Check (fast): cargo check
+- Lint: cargo clippy -- -D warnings
+- Format: cargo fmt
+- Bench: cargo bench
+
+## Conventions
+- No unwrap() or expect() in library code — use ? or proper error types
+- Error types implement std::error::Error via thiserror
+- No clone() to fix borrow issues — fix the borrow instead
+- All public API has doc comments (///)
+- Tests in the same file (mod tests at the bottom) for unit tests
+- Integration tests in tests/ directory
+</pre>
+<p>The "no clone() to fix borrow issues" rule is important — without it, Claude Code may take the easy path of cloning to silence the borrow checker instead of finding the correct ownership design.</p>
+
+<h2>Fix borrow checker errors</h2>
+<pre>claude "this code has a borrow checker error: [paste the rustc error + the relevant code]. Fix it correctly — don't add clone() unless cloning is semantically correct here. Explain what ownership rule was violated and why the fix works."</pre>
+<p>Rust's borrow checker errors are structured and precise — Claude Code reads them well. The key is asking for the explanation: it forces a diagnosis rather than a mechanical fix that might hide the real issue.</p>
+<p>For a wall of errors after a refactor:</p>
+<pre>claude "cargo check produces these errors: [paste output]. Fix them all. Don't use unwrap(), clone(), or unsafe to paper over issues. Run cargo check after each fix to verify the count goes down."</pre>
+
+<h2>Resolve lifetime errors</h2>
+<pre>claude "this function has a lifetime error. Read the function signature, the struct it returns, and the callers. Explain which lifetime should be named and why, then add the annotations."</pre>
+<p>Lifetime errors are harder than borrow errors because they often require understanding the caller context, not just the function in isolation. Telling Claude Code to read the callers first leads to better lifetime designs than letting it annotate in isolation.</p>
+<pre>claude "I'm getting 'lifetime may not live long enough' in this async function. The issue is likely the Future's lifetime bounds. Read the function and the trait it implements, then fix the lifetime annotations."</pre>
+
+<h2>Clippy fix loop</h2>
+<pre>claude "run cargo clippy -- -D warnings and fix every warning. No #[allow(clippy::...)] suppressions unless the lint is genuinely wrong for this case — explain why if you suppress one. Run clippy again after each batch of fixes."</pre>
+<p>Clippy is one of the best uses of Claude Code in Rust — there are often 20–50 warnings in a new codebase, and fixing them mechanically is tedious but not hard. Claude Code works through them systematically.</p>
+
+<h2>Error handling with thiserror</h2>
+<pre>claude "replace all the string error returns (Err("something failed".to_string())) in src/parser.rs with a proper ParseError enum using thiserror. Keep the same error messages but as enum variants with fields. Update all call sites to use the new type."</pre>
+<pre>claude "add a top-level AppError enum with thiserror that wraps ParseError, IoError (from std::io::Error), and NetworkError. Implement From for each. Update main.rs to use ? throughout instead of match on errors."</pre>
+
+<h2>Write tests</h2>
+<pre>claude "write unit tests for the parse_config function in src/config.rs. Cover: valid input, missing required field, invalid type, empty input, unicode in string fields. Use the mod tests pattern at the bottom of the file."</pre>
+<pre>claude "write integration tests in tests/parser_integration.rs. Test the full parse → validate → execute pipeline with real input files from tests/fixtures/. Create the fixture files as part of this."</pre>
+<p>Rust's built-in test runner is fast — Claude Code can write tests and run them in the same session without any setup. The <code>#[cfg(test)]</code> + <code>mod tests</code> pattern is idiomatic; use the <code>tests/</code> directory for integration tests that need a full binary.</p>
+
+<h2>Traits and generics</h2>
+<pre>claude "extract a Serializer trait from the three serializers in src/serializers/. They all have the same methods: serialize(&self, value: &T) -> Vec&lt;u8&gt; and deserialize(&self, bytes: &[u8]) -> Result&lt;T, SerializeError&gt;. Make the existing implementations use the trait. Add a test that works against the trait object."</pre>
+<pre>claude "this function takes a Vec&lt;ConcreteType&gt; but should work with any iterator of items that implement Display. Refactor it to use generics with the right trait bounds."</pre>
+
+<h2>Async Rust</h2>
+<pre>claude "convert the synchronous file-processing pipeline in src/pipeline.rs to async using tokio. Use tokio::fs for file I/O and tokio::spawn for the parallel processing steps. Add the #[tokio::main] attribute and tokio dev-dependency."</pre>
+<pre>claude "this async function holds a MutexGuard across an .await point. That's a compile error because MutexGuard isn't Send. Read the function and restructure it so the guard is dropped before the await."</pre>
+<p>The MutexGuard-across-await error is one of the most common async Rust pitfalls — Claude Code knows the pattern and fixes it by restructuring the code into a smaller critical section rather than by reaching for unsafe or tokio::sync::Mutex as a first resort.</p>
+
+<h2>Performance and unsafe</h2>
+<pre>claude "profile this hot path with criterion: [paste the function]. Write a benchmark in benches/. Identify the bottleneck from the output and propose a fix — explain the tradeoff between safety and performance before touching unsafe."</pre>
+<pre>claude "this function uses unsafe for a raw pointer operation. Read the safety invariants, add a SAFETY comment explaining why the code is correct, and add a test that would catch a violation if the invariant breaks."</pre>
+
+<h2>Cargo and dependencies</h2>
+<pre>claude "audit Cargo.toml for unused dependencies. Run cargo +nightly udeps or check with cargo tree. Remove unused ones and verify cargo test still passes."</pre>
+<pre>claude "update all dependencies to their latest compatible versions. Run cargo update, then cargo test. If anything breaks, identify which upgrade caused the failure and downgrade just that one."</pre>
+
+<h2>Monitor session budget during Rust work</h2>
+<p>Rust compile cycles are slow relative to other languages — cargo check is fast, but full cargo build or cargo test can take 10–30s for medium projects. A clippy fix loop that iterates 15 times burns session budget faster than it appears.</p>
+
+<div class="cta-box">
+<h2>Headroom — track your session budget during Rust compile loops</h2>
+<p>When Claude Code is iterating on borrow checker fixes or running a clippy loop, your 5-hour session meter is moving. Headroom shows your Claude Code session (5h) and weekly (7d) utilization live in the macOS menu bar — color-coded from calm to amber to red. No token, no API key: it reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Start a Rust refactor, glance at the menu bar — you'll know if you have the headroom to finish the error migration before the session resets.</p>
+</div>
+
+<h2>Common Rust + Claude Code patterns</h2>
+<table>
+<tr><th>Task</th><th>Prompt pattern</th></tr>
+<tr><td>Borrow error</td><td><code>[paste rustc error + code]. Fix without clone() unless semantically right. Explain the rule.</code></td></tr>
+<tr><td>Clippy loop</td><td><code>cargo clippy -D warnings, fix all. No allows without explanation. Run after each batch.</code></td></tr>
+<tr><td>Error types</td><td><code>replace string errors in [file] with [Name]Error enum using thiserror. Update call sites.</code></td></tr>
+<tr><td>Tests</td><td><code>write unit tests for [function]. Cover [cases]. Use mod tests pattern.</code></td></tr>
+<tr><td>Async fix</td><td><code>MutexGuard across await in [function] — restructure so guard drops before the await point.</code></td></tr>
+</table>
+
+<hr>
+<p>→ <a href="/go">Claude Code for Go</a><br>
+→ <a href="/test">Writing tests with Claude Code</a><br>
+→ <a href="/zed">Claude Code + Zed Editor</a><br>
+→ <a href="/debug">Debugging with Claude Code</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
