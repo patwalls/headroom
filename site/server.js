@@ -375,6 +375,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/docker</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/go</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/api</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/react</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -8040,6 +8041,133 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #e5e5e5;color:#666;fo
 → <a href="/typescript">Claude Code for TypeScript</a><br>
 → <a href="/debug">Debugging with Claude Code</a><br>
 → <a href="/hooks">Claude Code hooks system</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/react") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code for React — components, hooks, state, and testing</title>
+<meta name="description" content="Use Claude Code to build React components, write custom hooks, refactor prop drilling, migrate to TypeScript, and run Vitest/Playwright test loops. Practical patterns for React developers.">
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:740px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.6}
+h1{font-size:2rem;font-weight:700;margin-bottom:.3em}
+h2{font-size:1.25rem;font-weight:600;margin-top:2em}
+pre{background:#f5f5f5;padding:14px 16px;border-radius:6px;overflow-x:auto;font-size:.9rem;line-height:1.5}
+code{background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:.9em}
+.cta-box{background:#f0f7ff;border:1px solid #bcd;border-radius:8px;padding:20px 24px;margin:2em 0}
+.brew{background:#1e1e1e;color:#a8ff78;padding:12px 16px;border-radius:6px;font-family:monospace;font-size:.95rem;margin:10px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid #e5e5e5}
+th{font-weight:600;background:#f8f8f8}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #e5e5e5;color:#666;font-size:.9rem}
+</style>
+</head><body>
+<p><a href="/">← headroom.walls.sh</a></p>
+<h1>Claude Code for React</h1>
+<p>Claude Code is strong on React work: component generation, hook extraction, state refactors, and test loops. It reads your existing components first and matches whatever conventions are already in the codebase — no new patterns imposed on top of yours.</p>
+
+<h2>CLAUDE.md for a React project</h2>
+<p>Set this once so every session starts with the right context:</p>
+<pre>
+# React App
+
+## Stack
+- React 18 + TypeScript + Vite
+- State: Zustand (global), useState/useReducer (local)
+- Data fetching: TanStack Query
+- Styling: Tailwind CSS
+- Testing: Vitest + React Testing Library + Playwright
+
+## Commands
+- Dev: npm run dev
+- Test: npm test
+- E2E: npx playwright test
+- Typecheck: npx tsc --noEmit
+- Lint: npm run lint
+
+## Conventions
+- Components in src/components/ — PascalCase filenames
+- Custom hooks in src/hooks/ — useXxx.ts
+- No prop drilling past two levels — use Zustand store or context
+- All new components must have TypeScript prop types
+- Tests co-located: ComponentName.test.tsx next to ComponentName.tsx
+</pre>
+
+<h2>Generate a component from a description</h2>
+<pre>claude "create a SearchableDropdown component: takes options (label/value pairs), a placeholder string, and an onChange callback. Filterable by typing. Keyboard navigable (arrow keys + Enter). Follow the existing component patterns in src/components/."</pre>
+<p>Claude Code reads your existing components before writing anything — it matches your prop type style, event handler naming, and className conventions. The result drops in without a style clash.</p>
+
+<h2>Extract a custom hook</h2>
+<pre>claude "the UserProfile component has fetch logic, loading state, and error state mixed into the render. Extract a useUserProfile hook that handles all of that. The component should just call the hook and render the result."</pre>
+<p>Hook extraction is one of Claude Code's strongest React tasks — it can trace data flow through a component and produce a clean separation without breaking the behavior. Add <code>npm test -- UserProfile</code> to the prompt and it will run the test suite after to verify nothing broke.</p>
+
+<h2>Fix prop drilling</h2>
+<pre>claude "theme (dark/light) is drilled through 4 levels: App → Layout → Sidebar → NavItem. Replace it with a ThemeContext. Read all four files first, then make the change consistently — same context shape in all consumers."</pre>
+<p>The "read all files first" instruction matters here — prop drilling spans multiple files, and Claude Code should see all of them before editing any one of them.</p>
+
+<h2>Migrate a class component to a function component</h2>
+<pre>claude "migrate src/components/DataTable.tsx from a class component to a function component with hooks. Preserve all props, all behavior, and all event handlers. Run the tests after."</pre>
+<p>State → useState, lifecycle methods → useEffect, refs → useRef. Claude Code handles these mappings reliably. Give it the test command so it verifies the migration.</p>
+
+<h2>Add TypeScript to an existing React component</h2>
+<pre>claude "add TypeScript types to all props and state in src/components/Modal.jsx. Convert to .tsx. Use the existing prop shapes as the source of truth — don't change any runtime behavior, just add types."</pre>
+<p>For a larger JS→TS migration across the whole component tree:</p>
+<pre>claude "convert all .jsx files in src/components/ to TypeScript. Do them leaf-first (components with no children first, then parents). Run tsc --noEmit after each file. Stop and report if a type error in one file implies a design issue rather than a simple annotation gap."</pre>
+
+<h2>Write component tests</h2>
+<pre>claude "write Vitest + React Testing Library tests for SearchableDropdown. Cover: renders with placeholder, filters options on input, selects option on click, keyboard navigation (ArrowDown/ArrowUp/Enter), calls onChange with the right value, empty state when no matches."</pre>
+<pre>claude "write tests and fix any failures. Run: npm test -- SearchableDropdown"</pre>
+<p>The two-step pattern (write tests, then run-and-fix) works better than asking for working tests upfront — it lets Claude Code see the actual failure messages and fix them precisely.</p>
+
+<h2>State management refactor</h2>
+<pre>claude "the cart state is managed with prop drilling and local useState scattered across 6 components. Consolidate into a Zustand cartStore: items, addItem, removeItem, clearCart, total (derived). Migrate all 6 components to use the store. Run the tests after each component."</pre>
+<p>Name the store and its actions upfront — Claude Code will create a consistent interface across all consumers rather than inventing slightly different shapes in each file.</p>
+
+<h2>Performance: memo and callback</h2>
+<pre>claude "ProfileCard re-renders on every parent update even when its props haven't changed. Identify the cause and fix it — React.memo, useMemo, or useCallback as appropriate. Explain why you chose the approach."</pre>
+<p>Ask for the explanation — Claude Code will read the render tree and give you a diagnosis, not just wrap everything in memo blindly.</p>
+
+<h2>Playwright end-to-end tests</h2>
+<pre>claude "write a Playwright test for the checkout flow: add item to cart, open cart, enter shipping address, submit, verify confirmation page. Use the page object pattern. Run the tests after writing them."</pre>
+<p>Playwright tests are a good fit for Claude Code because the assertions are explicit and the failure output is detailed — when a test fails, Claude Code sees the error, edits the selector or assertion, and reruns until green.</p>
+
+<h2>React Query patterns</h2>
+<pre>claude "replace the fetch+useEffect+useState pattern in src/hooks/useProducts.ts with a TanStack Query useQuery call. Add loading/error/stale states. Set staleTime to 5 minutes. Add an invalidation trigger for when a product is updated."</pre>
+<pre>claude "add an optimistic update to the addToCart mutation — update the cart in the query cache immediately, roll back on error."</pre>
+
+<h2>Monitor session budget during component work</h2>
+<p>React test loops (Vitest re-running on each edit) and large component migrations can move fast through your session budget. A migration of 20 components with test runs after each one can consume 30–40% of the 5-hour window.</p>
+
+<div class="cta-box">
+<h2>Headroom — track your session budget while React tests run</h2>
+<p>When Claude Code is iterating on component tests or migrating a component tree, your 5-hour session meter is moving. Headroom shows your Claude Code session (5h) and weekly (7d) utilization live in the macOS menu bar — color-coded from calm to amber to red. No token, no API key: it reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Start a React migration, check the menu bar. You'll know when to save a stopping point before the session limit hits mid-refactor.</p>
+</div>
+
+<h2>Common React + Claude Code patterns</h2>
+<table>
+<tr><th>Task</th><th>Prompt pattern</th></tr>
+<tr><td>New component</td><td><code>create a [Name] component: [spec]. Follow patterns in src/components/</code></td></tr>
+<tr><td>Hook extraction</td><td><code>extract a use[Name] hook from [Component]. Component should just call the hook.</code></td></tr>
+<tr><td>Add tests</td><td><code>write RTL tests for [Component]. Cover: [cases]. Run: npm test -- [Component]</code></td></tr>
+<tr><td>TS migration</td><td><code>add TypeScript types to [Component].jsx, convert to .tsx. Run tsc --noEmit after.</code></td></tr>
+<tr><td>Perf fix</td><td><code>identify why [Component] re-renders unnecessarily and fix it. Explain the cause.</code></td></tr>
+</table>
+
+<hr>
+<p>→ <a href="/typescript">Claude Code for TypeScript</a><br>
+→ <a href="/nextjs">Claude Code + Next.js</a><br>
+→ <a href="/test">Writing tests with Claude Code</a><br>
+→ <a href="/multifile">Claude Code multi-file editing</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
