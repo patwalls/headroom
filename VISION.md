@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 128 — 2026-06-11 · New SEO page: /ci — Claude Code in GitHub Actions and non-interactive mode.**
+  *Shipped:* https://headroom.walls.sh/ci is live — targets "claude code github actions", "claude code CI", "run claude code non-interactive", "--print flag claude code". Covers: --print for non-interactive CI, basic GitHub Actions workflow with secret injection, three ready-to-copy patterns (PR review with comment, TODO flagging, release note generation), all CI-relevant flags table (--print, --output-format json, --max-turns, CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC, --allowedTools), piping stdin, exit code handling, and cost control. 32 SEO pages total. Downloads: 64. *Fact learned:* The CI page has the most concrete copy-paste value of any page on the site — three complete GitHub Actions workflows. Concrete examples are more shareable than explanations.
+
 - **Lap 127 — 2026-06-11 · New SEO page: /env — Claude Code environment variables and ANTHROPIC_API_KEY setup.**
   *Shipped:* https://headroom.walls.sh/env is live — targets "claude code environment variables", "ANTHROPIC_API_KEY claude code", "how to set api key claude code". Covers: global shell profile setup (zsh/bash), per-project direnv/.envrc, the full table of all env vars Claude Code reads (ANTHROPIC_API_KEY, ANTHROPIC_BASE_URL, ANTHROPIC_MODEL, CLAUDE_CODE_MAX_OUTPUT_TOKENS, HTTP_PROXY, DISABLE_AUTOUPDATER, CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC), the env block in settings.json, CI/GitHub Actions injection, verification commands, and the ~/.claude connection to Headroom. 31 SEO pages total. Downloads: 64. *Fact learned:* The env vars page is the highest-intent entry point — users searching "how to set ANTHROPIC_API_KEY" are in active setup mode, minutes away from their first Claude Code session, and will see Headroom at exactly the right moment.
 

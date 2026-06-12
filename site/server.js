@@ -351,6 +351,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/permissions</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/memory</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/env</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/ci</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -3541,6 +3542,163 @@ claude --print "say hello" 2>&1 | head -3</pre>
 → <a href="/memory">CLAUDE.md and memory</a><br>
 → <a href="/ci">Claude Code in CI</a><br>
 → <a href="/hook">statusLineHook setup</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/ci") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code in CI — GitHub Actions, Non-Interactive Mode, PR Reviews</title>
+<meta name="description" content="How to run Claude Code in GitHub Actions and CI pipelines: --print for non-interactive mode, injecting ANTHROPIC_API_KEY, automated PR reviews, and cost control.">
+<link rel="canonical" href="https://headroom.walls.sh/ci">
+<meta property="og:title" content="Claude Code in CI — GitHub Actions and Non-Interactive Mode">
+<meta property="og:description" content="Run Claude Code in GitHub Actions for automated PR reviews and code analysis. Non-interactive --print mode, secret injection, output handling, and cost control.">
+<meta property="og:url" content="https://headroom.walls.sh/ci">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code in CI — GitHub Actions Non-Interactive">
+<meta name="twitter:description" content="Run Claude Code in GitHub Actions with --print for non-interactive PR reviews and code analysis.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1.1rem;margin:2.2em 0 .35em;color:var(--ink);border-bottom:1px solid #242936;padding-bottom:.3em}
+  h3{font-size:.95rem;margin:1.4em 0 .25em;color:var(--accent)}
+  p{color:#c9c6bd;margin:.35em 0 .7em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.84rem;line-height:1.55;margin:.5em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+  .cta{display:inline-block;margin:1.5em 0;padding:12px 22px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:.97rem}
+  table{width:100%;border-collapse:collapse;margin:.6em 0 1.2em;font-size:.88rem}
+  th{text-align:left;color:var(--dim);font-weight:600;border-bottom:1px solid #242936;padding:6px 10px 6px 0}
+  td{border-bottom:1px solid #1e2230;padding:7px 10px 7px 0;color:#c9c6bd;vertical-align:top}
+  td:first-child{color:var(--ok);font-family:ui-monospace,Menlo,monospace;font-size:.84rem;white-space:nowrap}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · ci</p>
+<h1>Claude Code in CI</h1>
+<p class="sub">Run Claude Code in GitHub Actions and other CI pipelines with <code>--print</code> for non-interactive output — automated PR reviews, code analysis, and documentation generation.</p>
+
+<h2>The key flag: --print</h2>
+<p>By default, Claude Code runs in interactive mode — it opens a session where you type prompts and get responses. In CI, you need it to run once, print output, and exit. That's <code>--print</code>:</p>
+<pre>claude --print "review this diff for security issues"</pre>
+<p>With <code>--print</code>, Claude Code reads stdin (if piped) or uses only the flags you provide, outputs its response to stdout, then exits with code 0 on success or non-zero on error. No terminal UI, no session state, fully scriptable.</p>
+
+<h2>GitHub Actions: basic setup</h2>
+<pre>name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Review PR diff
+        env:
+          ANTHROPIC_API_KEY: \${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+        run: |
+          git diff origin/\${{ github.base_ref }}...HEAD > /tmp/pr.diff
+          claude --print "Review this pull request diff for bugs, security issues, and style problems. Be concise." < /tmp/pr.diff</pre>
+
+<h3>Setting the secret</h3>
+<p>In your GitHub repo: Settings → Secrets and variables → Actions → New repository secret. Name: <code>ANTHROPIC_API_KEY</code>, value: your key from <a href="https://console.anthropic.com">console.anthropic.com</a>.</p>
+
+<h2>Common CI use cases</h2>
+
+<h3>PR review with GitHub comment</h3>
+<pre>      - name: Review and comment
+        env:
+          ANTHROPIC_API_KEY: \${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git diff origin/\${{ github.base_ref }}...HEAD > /tmp/pr.diff
+          REVIEW=\$(claude --print "Review this diff. Flag bugs and security issues only — skip style nitpicks. Use markdown." < /tmp/pr.diff)
+          gh pr comment \${{ github.event.pull_request.number }} --body "\$REVIEW"</pre>
+
+<h3>Check for TODO comments before merge</h3>
+<pre>      - name: Flag TODOs
+        env:
+          ANTHROPIC_API_KEY: \${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+        run: |
+          TODOS=\$(grep -rn "TODO\\|FIXME\\|HACK\\|XXX" src/ || true)
+          if [ -n "\$TODOS" ]; then
+            echo "\$TODOS" | claude --print "Categorize these TODO comments by severity: blocker (must fix before merge), warning (should fix soon), info (nice to have)."
+          fi</pre>
+
+<h3>Generate release notes from commits</h3>
+<pre>      - name: Generate release notes
+        env:
+          ANTHROPIC_API_KEY: \${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+        run: |
+          git log --oneline v\${{ github.event.release.tag_name }}^..HEAD > /tmp/commits.txt
+          claude --print "Write user-facing release notes from these git commits. Group by: new features, bug fixes, breaking changes. Skip chores and ci commits." < /tmp/commits.txt > RELEASE_NOTES.md</pre>
+
+<h2>Important flags for CI</h2>
+<table>
+<tr><th>Flag / env var</th><th>What it does in CI</th></tr>
+<tr><td>--print</td><td>Non-interactive: single prompt → stdout → exit. Essential for CI.</td></tr>
+<tr><td>--output-format json</td><td>Structured JSON output — easier to parse in scripts than raw text.</td></tr>
+<tr><td>--max-turns N</td><td>Limit how many tool-use turns Claude Code can take (cost control).</td></tr>
+<tr><td>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</td><td>Disables telemetry and update checks — faster CI, no noise.</td></tr>
+<tr><td>--allowedTools "Read,Bash"</td><td>Restrict which tools Claude Code can use in this run.</td></tr>
+</table>
+
+<h2>Piping files and stdin</h2>
+<p>Claude Code with <code>--print</code> reads stdin when you pipe to it. This is the cleanest way to pass large inputs like diffs, log files, or generated content:</p>
+<pre># Pipe a file
+cat error.log | claude --print "summarize the errors in this log"
+
+# Pipe git diff
+git diff HEAD~1 | claude --print "what changed and why does it matter"
+
+# Pipe and capture output
+SUMMARY=\$(cat report.json | claude --print "extract the key metrics as a bullet list")</pre>
+
+<h2>Exit codes and error handling</h2>
+<pre>claude --print "check this code" < src/main.py
+EXIT=\$?
+if [ \$EXIT -ne 0 ]; then
+  echo "Claude Code failed with exit code \$EXIT"
+  exit 1
+fi</pre>
+<p>Exit 0 = success. Non-zero = API error, auth failure, or --max-turns exceeded. Always check the exit code in scripts that gate a deploy or merge.</p>
+
+<h2>Cost control in CI</h2>
+<p>Each CI run makes real API calls — they count against your 5-hour session and 7-day weekly limits, and cost money. A few practices that help:</p>
+<p>Use <code>--max-turns 5</code> to cap agentic tool use. Scope your prompts tightly (diff only, not full repo). Cache the Claude Code install step. Run only on PRs that touch relevant paths using <code>paths:</code> in your workflow trigger.</p>
+<div class="note"><p>Headroom shows your Claude Code session (5h) and weekly (7d) utilization in the macOS menu bar — useful when CI pipelines are eating into your local coding quota. The numbers update live from the same data Claude Code tracks itself.</p></div>
+<a class="cta" href="/download">Download Headroom v${VERSION} — free</a>
+<pre>brew install patwalls/tap/headroom</pre>
+
+<p>→ <a href="/env">Environment variables</a><br>
+→ <a href="/agent">Agent mode and subagents</a><br>
+→ <a href="/permissions">Permissions and allow rules</a><br>
+→ <a href="/limits">Rate limits and windows</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
