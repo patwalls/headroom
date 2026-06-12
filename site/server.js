@@ -374,6 +374,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/nextjs</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/docker</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/go</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/api</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -7915,6 +7916,130 @@ td{color:#c8c4bb;padding:8px 10px;border-bottom:1px solid #1e1e1e;vertical-align
 → <a href="/neovim">Claude Code + Neovim integration</a><br>
 → <a href="/refactor">Refactoring with Claude Code</a><br>
 → <a href="/test">Writing tests with Claude Code</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/api") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code for REST API Development — scaffold, test, and refactor APIs faster</title>
+<meta name="description" content="Use Claude Code to scaffold REST APIs, generate OpenAPI specs, write validation, and run test loops. Practical patterns for Express, Fastify, and Hono.">
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:740px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.6}
+h1{font-size:2rem;font-weight:700;margin-bottom:.3em}
+h2{font-size:1.25rem;font-weight:600;margin-top:2em}
+pre{background:#f5f5f5;padding:14px 16px;border-radius:6px;overflow-x:auto;font-size:.9rem;line-height:1.5}
+code{background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:.9em}
+.cta-box{background:#f0f7ff;border:1px solid #bcd;border-radius:8px;padding:20px 24px;margin:2em 0}
+.brew{background:#1e1e1e;color:#a8ff78;padding:12px 16px;border-radius:6px;font-family:monospace;font-size:.95rem;margin:10px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid #e5e5e5}
+th{font-weight:600;background:#f8f8f8}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #e5e5e5;color:#666;font-size:.9rem}
+</style>
+</head><body>
+<p><a href="/">← headroom.walls.sh</a></p>
+<h1>Claude Code for REST API Development</h1>
+<p>Claude Code handles the repetitive work of API development — scaffolding routes, generating OpenAPI specs, writing validation, running test loops — while you focus on the business logic. This page covers the patterns that save the most time.</p>
+
+<h2>Set up your CLAUDE.md first</h2>
+<p>Tell Claude Code your framework and conventions once, so every session starts with context:</p>
+<pre>
+# API Project
+
+## Stack
+- Runtime: Node.js 20 + TypeScript
+- Framework: Fastify 4
+- Validation: Zod
+- ORM: Prisma
+- Test: Vitest + supertest
+
+## Commands
+- Dev: npm run dev
+- Test: npm test
+- Build: npm run build
+- Lint: npm run lint
+
+## Conventions
+- Routes in src/routes/ — one file per resource
+- Schemas in src/schemas/ — Zod schemas exported and reused
+- Errors use HTTP status codes; body always \`{ error: string, code?: string }\`
+- No console.log — use the logger (fastify.log)
+</pre>
+<p>With this in place, <code>claude "add a DELETE /users/:id route"</code> generates the route, schema, and test that match everything already in the codebase.</p>
+
+<h2>Scaffold a new API from a description</h2>
+<pre>claude "scaffold a REST API for a task management app: tasks (id, title, description, status, dueDate, userId), users (id, email, name). Use Fastify + Zod + Prisma. Create the Prisma schema, route files, and Zod validation schemas. Follow the conventions in CLAUDE.md."</pre>
+<p>Claude Code will read your existing routes for structure, then generate consistent new ones. It won't invent a new pattern when the old one is right there.</p>
+
+<h2>Add a route to an existing API</h2>
+<pre>claude "add PATCH /tasks/:id — allow updating title, description, status, and dueDate. Validate with Zod (all fields optional). Return 404 if the task doesn't exist or doesn't belong to the authenticated user. Add a test."</pre>
+<p>Claude Code reads the existing GET /tasks/:id handler to match its auth check pattern, writes the PATCH, writes the Zod partial schema, and generates a supertest that covers the 404 path.</p>
+
+<h2>Generate an OpenAPI spec from existing routes</h2>
+<pre>claude "read all route files in src/routes/ and generate an OpenAPI 3.1 spec at docs/openapi.yaml. Include all request/response schemas, path parameters, and error responses. Derive descriptions from the route and schema names."</pre>
+<p>For Fastify: Claude Code can also wire up <code>@fastify/swagger</code> to auto-generate the spec from your schemas at runtime.</p>
+<pre>claude "install @fastify/swagger and @fastify/swagger-ui. Register both plugins. Annotate each route with the schema property so the spec generates automatically. Expose /docs as the Swagger UI."</pre>
+
+<h2>Write input validation</h2>
+<pre>claude "add Zod validation to all routes in src/routes/users.ts that are missing it. Infer the TypeScript types from the schemas. Add a 400 response with a clear error message for invalid input."</pre>
+<p>Validation schemas become the single source of truth — Claude Code will use them to type the request body and generate the OpenAPI spec automatically if you have swagger registered.</p>
+
+<h2>Error handling patterns</h2>
+<pre>claude "add a global error handler to the Fastify instance. Map Zod validation errors to 400 with the field path and message. Map Prisma's P2025 (not found) to 404. All other errors get 500. Never leak a stack trace in production (check NODE_ENV)."</pre>
+<p>Once you have a global handler, every route gets consistent errors without try/catch boilerplate. Claude Code will remove redundant try/catch blocks from existing routes once the handler is in place — just ask it to.</p>
+
+<h2>Run the test loop unattended</h2>
+<pre>claude "write integration tests for all routes in src/routes/tasks.ts using supertest and Vitest. Cover: happy path, 400 invalid input, 401 unauthenticated, 404 not found, 403 wrong user. Run the tests and fix any failures."</pre>
+<p>Claude Code runs the tests after writing them, then iterates on failures until the suite is green — without you watching. The test-fix loop is the pattern that saves the most clock time.</p>
+
+<h2>Refactor an existing API</h2>
+<pre>claude "the routes in src/routes/ use express-validator for validation but the rest of the codebase uses Zod. Migrate all routes to Zod schemas. Keep the same request/response shapes — this is a refactor, not a redesign. Run tests after each file."</pre>
+<p>Give Claude Code a clear constraint ("same shapes, just different library") and it will migrate methodically without drifting the API contract.</p>
+
+<h2>Authentication middleware</h2>
+<pre>claude "add JWT authentication middleware. Use the jsonwebtoken package. The middleware should extract the Bearer token from Authorization header, verify it with JWT_SECRET from env, and attach the decoded payload to request.user. Return 401 if the token is missing or invalid. Apply it to all routes except POST /auth/login and POST /auth/register."</pre>
+<pre>claude "write tests for the auth middleware: valid token passes through, expired token returns 401, tampered token returns 401, missing header returns 401."</pre>
+
+<h2>Database migration workflow</h2>
+<pre>claude "I need to add a 'tags' field to tasks — it should be a string array. Update the Prisma schema, generate a migration, update the Zod schemas, update the routes (tags is optional on create/update, returned on all reads), and update the tests."</pre>
+<p>Claude Code handles the whole chain: schema → migration → routes → tests. The migration is generated (not run — it asks before touching the database by default) so you can review it first.</p>
+
+<h2>Monitor session budget during API work</h2>
+<p>API development with test loops burns session budget faster than manual coding. A test-fix loop that iterates 8 times (read → edit → run tests → read errors → edit → run again…) can consume 15–20% of your 5-hour window without you noticing.</p>
+
+<div class="cta-box">
+<h2>Headroom — see your session budget while the test loop runs</h2>
+<p>When Claude Code is running your test suite and iterating on failures, your session meter is moving. Headroom shows your Claude Code session (5h) and weekly (7d) utilization live in the macOS menu bar — color-coded from calm to amber to red. No token, no API key: it reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Start a long API refactor, glance at the menu bar — that's it. You'll know when to wrap up the session before the limit cuts it short.</p>
+</div>
+
+<h2>Common Claude Code API patterns</h2>
+<table>
+<tr><th>Task</th><th>Prompt pattern</th></tr>
+<tr><td>Add route</td><td><code>add POST /resource — [spec]. Follow the pattern in GET /resource/:id</code></td></tr>
+<tr><td>Add pagination</td><td><code>add cursor-based pagination to GET /tasks — page + limit params, return nextCursor</code></td></tr>
+<tr><td>Rate limiting</td><td><code>add rate limiting to POST /auth/login — 5 attempts per 15 minutes per IP</code></td></tr>
+<tr><td>Response caching</td><td><code>add ETag caching to GET /tasks/:id — 304 on match</code></td></tr>
+<tr><td>Health check</td><td><code>add GET /health that checks the database connection and returns 200 or 503</code></td></tr>
+</table>
+
+<h2>What Claude Code won't do well without help</h2>
+<p>Claude Code is great at generating consistent, correct code from your existing patterns. It's less reliable for: designing the right data model from scratch (that's a design decision, not a coding task), deciding on auth strategy (JWT vs sessions vs API keys — know what you want before asking), and performance optimization without profiling data (always provide the slow query or trace).</p>
+
+<hr>
+<p>→ <a href="/test">Writing tests with Claude Code</a><br>
+→ <a href="/typescript">Claude Code for TypeScript</a><br>
+→ <a href="/debug">Debugging with Claude Code</a><br>
+→ <a href="/hooks">Claude Code hooks system</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
