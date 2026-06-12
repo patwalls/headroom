@@ -367,6 +367,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/test</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/jetbrains</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/git</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/zed</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -6700,6 +6701,155 @@ Write a failing test for it first — it should validate format, reject TLDs sho
 → <a href="/refactor">Refactoring with Claude Code</a><br>
 → <a href="/agent">Agent mode and subagents</a><br>
 → <a href="/session">5-hour session limit explained</a> · <a href="/weekly">7-day weekly cap</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/zed") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code + Zed Editor — Terminal Workflow, AI Integration, Session Usage</title>
+<meta name="description" content="How to use Claude Code with Zed editor. Terminal pane workflow, Zed AI vs Claude Code agent, keybindings, and monitoring session usage from the menu bar.">
+<link rel="canonical" href="https://headroom.walls.sh/zed">
+<meta property="og:title" content="Claude Code + Zed Editor">
+<meta property="og:description" content="Claude Code in Zed: terminal pane workflow, Zed AI assistant vs Claude Code agent, project context, and session budget monitoring.">
+<meta property="og:url" content="https://headroom.walls.sh/zed">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude Code + Zed Editor">
+<meta name="twitter:description" content="Claude Code with Zed — terminal workflow, Zed AI vs Claude Code, and session usage monitoring.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.4em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.tip{background:#141414;border-left:3px solid #5db85d;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+.warn{background:#141414;border-left:3px solid #d9a657;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+table{width:100%;border-collapse:collapse;margin:1em 0 1.4em;font-size:.92rem}
+th{text-align:left;color:#888;font-weight:600;padding:8px 10px;border-bottom:1px solid #2a2a2a}
+td{color:#c8c4bb;padding:8px 10px;border-bottom:1px solid #1e1e1e;vertical-align:top}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · zed</p>
+<h1>Claude Code + Zed Editor</h1>
+<p class="sub">Zed has its own AI assistant built in, but Claude Code is a different thing: a terminal agent that writes and runs code across your whole project. The two work well together. This page covers how to run Claude Code from Zed's terminal, what each tool is actually for, and how to keep track of your session budget.</p>
+
+<h2>Zed AI vs Claude Code — what each is for</h2>
+<table>
+<tr><th></th><th>Zed AI</th><th>Claude Code</th></tr>
+<tr><td>Where it lives</td><td>Inside the editor — inline, panel</td><td>Terminal agent — runs independently</td></tr>
+<tr><td>What it does</td><td>Inline completions, quick edits, explanations</td><td>Multi-file agent: reads, writes, runs code</td></tr>
+<tr><td>Shell access</td><td>No</td><td>Yes — runs tests, builds, git commands</td></tr>
+<tr><td>Autonomous loops</td><td>No</td><td>Yes — write → test → fix → repeat unattended</td></tr>
+<tr><td>Billing</td><td>Zed subscription or your API key</td><td>Claude Pro/Max subscription or API</td></tr>
+<tr><td>Project scope</td><td>Open files and editor context</td><td>Any path in the working directory</td></tr>
+</table>
+<p>Zed AI is the in-editor assistant for things you're actively writing. Claude Code is the agent for things you want done — refactors, test-fix loops, build debugging — that benefit from shell access and full project scope.</p>
+
+<h2>Opening Claude Code in Zed's terminal</h2>
+<p>Zed has a built-in terminal. Open it with <strong>Ctrl+\`</strong> (or <strong>Cmd+\`</strong> on macOS) or via the command palette: <strong>terminal: new</strong>. It opens at the project root.</p>
+<p>From there, run Claude Code as normal:</p>
+<pre>claude</pre>
+<p>or start with a task immediately:</p>
+<pre>claude "add error handling to every function in src/handlers/ that currently returns unwrap()"</pre>
+<p>The terminal pane sits below the editor. While Claude Code runs, you stay in the editor — watch the file tree update as it writes, open changed files in the editor to see diffs, switch back to code when it pauses.</p>
+
+<div class="tip">Zed's split pane layout works well with Claude Code: editor on the left, terminal on the right. Use <strong>Cmd+Shift+E</strong> to focus the terminal and <strong>Cmd+1</strong> to return to the editor without closing the terminal.</div>
+
+<h2>Using Zed's file tree as context</h2>
+<p>Because Zed's terminal opens at the project root, you can reference any project path directly in Claude Code prompts:</p>
+<pre>claude "read src/parser.rs and write a test module for the tokenize function. Place it in tests/parser_tests.rs."</pre>
+<p>Or reference the currently open file by name (check the tab bar):</p>
+<pre>claude "explain the lifetime annotations in lexer.rs and suggest where they could be simplified"</pre>
+<p>For Rust projects specifically, Claude Code understands the Cargo workspace structure and can reference <code>Cargo.toml</code> for build targets, features, and workspace members.</p>
+
+<h2>CLAUDE.md for Zed projects</h2>
+<p>Add a <code>CLAUDE.md</code> at the project root to give Claude Code persistent context. Useful for Rust and performance-critical projects:</p>
+<pre>## Build
+- Build: cargo build
+- Test: cargo test
+- Lint: cargo clippy -- -D warnings
+- Format: cargo fmt
+
+## Conventions
+- No unwrap() in library code — use proper error propagation with ?
+- All public APIs need doc comments
+- Benchmarks live in benches/ using criterion
+- Unsafe blocks require a // SAFETY: comment</pre>
+<p>Claude Code reads <code>CLAUDE.md</code> at session start and respects these rules throughout. No re-explaining the no-unwrap rule on every prompt.</p>
+
+<h2>Practical Zed + Claude Code workflow</h2>
+<ol>
+<li>Open the project in Zed as normal</li>
+<li>Open the terminal pane (<code>Ctrl+\`</code>) — already at project root</li>
+<li>Run <code>claude</code> to start a session, or pass a task directly</li>
+<li>While Claude Code works, use Zed's editor to review changes — the file tree updates in real time</li>
+<li>Use Zed's diff gutter to see line-level changes as they're written</li>
+<li>Ask follow-up questions or course-correct from the terminal pane</li>
+</ol>
+
+<h2>Zed keybindings for Claude Code workflows</h2>
+<p>Add these to <code>~/.config/zed/keymap.json</code> to make terminal + Claude Code faster:</p>
+<pre>{
+  "bindings": {
+    "ctrl-grave": "terminal_panel::ToggleFocus",
+    "cmd-shift-c": ["workspace::SendKeystrokes", "claude \\n"]
+  }
+}</pre>
+<p>The toggle focus binding lets you switch between editor and terminal instantly. The second binding starts a Claude Code session from anywhere in the editor with a single shortcut.</p>
+
+<h2>Claude Code with Rust projects in Zed</h2>
+<p>Rust projects have specific patterns Claude Code handles well when given the right commands:</p>
+<pre>claude "find all .unwrap() calls in src/ that aren't in test modules, replace with proper error propagation using ?, run cargo build to verify"</pre>
+<pre>claude "add criterion benchmarks for the parse_tokens function in src/lexer.rs — place them in benches/lexer_bench.rs, run cargo bench after"</pre>
+<pre>claude "run cargo clippy and fix all warnings — don't just add #[allow] attributes, fix the actual issues"</pre>
+<p>Claude Code reads the compiler errors and fixes them iteratively — the Rust borrow checker's detailed error messages are exactly the kind of structured feedback it works well with.</p>
+
+<h2>When to use Zed AI vs Claude Code</h2>
+<ul>
+<li><strong>Use Zed AI for:</strong> inline completions while typing, quick explanations of a selected block, small edits in the active file, asking questions about the code you're looking at</li>
+<li><strong>Use Claude Code for:</strong> anything that spans multiple files, anything that needs to run commands, test-fix loops, refactors, adding tests to existing code, build debugging</li>
+</ul>
+<p>If you're billing both to your Anthropic API key (BYOK for Zed AI), remember they share the same 5h/7d quota windows. A long Claude Code session can affect your remaining Zed AI budget and vice versa.</p>
+
+<div class="cta-box">
+<h2>Headroom — see your session budget while Zed is open</h2>
+<p>If you're using Claude Code from Zed's terminal — especially for Rust build cycles and test loops — Headroom keeps your session and weekly utilization visible in the macOS menu bar without you leaving Zed. No token, no API key: it reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Color-coded from calm to amber to red. The menu bar is always visible even when Zed is fullscreen.</p>
+</div>
+
+<hr>
+<p>→ <a href="/vscode">Claude Code + VS Code</a><br>
+→ <a href="/neovim">Claude Code + Neovim</a><br>
+→ <a href="/jetbrains">Claude Code + JetBrains</a><br>
+→ <a href="/refactor">Refactoring with Claude Code</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
