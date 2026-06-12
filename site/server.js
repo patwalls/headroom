@@ -379,6 +379,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/svelte</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/vue</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/rust</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/database</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -8540,6 +8541,120 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #e5e5e5;color:#666;fo
 → <a href="/test">Writing tests with Claude Code</a><br>
 → <a href="/zed">Claude Code + Zed Editor</a><br>
 → <a href="/debug">Debugging with Claude Code</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/database") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code for Database Work — SQL, Prisma, migrations, and query optimization</title>
+<meta name="description" content="Use Claude Code to write SQL queries, generate Prisma migrations, optimize slow queries, and manage database schema changes. Practical patterns for backend developers.">
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:740px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.6}
+h1{font-size:2rem;font-weight:700;margin-bottom:.3em}
+h2{font-size:1.25rem;font-weight:600;margin-top:2em}
+pre{background:#f5f5f5;padding:14px 16px;border-radius:6px;overflow-x:auto;font-size:.9rem;line-height:1.5}
+code{background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:.9em}
+.cta-box{background:#f0f7ff;border:1px solid #bcd;border-radius:8px;padding:20px 24px;margin:2em 0}
+.brew{background:#1e1e1e;color:#a8ff78;padding:12px 16px;border-radius:6px;font-family:monospace;font-size:.95rem;margin:10px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid #e5e5e5}
+th{font-weight:600;background:#f8f8f8}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #e5e5e5;color:#666;font-size:.9rem}
+</style>
+</head><body>
+<p><a href="/">← headroom.walls.sh</a></p>
+<h1>Claude Code for Database Work</h1>
+<p>Claude Code handles database work well across the stack: raw SQL, Prisma schema changes, migration generation, query analysis, and data model design. The key is giving it the schema and the slow query together — it can't optimize what it can't read.</p>
+
+<h2>CLAUDE.md for a project with a database</h2>
+<pre>
+# Project Database
+
+## ORM / Query layer
+- Prisma 5 with PostgreSQL
+
+## Commands
+- Generate migration: npx prisma migrate dev --name [name]
+- Apply migrations: npx prisma migrate deploy
+- Reset dev DB: npx prisma migrate reset
+- Studio: npx prisma studio
+- Generate client: npx prisma generate
+
+## Conventions
+- All schema changes go through Prisma migrations — no raw DDL in production
+- Every new table needs a createdAt and updatedAt (managed by Prisma @updatedAt)
+- Soft deletes: use a deletedAt DateTime? field, not hard deletes
+- Always review generated migration SQL before running it on a shared dev database
+</pre>
+
+<h2>Schema changes with Prisma</h2>
+<pre>claude "add a tags field to the Post model — it should be a many-to-many relation to a new Tag model (id, name, slug). Generate a migration named 'add-post-tags'. Show me the migration SQL before I run it."</pre>
+<p>Claude Code edits the schema, generates the migration, and shows you the SQL. The review step matters — <code>prisma migrate dev</code> runs immediately in dev, so seeing the SQL first is cheap insurance.</p>
+<pre>claude "rename the 'author' field on Post to 'authorId' to make the foreign key naming explicit. This is a rename in the schema, not a new column — generate a migration that renames the column, not one that drops and re-adds it."</pre>
+<p>Column renames need a custom migration — Prisma generates a drop+re-add by default. Give Claude Code the constraint ("rename, not drop-and-add") and it will generate the correct <code>RENAME COLUMN</code> SQL.</p>
+
+<h2>Write raw SQL queries</h2>
+<pre>claude "write a SQL query that returns the top 10 users by total order value in the last 30 days. Join users, orders, and order_items. Group by user. Include their email, name, order count, and total spent."</pre>
+<pre>claude "write a query to find all products that have never been ordered. Use a LEFT JOIN with a NULL check rather than NOT IN — explain why NOT IN with a subquery is dangerous when order_items.product_id can be NULL."</pre>
+<p>Ask Claude Code for the explanation when it chooses one join pattern over another — the reasoning (NULL handling, index usage, row estimate differences) is often the most valuable part.</p>
+
+<h2>Optimize a slow query</h2>
+<pre>claude "this query takes 4 seconds on 2M rows: [paste query]. Here's the EXPLAIN ANALYZE output: [paste output]. Identify the bottleneck and suggest the fix — indexes, query rewrite, or both."</pre>
+<p>Always include the <code>EXPLAIN ANALYZE</code> output. Claude Code can read the plan and identify sequential scans, bad row estimates, and missing indexes — but it needs the actual plan, not just the query.</p>
+<pre>claude "add the missing indexes suggested by this EXPLAIN ANALYZE output: [paste]. Write the CREATE INDEX statements as a new migration. Use CONCURRENTLY so production tables aren't locked."</pre>
+<p>The <code>CONCURRENTLY</code> flag matters for production — adding an index without it locks the table for writes. Claude Code will use it if you specify "no table locks" or "production-safe".</p>
+
+<h2>Prisma queries and N+1 problems</h2>
+<pre>claude "this Prisma query has an N+1 problem — it loads posts and then fetches the author for each one separately: [paste code]. Fix it with a single include that loads posts and authors together."</pre>
+<pre>claude "rewrite this prisma.findMany to use cursor-based pagination instead of offset pagination. The cursor should be the id field. Return nextCursor alongside the results."</pre>
+<pre>claude "this query loads entire Post objects but the API only returns id, title, and createdAt. Add a select to fetch only those three fields."</pre>
+
+<h2>Database migrations for a large table</h2>
+<pre>claude "I need to add a NOT NULL column 'status' (enum: draft/published/archived, default 'draft') to a posts table with 50M rows. Write a migration strategy that doesn't lock the table: add nullable, backfill in batches, then add the NOT NULL constraint."</pre>
+<p>Large table migrations are where Claude Code's knowledge of PostgreSQL-specific patterns (batched backfills, <code>ALTER TABLE ... SET NOT NULL</code> with a CHECK CONSTRAINT first) is most valuable. Always specify the row count — the strategy changes based on scale.</p>
+<pre>claude "write the backfill script for the status column migration: update rows in batches of 10,000 with a LIMIT and cursor, sleep 100ms between batches to avoid lock pressure. Run as a standalone script, not inside a migration."</pre>
+
+<h2>Seed data and test fixtures</h2>
+<pre>claude "write a Prisma seed script (prisma/seed.ts) that creates: 3 users with different roles (admin/editor/viewer), 10 posts in various states, and realistic tag relationships. Use deterministic IDs so the seed is idempotent."</pre>
+<pre>claude "write factory functions for tests: createUser(), createPost(authorId), createOrderWithItems(userId, productIds). Each should insert to the test database and return the created record. Use the Prisma client directly."</pre>
+
+<h2>Schema design questions</h2>
+<pre>claude "I need to store per-user notification preferences — each user can enable/disable notifications for ~20 different event types. Options: JSONB column on users table, a notification_preferences table with one row per user per type, or a bitmask. What are the tradeoffs for a table of 500k users?"</pre>
+<p>Claude Code will lay out the tradeoffs concretely: query patterns, index strategies, storage costs, and schema flexibility for each option. Give it the scale (500k users, 20 types) — the answer changes at different scales.</p>
+
+<h2>Monitor session budget during database work</h2>
+<p>Migration generation + review + large table backfill scripting can span multiple back-and-forth exchanges that add up. Sessions involving database schema design often run longer than they look because of the review cycles.</p>
+
+<div class="cta-box">
+<h2>Headroom — track your session budget during schema work</h2>
+<p>When Claude Code is iterating on migrations or writing a complex backfill strategy, your 5-hour session meter is moving. Headroom shows your Claude Code session (5h) and weekly (7d) utilization live in the macOS menu bar — color-coded from calm to amber to red. No token, no API key: it reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Know how much session you have left before starting a complex migration review — you want to finish the whole analysis in one session, not pick it up cold tomorrow.</p>
+</div>
+
+<h2>Common database + Claude Code patterns</h2>
+<table>
+<tr><th>Task</th><th>Prompt pattern</th></tr>
+<tr><td>Schema change</td><td><code>add [field/table] to schema. Generate migration named '[name]'. Show SQL first.</code></td></tr>
+<tr><td>Column rename</td><td><code>rename [col] to [new] — rename not drop-and-add. Generate correct migration SQL.</code></td></tr>
+<tr><td>Slow query</td><td><code>[paste query + EXPLAIN ANALYZE]. Identify bottleneck and fix — indexes, rewrite, or both.</code></td></tr>
+<tr><td>N+1 fix</td><td><code>this Prisma query has N+1: [paste]. Fix with a single include/select.</code></td></tr>
+<tr><td>Big table migration</td><td><code>[N]M-row table — add NOT NULL [col] without locking. Batched backfill strategy.</code></td></tr>
+</table>
+
+<hr>
+<p>→ <a href="/api">Claude Code for REST API Development</a><br>
+→ <a href="/typescript">Claude Code for TypeScript</a><br>
+→ <a href="/go">Claude Code for Go</a><br>
+→ <a href="/python">Claude Code for Python</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
