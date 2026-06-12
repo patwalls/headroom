@@ -195,6 +195,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                     do {
                         try? fm.removeItem(at: currentBundle)
                         try fm.copyItem(at: newBundle, to: currentBundle)
+                        // Must strip quarantine AFTER copying or macOS App Translocation
+                        // will run it from a random UUID temp path and immediately exit.
+                        let strip = Process()
+                        strip.executableURL = URL(fileURLWithPath: "/usr/bin/xattr")
+                        strip.arguments = ["-rd", "com.apple.quarantine", currentBundle.path]
+                        try? strip.run(); strip.waitUntilExit()
                         replacedInPlace = true
                     } catch {}
 
