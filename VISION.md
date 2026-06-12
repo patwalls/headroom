@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 130 — 2026-06-11 · New SEO page: /hooks — Claude Code hooks system (PreToolUse, PostToolUse, statusLineHook).**
+  *Shipped:* https://headroom.walls.sh/hooks is live — targets "claude code hooks", "claude code pretooluse hook", "claude code statuslinehook". Covers: all five hook types (PreToolUse/PostToolUse/Stop/SubagentStop/statusLineHook) with when/can-block table; full settings.json config syntax; practical PreToolUse examples (block rm -rf, log every call); PostToolUse notification hook; Stop/SubagentStop cleanup; statusLineHook polling model; chaining multiple hooks. The Headroom upsell is the most natural on the site — statusLineHook IS how Headroom works. 34 SEO pages total. Downloads: 64. *Fact learned:* The /hooks page is the tightest funnel to Headroom — someone reading about statusLineHook is already 90% of the way to installing it; the page just closes the loop.
+
 - **Lap 129 — 2026-06-11 · New SEO page: /keyboard — Claude Code keyboard shortcuts reference.**
   *Shipped:* https://headroom.walls.sh/keyboard is live — targets "claude code keyboard shortcuts", "claude code hotkeys", "claude code key bindings". Covers: Escape (interrupt mid-response), Ctrl+C (cancel), Ctrl+D (exit), Tab file completion, Up/Down history; special prefixes (/commands, @file-refs, ! shell passthrough, # context); readline line editing (Ctrl+A/E/K/U/W/R, Alt+arrows); Shift+Return multi-line input; tool-use interrupt semantics; VS Code extension bindings; practical tips on using Escape early. 33 SEO pages total. Downloads: 64. *Fact learned:* The Escape key tip (interrupt early rather than waiting for a wrong path to finish) is the most actionable piece of Headroom upsell on the page — it directly frames the 5h budget as something worth monitoring.
 

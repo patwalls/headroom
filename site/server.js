@@ -353,6 +353,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/env</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/ci</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/keyboard</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/hooks</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -3816,6 +3817,167 @@ fi</pre>
 → <a href="/tips">Claude Code tips and tricks</a><br>
 → <a href="/compact">/compact and context management</a><br>
 → <a href="/session">Session (5h) window explained</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/hooks") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Hooks — PreToolUse, PostToolUse, statusLineHook Explained</title>
+<meta name="description" content="How Claude Code hooks work: PreToolUse to intercept tool calls, PostToolUse for side effects, statusLineHook for custom status line output, and Stop hooks for session cleanup.">
+<link rel="canonical" href="https://headroom.walls.sh/hooks">
+<meta property="og:title" content="Claude Code Hooks — PreToolUse, PostToolUse, statusLineHook">
+<meta property="og:description" content="Configure Claude Code hooks to run shell commands before/after tool use, customize the status line, log every action, and trigger notifications.">
+<meta property="og:url" content="https://headroom.walls.sh/hooks">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code Hooks — PreToolUse, PostToolUse, statusLineHook">
+<meta name="twitter:description" content="Run shell commands before/after every Claude Code tool call. PreToolUse, PostToolUse, statusLineHook, and Stop hooks explained with examples.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1.1rem;margin:2.2em 0 .35em;color:var(--ink);border-bottom:1px solid #242936;padding-bottom:.3em}
+  h3{font-size:.95rem;margin:1.4em 0 .25em;color:var(--accent)}
+  p{color:#c9c6bd;margin:.35em 0 .7em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.84rem;line-height:1.55;margin:.5em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+  .cta{display:inline-block;margin:1.5em 0;padding:12px 22px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:.97rem}
+  table{width:100%;border-collapse:collapse;margin:.6em 0 1.2em;font-size:.88rem}
+  th{text-align:left;color:var(--dim);font-weight:600;border-bottom:1px solid #242936;padding:6px 10px 6px 0}
+  td{border-bottom:1px solid #1e2230;padding:7px 10px 7px 0;color:#c9c6bd;vertical-align:top}
+  td:first-child{color:var(--ok);font-family:ui-monospace,Menlo,monospace;font-size:.84rem;white-space:nowrap}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · hooks</p>
+<h1>Claude Code hooks</h1>
+<p class="sub">Shell commands that Claude Code runs at specific points in its lifecycle — before tool use, after tool use, when the session ends, and on the status line.</p>
+
+<h2>What hooks are for</h2>
+<p>Claude Code's hooks system lets you wire up shell scripts to lifecycle events. A hook is any shell command — a script, a binary, a one-liner. Common uses: logging every tool call to a file, sending a desktop notification when a session ends, blocking certain bash commands, updating an external dashboard, or writing usage data for another app to read.</p>
+<p>Hooks are configured in <code>~/.claude/settings.json</code> under the <code>"hooks"</code> key. They run locally, synchronously (for PreToolUse) or asynchronously (for PostToolUse and Stop), and have no access to the Anthropic API — just your machine.</p>
+
+<h2>Hook types</h2>
+<table>
+<tr><th>Hook</th><th>When it runs</th><th>Can block?</th></tr>
+<tr><td>PreToolUse</td><td>Before Claude Code executes a tool (Bash, Read, Edit, Write, etc.)</td><td>Yes — non-zero exit cancels the tool call</td></tr>
+<tr><td>PostToolUse</td><td>After a tool completes, before the next turn</td><td>No</td></tr>
+<tr><td>Stop</td><td>When a Claude Code session ends (user exits, /quit, Ctrl+D)</td><td>No</td></tr>
+<tr><td>SubagentStop</td><td>When a subagent finishes (in --agent runs)</td><td>No</td></tr>
+<tr><td>statusLineHook</td><td>Periodically — output appears in the Claude Code status line</td><td>No</td></tr>
+</table>
+
+<h2>Hook configuration</h2>
+<p>All hooks go in the <code>"hooks"</code> object in <code>~/.claude/settings.json</code>:</p>
+<pre>{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "/path/to/pre-bash-hook.sh" }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [{ "type": "command", "command": "/path/to/log-all-tools.sh" }]
+      }
+    ],
+    "Stop": [
+      { "type": "command", "command": "osascript -e 'display notification \"Claude Code session ended\" with title \"Claude Code\"'" }
+    ],
+    "statusLineHook": "~/.claude/headroom-hook.sh"
+  }
+}</pre>
+
+<h2>PreToolUse hooks</h2>
+<p>Runs before every tool call. The hook receives a JSON payload on stdin with the tool name and input. If the hook exits non-zero, the tool call is cancelled and the exit output is shown to Claude Code as an error.</p>
+<h3>Block destructive commands</h3>
+<pre>#!/bin/bash
+# ~/.claude/block-rm-rf.sh
+INPUT=\$(cat)
+COMMAND=\$(echo "\$INPUT" | jq -r '.tool_input.command // ""')
+if echo "\$COMMAND" | grep -qE 'rm -rf /|rm -rf ~'; then
+  echo "Blocked: rm -rf on root or home is not allowed"
+  exit 1
+fi
+exit 0</pre>
+<pre># settings.json
+"PreToolUse": [{
+  "matcher": "Bash",
+  "hooks": [{ "type": "command", "command": "~/.claude/block-rm-rf.sh" }]
+}]</pre>
+
+<h3>Log every tool call</h3>
+<pre>#!/bin/bash
+# ~/.claude/log-tools.sh
+echo "\$(date -Iseconds) PRE \$(cat | jq -c '.')" >> ~/.claude/tool-log.jsonl</pre>
+
+<h2>PostToolUse hooks</h2>
+<p>Runs after a tool completes. Receives the same JSON payload plus the tool's output. Non-zero exit is ignored (the tool already ran). Good for logging, notifications, and side effects.</p>
+<pre>#!/bin/bash
+# ~/.claude/notify-on-write.sh
+INPUT=\$(cat)
+TOOL=\$(echo "\$INPUT" | jq -r '.tool_name')
+if [ "\$TOOL" = "Write" ] || [ "\$TOOL" = "Edit" ]; then
+  FILE=\$(echo "\$INPUT" | jq -r '.tool_input.file_path // .tool_input.path // "file"')
+  osascript -e "display notification \\"Wrote \$FILE\\" with title \\"Claude Code\\""
+fi</pre>
+
+<h2>Stop and SubagentStop hooks</h2>
+<p>Run when the session exits. No stdin payload — just a chance to clean up, log, or notify.</p>
+<pre># Notify when a long session ends
+"Stop": [{
+  "type": "command",
+  "command": "osascript -e 'display notification \"Session complete\" with title \"Claude Code\" sound name \"Glass\"'"
+}]</pre>
+
+<h2>statusLineHook — the status bar</h2>
+<p>The <code>statusLineHook</code> is different from the others: it's a polling hook that runs on a short interval (roughly every few seconds while Claude Code is active). Its stdout output appears directly in the Claude Code status line — the line at the bottom of the terminal showing current session info.</p>
+<pre># settings.json — a simple clock in the status line
+"statusLineHook": "date '+%H:%M'"
+
+# Or a usage counter from an external file
+"statusLineHook": "cat ~/.claude/headroom-usage.json | jq -r '.statusLine // \"\"'"</pre>
+<p>The statusLineHook can display anything: git branch, battery level, a custom prompt counter, or Claude Code's own usage data. The output is shown verbatim — keep it short (under 60 chars) so it fits on one line.</p>
+
+<div class="note"><p>Headroom uses the statusLineHook to capture Claude Code's session (5h) and weekly (7d) utilization numbers and write them to <code>~/.claude/headroom-usage.json</code>. Headroom reads that file and shows the numbers as a live % in your macOS menu bar. No network calls, no tokens, no API — just a local file written by the hook and read by the app.</p></div>
+<a class="cta" href="/download">Download Headroom v${VERSION} — free</a>
+<pre>brew install patwalls/tap/headroom</pre>
+
+<h2>Chaining hooks</h2>
+<p>Each hook type accepts an array of hooks objects — they run in order. You can also chain your own script with an existing <code>statusLineHook</code>: Headroom's installer automatically detects an existing hook and wraps it so both run.</p>
+<pre>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "~/.claude/log-bash.sh" },
+          { "type": "command", "command": "~/.claude/notify-bash.sh" }
+        ]
+      }
+    ]
+  }
+}</pre>
+
+<p>→ <a href="/hook">statusLineHook deep-dive</a><br>
+→ <a href="/settings">settings.json reference</a><br>
+→ <a href="/permissions">Tool permissions and allow rules</a><br>
+→ <a href="/log">Logging Claude Code usage over time</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
