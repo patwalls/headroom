@@ -376,6 +376,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/go</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/api</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/react</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/svelte</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -8168,6 +8169,130 @@ footer{margin-top:3em;padding-top:1em;border-top:1px solid #e5e5e5;color:#666;fo
 → <a href="/nextjs">Claude Code + Next.js</a><br>
 → <a href="/test">Writing tests with Claude Code</a><br>
 → <a href="/multifile">Claude Code multi-file editing</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/svelte") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code for Svelte and SvelteKit — components, stores, and routing</title>
+<meta name="description" content="Use Claude Code to build Svelte components, SvelteKit routes, Svelte stores, and run Vitest and Playwright test loops. Practical patterns for Svelte developers.">
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:740px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.6}
+h1{font-size:2rem;font-weight:700;margin-bottom:.3em}
+h2{font-size:1.25rem;font-weight:600;margin-top:2em}
+pre{background:#f5f5f5;padding:14px 16px;border-radius:6px;overflow-x:auto;font-size:.9rem;line-height:1.5}
+code{background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:.9em}
+.cta-box{background:#f0f7ff;border:1px solid #bcd;border-radius:8px;padding:20px 24px;margin:2em 0}
+.brew{background:#1e1e1e;color:#a8ff78;padding:12px 16px;border-radius:6px;font-family:monospace;font-size:.95rem;margin:10px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid #e5e5e5}
+th{font-weight:600;background:#f8f8f8}
+footer{margin-top:3em;padding-top:1em;border-top:1px solid #e5e5e5;color:#666;font-size:.9rem}
+</style>
+</head><body>
+<p><a href="/">← headroom.walls.sh</a></p>
+<h1>Claude Code for Svelte and SvelteKit</h1>
+<p>Svelte's compiler-first model and SvelteKit's file-system routing are a good fit for Claude Code — the conventions are consistent enough that generating correct components and routes is reliable. This page covers the patterns that save the most time.</p>
+
+<h2>CLAUDE.md for a SvelteKit project</h2>
+<pre>
+# SvelteKit App
+
+## Stack
+- SvelteKit + TypeScript + Vite
+- Styling: Tailwind CSS
+- State: Svelte stores (writable/derived/readable)
+- Data fetching: SvelteKit load functions
+- Testing: Vitest + Svelte Testing Library + Playwright
+
+## Commands
+- Dev: npm run dev
+- Test: npm test
+- E2E: npx playwright test
+- Typecheck: npx svelte-check --tsconfig ./tsconfig.json
+- Build: npm run build
+
+## Conventions
+- Components in src/lib/components/ — PascalCase .svelte files
+- Stores in src/lib/stores/ — one store per domain
+- Types in src/lib/types/ — shared TypeScript interfaces
+- SvelteKit routes in src/routes/ — +page.svelte, +page.ts, +layout.svelte
+- No inline styles — use Tailwind classes
+</pre>
+
+<h2>Generate a Svelte component</h2>
+<pre>claude "create a TagInput.svelte component: takes an array of tags (strings) as a prop, lets the user add tags by typing and pressing Enter, remove tags by clicking X. Dispatch a 'change' event with the updated array. Follow patterns in src/lib/components/."</pre>
+<p>Claude Code reads your existing components to match the script/template/style structure you use — script ordering, TypeScript style, event dispatch patterns. It won't invent a different structure.</p>
+
+<h2>SvelteKit load functions and routing</h2>
+<pre>claude "add a /blog/[slug] route. The +page.ts load function fetches the post from the CMS API using the slug parameter. Return the post data and a 404 error if not found. The +page.svelte renders the title, date, and HTML content. Add basic meta tags for SEO."</pre>
+<p>SvelteKit's load function pattern is well-understood by Claude Code — it generates the correct <code>PageLoad</code> type, <code>error()</code> helper for the 404, and wires the data type to the page component automatically.</p>
+
+<h2>Svelte stores</h2>
+<pre>claude "create a cartStore in src/lib/stores/cart.ts. It should be a writable store with: items (array of {product, quantity}), addItem, removeItem, updateQuantity, and a derived totalPrice store. Export all of them. Persist to localStorage on change."</pre>
+<p>Derived stores and persistence are a common pattern Claude Code handles well. Specify the shape of the items upfront — it will use that interface consistently across the store and all consumers.</p>
+<pre>claude "read src/routes/checkout/+page.svelte and migrate it to use cartStore instead of the local state it currently uses. Keep all UI behavior identical."</pre>
+
+<h2>SvelteKit API routes (+server.ts)</h2>
+<pre>claude "add a POST /api/subscribe +server.ts route. Accept { email } in the request body, validate with Zod (valid email required), add to the mailing list via the Mailchimp API (key in MAILCHIMP_API_KEY env), return { success: true } or a 400/500 error. Write a test."</pre>
+<p>Claude Code generates the <code>RequestHandler</code> type, the Zod schema, error responses, and the test — all in the SvelteKit idiom.</p>
+
+<h2>Svelte transitions and animations</h2>
+<pre>claude "add a fade transition to the notification toast component when it appears and disappears. Use Svelte's built-in fade transition. The duration should be 200ms. Follow the existing animation patterns in the codebase if any."</pre>
+<pre>claude "add a slide-in animation to the mobile menu — slides in from the left when open, slides back out when closed. Use Svelte's fly transition."</pre>
+
+<h2>TypeScript migration</h2>
+<pre>claude "add TypeScript to all .svelte files in src/lib/components/ that are using JavaScript. Add prop types with TypeScript. Use \`lang="ts"\` in the script block. Run svelte-check after each file."</pre>
+<p>The <code>svelte-check</code> command is the right verifier for Svelte TypeScript — it catches both TypeScript errors and Svelte-specific issues that <code>tsc</code> alone would miss.</p>
+
+<h2>Write component tests</h2>
+<pre>claude "write Vitest + Svelte Testing Library tests for TagInput.svelte. Cover: renders with initial tags, adds tag on Enter, removes tag on X click, does not add empty tags, dispatches change event with updated array."</pre>
+<pre>claude "run the tests and fix any failures: npm test -- TagInput"</pre>
+<p>The two-step pattern — write, then run-and-fix — works better than asking for working tests upfront. The actual test runner output tells Claude Code exactly what to fix.</p>
+
+<h2>Playwright end-to-end tests</h2>
+<pre>claude "write Playwright tests for the cart flow: add item to cart from product page, verify cart badge updates, open cart drawer, update quantity, remove item, proceed to checkout. Use the page object pattern."</pre>
+
+<h2>SvelteKit form actions</h2>
+<pre>claude "convert the contact form from a fetch-based submission to a SvelteKit form action. Create a +page.server.ts with a default action that validates the fields with Zod, sends the email, and returns success or field-level errors. Update the +page.svelte to use enhance() and show the errors inline."</pre>
+<p>Form actions with progressive enhancement are idiomatic SvelteKit — Claude Code generates the correct <code>Actions</code> type, <code>fail()</code> for validation errors, and the <code>ActionData</code> type for the page.</p>
+
+<h2>SvelteKit hooks and middleware</h2>
+<pre>claude "add a src/hooks.server.ts handle function that checks for a session cookie on protected routes (anything under /dashboard). Redirect to /login if there's no valid session. Pass the session data to the event.locals so load functions can access it."</pre>
+
+<h2>Monitor session budget during Svelte work</h2>
+<p>SvelteKit's type system (<code>svelte-check</code>) can produce cascading errors when a store shape or load function return type changes — fixing them iteratively burns session budget faster than it looks.</p>
+
+<div class="cta-box">
+<h2>Headroom — watch your session budget while the type checker runs</h2>
+<p>When Claude Code is iterating on Svelte component types or running a test loop, your 5-hour session meter is moving. Headroom shows your Claude Code session (5h) and weekly (7d) utilization live in the macOS menu bar — color-coded from calm to amber to red. No token, no API key: it reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Check the menu bar before starting a large svelte-check fix loop — you'll know if you have the headroom to finish it.</p>
+</div>
+
+<h2>Common Svelte + Claude Code patterns</h2>
+<table>
+<tr><th>Task</th><th>Prompt pattern</th></tr>
+<tr><td>New component</td><td><code>create a [Name].svelte component: [spec]. Follow patterns in src/lib/components/</code></td></tr>
+<tr><td>New route</td><td><code>add a /[path] route with load function and page component. Fetch [data] from [source].</code></td></tr>
+<tr><td>New store</td><td><code>create a [name]Store with: [shape]. Derived stores for [computed values]. Persist to localStorage.</code></td></tr>
+<tr><td>Add tests</td><td><code>write STL tests for [Component]. Cover: [cases]. Run: npm test -- [Component]</code></td></tr>
+<tr><td>Form action</td><td><code>convert [form] to a SvelteKit form action with Zod validation and inline errors.</code></td></tr>
+</table>
+
+<hr>
+<p>→ <a href="/typescript">Claude Code for TypeScript</a><br>
+→ <a href="/react">Claude Code for React</a><br>
+→ <a href="/test">Writing tests with Claude Code</a><br>
+→ <a href="/vscode">Claude Code + VS Code</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
