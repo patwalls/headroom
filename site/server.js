@@ -370,6 +370,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/zed</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/python</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/typescript</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/multifile</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -6703,6 +6704,134 @@ Write a failing test for it first — it should validate format, reject TLDs sho
 → <a href="/refactor">Refactoring with Claude Code</a><br>
 → <a href="/agent">Agent mode and subagents</a><br>
 → <a href="/session">5-hour session limit explained</a> · <a href="/weekly">7-day weekly cap</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/multifile") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Multi-File Editing — How to Edit Multiple Files at Once</title>
+<meta name="description" content="How Claude Code reads and edits multiple files in one session: directory-scope tasks, cross-file refactors, moving code between files, and session budget tips for large projects.">
+<link rel="canonical" href="https://headroom.walls.sh/multifile">
+<meta property="og:title" content="Claude Code Multi-File Editing">
+<meta property="og:description" content="Claude Code reads and edits multiple files simultaneously. Directory-scope tasks, cross-file refactors, moving code, and how to manage session budget across large projects.">
+<meta property="og:url" content="https://headroom.walls.sh/multifile">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude Code Multi-File Editing">
+<meta name="twitter:description" content="How Claude Code edits multiple files: directory tasks, cross-file refactors, moving code, and session budget tips.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.4em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.tip{background:#141414;border-left:3px solid #5db85d;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+.warn{background:#141414;border-left:3px solid #d9a657;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · multifile</p>
+<h1>Claude Code Multi-File Editing</h1>
+<p class="sub">Claude Code reads and edits files one at a time internally, but it works across your whole project in a single session — reading context from dozens of files before editing, then updating each one. This is what makes it useful for real codebases rather than isolated snippets. Here is how to use it well.</p>
+
+<h2>How multi-file editing works</h2>
+<p>When you ask Claude Code to work across multiple files, it:</p>
+<ol>
+<li>Reads all relevant files to understand context (imports, types, function signatures, call sites)</li>
+<li>Plans the change — which files need edits and in what order</li>
+<li>Edits each file sequentially, with each edit informed by everything it read</li>
+<li>Verifies the result (runs tests, type checker, or build) if you ask it to</li>
+</ol>
+<p>The key constraint: Claude Code works within a context window. It can hold many files at once, but on very large projects (hundreds of files), it may need to read in batches or work across sub-directories. For most projects, it handles the full scope in one pass.</p>
+
+<h2>Directory-scope tasks</h2>
+<p>The simplest multi-file pattern: scope the task to a directory.</p>
+<pre>claude "add JSDoc comments to every exported function in src/utils/ — read all files first, then update them"</pre>
+<pre>claude "find all console.log() calls in src/ and replace them with a logger.debug() call using the project's logger from src/lib/logger.ts"</pre>
+<pre>claude "add input validation to every POST endpoint in src/routes/ — read the route files first to see the existing patterns, then add validation using the same style"</pre>
+<p>The "read all files first" instruction helps when context from one file affects how another should be written. Without it, Claude Code may start editing before reading everything it needs.</p>
+
+<h2>Cross-file refactors</h2>
+<p>Renaming a function, type, or variable that's used across many files:</p>
+<pre>claude "rename the function processPayment to handleTransaction everywhere it appears — update the definition in src/payments.ts and all call sites. Run the tests after."</pre>
+<pre>claude "the User type is defined in src/types/user.ts. Move it to src/models/User.ts, update the import path in every file that imports it."</pre>
+<pre>claude "we renamed the API endpoint from /api/v1/users to /api/v2/users. Find every place in the codebase that calls this endpoint and update the path."</pre>
+<p>Claude Code reads the definition file first, then finds and updates all callers. It handles relative imports correctly — a file in <code>src/routes/</code> and one in <code>src/services/</code> get different relative paths to the same module.</p>
+
+<div class="tip">For large renames, add "run tsc" or "run tests" at the end of the prompt. Claude Code will verify the refactor was consistent — a missed import or wrong relative path shows up immediately rather than in a late code review.</div>
+
+<h2>Moving code between files</h2>
+<p>Extracting a function or module to a new file:</p>
+<pre>claude "the auth logic in src/server.ts has grown too large. Extract the authentication middleware into src/middleware/auth.ts, update the import in server.ts, and verify the app still builds."</pre>
+<pre>claude "split src/utils.ts into separate files by category: src/utils/string.ts, src/utils/date.ts, and src/utils/api.ts. Update all imports across the project."</pre>
+<p>Moving code is more error-prone than renaming because import paths change and barrel files may need updating. Claude Code handles this well when you include "update all imports" and "verify the build" — the verification step catches any import it missed.</p>
+
+<h2>Coordinated changes across layers</h2>
+<p>The most powerful multi-file use: changes that span multiple layers of a codebase.</p>
+<pre>claude "add a 'lastModifiedBy' field to the User model. Update: the database migration, the TypeScript type, the API serializer, the admin panel display, and the tests. Do them in dependency order."</pre>
+<pre>claude "the getUsers API now returns a pagination cursor instead of a page number. Update the backend endpoint, the TypeScript response type, the frontend fetch function, and the UI component that renders the result."</pre>
+<p>The "dependency order" and "do them in order" instruction helps Claude Code update the schema before the type that depends on it, and the type before the code that uses it — avoiding intermediate states where the project doesn't compile.</p>
+
+<h2>Using @file references</h2>
+<p>You can explicitly tell Claude Code which files to read before starting:</p>
+<pre>claude "@src/types/api.ts @src/services/userService.ts add error handling to every function in userService.ts that calls the API — use the error types defined in api.ts"</pre>
+<p><code>@</code> references load those files immediately into context at the start of the task. This is useful when you know exactly which files are relevant and want to avoid Claude Code spending reads discovering them.</p>
+
+<h2>Large projects: scoping strategies</h2>
+<p>For very large codebases (hundreds of files), scope the task deliberately:</p>
+<ul>
+<li><strong>By directory</strong> — <code>src/api/</code> not <code>src/</code></li>
+<li><strong>By module</strong> — "just the auth module" not "the whole app"</li>
+<li><strong>By type of change</strong> — "only files that import from lib/db" not "all files"</li>
+<li><strong>Incrementally</strong> — do one module per session, commit between sessions</li>
+</ul>
+<p>Claude Code will tell you if it can't hold all the relevant files in context — it won't silently skip files it hasn't read.</p>
+
+<div class="warn"><strong>Session budget note:</strong> multi-file work is expensive on reads. Reading 20 files before editing them means 20 tool calls just for reads, before any edits happen. A full cross-project rename across 40 call sites can be 60–80 tool calls. Check your session usage before starting a large sweep.</div>
+
+<h2>Verify the result explicitly</h2>
+<p>Always end multi-file tasks with a verification step:</p>
+<pre>claude "rename calculateTax to computeTax everywhere — update definition and all callers. Run npm test after to verify nothing broke."</pre>
+<p>Without the verification step, a missed call site or wrong import path stays hidden until you push or someone else runs the tests. The explicit "run tests" instruction makes Claude Code responsible for confirming the change is consistent — not just complete.</p>
+
+<div class="cta-box">
+<h2>Headroom — monitor session usage during large refactors</h2>
+<p>Multi-file refactors across large codebases are one of the fastest ways to consume your Claude Code 5-hour session budget. Headroom shows your session and weekly utilization live in the macOS menu bar — no token, no API key, reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Color-coded from calm to amber to red. Know before you start a 40-file rename whether you have the headroom to finish it in one session.</p>
+</div>
+
+<hr>
+<p>→ <a href="/refactor">Refactoring with Claude Code</a><br>
+→ <a href="/typescript">Claude Code for TypeScript</a><br>
+→ <a href="/test">Writing tests with Claude Code</a><br>
+→ <a href="/session">5-hour session limit explained</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
