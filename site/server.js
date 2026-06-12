@@ -366,6 +366,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/refactor</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/test</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/jetbrains</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/git</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -6699,6 +6700,139 @@ Write a failing test for it first — it should validate format, reject TLDs sho
 → <a href="/refactor">Refactoring with Claude Code</a><br>
 → <a href="/agent">Agent mode and subagents</a><br>
 → <a href="/session">5-hour session limit explained</a> · <a href="/weekly">7-day weekly cap</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/git") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Git + Claude Code — Commit Messages, Code Review, Merge Conflicts, PR Descriptions</title>
+<meta name="description" content="Use Claude Code to write commit messages, review diffs, resolve merge conflicts, generate PR descriptions, and analyze git history. Real workflows with real commands.">
+<link rel="canonical" href="https://headroom.walls.sh/git">
+<meta property="og:title" content="Git + Claude Code — Commit Messages, Code Review, Merge Conflicts">
+<meta property="og:description" content="Claude Code for everyday git work: commit messages from diffs, PR descriptions, merge conflict resolution, code review before push, and git log analysis.">
+<meta property="og:url" content="https://headroom.walls.sh/git">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Git + Claude Code">
+<meta name="twitter:description" content="Commit messages, PR descriptions, merge conflict resolution, and code review with Claude Code. Real git workflows.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.4em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.tip{background:#141414;border-left:3px solid #5db85d;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+.warn{background:#141414;border-left:3px solid #d9a657;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · git</p>
+<h1>Git + Claude Code</h1>
+<p class="sub">Claude Code integrates naturally into git workflows — writing commit messages from staged diffs, resolving merge conflicts with full context, generating PR descriptions, and reviewing changes before push. This page covers the patterns that save time every day.</p>
+
+<h2>Commit messages from staged diffs</h2>
+<p>The most common Claude Code git task: stage your changes, then ask for a commit message that reflects what actually changed.</p>
+<pre>git add -p   # stage what you want
+git diff --staged | claude --print "write a conventional commit message for this diff — one subject line under 72 chars, then a body paragraph explaining why"</pre>
+<p>Or from inside a Claude Code session after making changes:</p>
+<pre>claude "look at the staged diff and write a commit message. Use conventional commits format: feat/fix/refactor/docs. Focus on why, not what."</pre>
+<p>Claude Code reads the diff, understands what the change does, and writes a message that would make sense to a reviewer six months later — not just "update auth.js".</p>
+
+<div class="tip">Ask for "why, not what" explicitly. Claude Code can always read what changed from the diff. The why — the motivation, the constraint, the bug being fixed — is what commit messages are actually for.</div>
+
+<h2>Code review before pushing</h2>
+<p>Review your own changes before they go up for PR:</p>
+<pre>git diff main..HEAD | claude --print "review this diff for: bugs, edge cases not handled, missing error handling, anything a reviewer would flag"</pre>
+<p>Or from inside a session with full project context:</p>
+<pre>claude "review the changes on this branch compared to main. Look for: logic errors, unhandled edge cases, missing tests, anything that would get a PR comment"</pre>
+<p>Claude Code can read the actual files — not just the diff — so it catches issues like "this change assumes the user is authenticated but the route middleware was removed three commits ago."</p>
+
+<h2>Merge conflict resolution</h2>
+<p>When you hit a merge conflict, Claude Code can resolve it with context from both sides:</p>
+<pre>claude "I have merge conflicts in src/api/users.js. Read the file, understand both sides of the conflict, and resolve it correctly — preserve the intent of both branches."</pre>
+<p>It reads the conflict markers (<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>), understands what each side is trying to do, and produces a clean resolution. For complex conflicts across many files:</p>
+<pre>claude "there are merge conflicts across the src/models/ directory. Resolve each one — our branch added new fields, theirs refactored the base class. Preserve both."</pre>
+
+<h2>PR descriptions</h2>
+<p>Generate a full PR description from the branch diff:</p>
+<pre>git log main..HEAD --oneline | claude --print "here are the commits on this branch. Write a GitHub PR description: summary paragraph, bullet-point changes, test plan section."</pre>
+<p>With the full diff for more detail:</p>
+<pre>git diff main..HEAD | claude --print "write a GitHub PR description for this diff. Include: what changed and why, how to test it, any migration steps needed."</pre>
+
+<h2>Understanding git history</h2>
+<p>When you need to understand what changed in a range of commits:</p>
+<pre>git log --oneline -20 | claude --print "summarize what work happened in these commits — group by theme (feature, bug fix, refactor)"</pre>
+<p>Or dig into a specific commit:</p>
+<pre>git show abc1234 | claude --print "explain what this commit does and why it was necessary"</pre>
+<p>For tracking down when a bug was introduced:</p>
+<pre>claude "use git log and git show to find when the rate limiting logic in src/middleware/rateLimit.js was last changed, and what the change was"</pre>
+
+<h2>Preparing a clean commit history before PR</h2>
+<p>If you have a messy branch and want Claude Code to help organize it:</p>
+<pre>claude "look at the commits on this branch with git log. Describe the logical groupings — what should be squashed, what should stay separate, what order makes the history readable"</pre>
+<p>Claude Code won't rewrite history for you (interactive rebase requires human input at each step), but it will give you the exact rebase plan to execute:</p>
+<pre>claude "give me the exact git rebase -i commands to squash these commits into three clean logical units: the schema change, the API change, and the tests"</pre>
+
+<h2>Git hooks with Claude Code</h2>
+<p>Use Claude Code as a commit-msg hook to improve commit messages automatically:</p>
+<pre># .git/hooks/commit-msg
+#!/bin/sh
+MSG=\$(cat "\$1")
+if [ \${#MSG} -lt 20 ]; then
+  echo "Commit message too short — run: claude 'write a commit message for the staged diff'"
+  exit 1
+fi</pre>
+<p>Or a pre-push hook that runs a quick review:</p>
+<pre># .git/hooks/pre-push
+#!/bin/sh
+git diff origin/main..HEAD | claude --print "flag any obvious bugs or missing error handling in this diff. If none, say LGTM." --output-format text</pre>
+
+<div class="warn"><strong>Session budget note:</strong> git operations themselves are fast, but asking Claude Code to review large diffs or resolve many merge conflicts across dozens of files adds up. A thorough pre-push review of a large branch can be 10–20 tool calls.</div>
+
+<h2>Stash and branch workflows</h2>
+<p>Claude Code understands git state and can help navigate it:</p>
+<pre>claude "I'm in the middle of this feature but need to switch branches to fix a bug. Help me stash the right things and create a clean branch for the hotfix."</pre>
+<pre>claude "I accidentally committed to main instead of a feature branch. Help me fix the git history — move these commits to a new branch and reset main."</pre>
+
+<h2>Monitor usage during long git sessions</h2>
+<div class="cta-box">
+<h2>Headroom — know your session budget before a big merge</h2>
+<p>Resolving merge conflicts across many files, reviewing a large PR, or cleaning up a messy branch history can consume more Claude Code session budget than expected. Headroom shows your session (5h) and weekly (7d) utilization live in the macOS menu bar — no token, no API key, just the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Color-coded from calm to amber to red. You'll know before you start a long conflict resolution whether you have the headroom to finish it.</p>
+</div>
+
+<hr>
+<p>→ <a href="/refactor">Refactoring with Claude Code</a><br>
+→ <a href="/test">Writing tests with Claude Code</a><br>
+→ <a href="/debug">Debugging with Claude Code</a><br>
+→ <a href="/hooks">Claude Code hooks — PreToolUse, PostToolUse, statusLineHook</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
