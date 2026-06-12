@@ -359,6 +359,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/windsurf</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/vscode</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/debug</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/continue</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -5338,6 +5339,156 @@ OUR_API_KEY=...</pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
+  }
+
+  if (url.pathname === "/continue") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code vs Continue.dev — Key Differences and How to Use Both</title>
+<meta name="description" content="Claude Code vs Continue.dev: how they differ, when the terminal agent beats the VS Code extension, when Continue.dev wins, and how to use both without burning your Claude quota.">
+<link rel="canonical" href="https://headroom.walls.sh/continue">
+<meta property="og:title" content="Claude Code vs Continue.dev">
+<meta property="og:description" content="Continue.dev is an open-source VS Code extension for AI coding. Claude Code is a terminal agent. Different tools — here's when each wins and how to use both.">
+<meta property="og:url" content="https://headroom.walls.sh/continue">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude Code vs Continue.dev">
+<meta name="twitter:description" content="Continue.dev is open-source, runs in VS Code, and supports multiple models. Claude Code is a terminal agent. Here is when to use each.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+table{width:100%;border-collapse:collapse;margin:1.2em 0 2em;font-size:.95rem}
+th{text-align:left;padding:10px 14px;background:#161616;color:#999;font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;border-bottom:2px solid #222}
+td{padding:11px 14px;border-bottom:1px solid #1e1e1e;color:#c8c4bb;vertical-align:top}
+tr:last-child td{border-bottom:none}
+td:first-child{color:#e8e4da;font-weight:500;white-space:nowrap}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.4em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.note{background:#141414;border-left:3px solid #d97757;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · continue</p>
+<h1>Claude Code vs Continue.dev</h1>
+<p class="sub">Continue.dev is an open-source VS Code and JetBrains extension that brings multiple AI models into your editor — including Claude. Claude Code is a terminal agent that executes tasks autonomously. They overlap, but they solve different problems. This page covers when each is the right tool and what happens when you use both together.</p>
+
+<h2>What they are</h2>
+<p><strong>Continue.dev</strong> is an open-source IDE extension (VS Code and JetBrains). You pick your model — Claude, GPT-4, Gemini, Llama, or any local model via Ollama. It handles inline completions, chat, and a basic agent mode inside the editor. Fully self-hosted option; no subscription lock-in.</p>
+<p><strong>Claude Code</strong> is Anthropic's terminal agent. It runs outside your editor, has full shell access, drives autonomous multi-step tasks (refactors, debugging loops, test suites), and is designed to run unattended. Locked to Claude models. Included in Claude Pro/Max subscriptions.</p>
+
+<table>
+<thead><tr><th>Dimension</th><th>Continue.dev</th><th>Claude Code</th></tr></thead>
+<tbody>
+<tr><td>Type</td><td>IDE extension (VS Code + JetBrains)</td><td>Terminal CLI agent</td></tr>
+<tr><td>Open source</td><td>Yes — MIT license</td><td>No — Anthropic proprietary</td></tr>
+<tr><td>Model support</td><td>Any: Claude, GPT-4, Gemini, Llama, Ollama local</td><td>Claude only</td></tr>
+<tr><td>Pricing</td><td>Free (BYOK or local models); Continue Pro for team features</td><td>Included in Claude Pro/Max subscription</td></tr>
+<tr><td>Inline completions</td><td>Yes</td><td>No</td></tr>
+<tr><td>Autonomous agent</td><td>Limited — editor-scoped</td><td>Full — shell access, any path</td></tr>
+<tr><td>Shell access</td><td>No</td><td>Yes — unrestricted</td></tr>
+<tr><td>Offline / local models</td><td>Yes — via Ollama integration</td><td>No</td></tr>
+<tr><td>Usage limits</td><td>Depends on provider (BYOK) or no limits (local)</td><td>5h session + 7d weekly rolling windows</td></tr>
+<tr><td>Self-hostable</td><td>Yes</td><td>No</td></tr>
+</tbody>
+</table>
+
+<h2>When Claude Code wins</h2>
+
+<h3>Autonomous multi-step tasks</h3>
+<p>Claude Code's core strength is unattended execution: read the codebase, form a plan, make all the edits, run the tests, fix failures, commit. Continue.dev's agent mode keeps you in the loop at each step. For a task that will take 30 minutes and touch 15 files, Claude Code is faster to delegate to and walk away from.</p>
+
+<h3>Shell and infra work</h3>
+<p>Claude Code has unrestricted shell access — it can run Docker builds, apply migrations, analyze git history, modify CI config, and script anything. Continue.dev operates in an editor sandbox without shell access.</p>
+
+<h3>Test-fix loops</h3>
+<p>The run-tests → read-failure → edit → re-run loop is where Claude Code shines. Continue.dev's agent mode doesn't have the same tight test-loop integration. Claude Code can loop on your test command until all tests pass without any manual interaction.</p>
+
+<h3>Projects locked to Claude</h3>
+<p>If you're using a Claude Pro/Max plan, Claude Code is included and uses the same subscription. Continue.dev with a Claude API key costs separately per token — for heavy use, Claude Code's subscription model is cheaper.</p>
+
+<h2>When Continue.dev wins</h2>
+
+<h3>Inline completions</h3>
+<p>Continue.dev supports inline tab completions while you type — line-by-line suggestions like Copilot. Claude Code has no inline completion mode. For the flow-state experience of AI suggestions as you write, Continue.dev is the right tool.</p>
+
+<h3>Model flexibility</h3>
+<p>Continue.dev supports any OpenAI-compatible API endpoint. You can point it at a local Llama model, at Mistral, at Gemini, or at Claude. Claude Code is Claude-only. If you want to compare models or use local inference for privacy, Continue.dev is the choice.</p>
+
+<h3>Cost: local models and BYOK</h3>
+<p>Continue.dev with a local Ollama model has zero API cost. For teams running sensitive codebases, or developers who want unlimited AI completions without a subscription, Continue.dev + local model is the most economical option.</p>
+
+<h3>JetBrains users</h3>
+<p>Continue.dev supports JetBrains IDEs (IntelliJ, PyCharm, WebStorm, etc.). Claude Code has no JetBrains integration — it runs in the terminal alongside any editor.</p>
+
+<h2>Using both together</h2>
+<p>These tools complement each other well:</p>
+<ul>
+  <li><strong>Continue.dev</strong> for inline completions and quick questions while you're actively writing code</li>
+  <li><strong>Claude Code</strong> for longer autonomous tasks — "implement this feature," "fix the failing tests," "refactor this module" — that you hand off and let run</li>
+</ul>
+<p>The split is roughly: Continue.dev for your active coding sessions; Claude Code for the tasks you delegate.</p>
+
+<div class="note"><strong>If you use Continue.dev with Claude models (BYOK):</strong> your Anthropic API calls from Continue.dev count against the same 5h session and 7d weekly rolling windows as Claude Code. The limits are shared. A heavy Continue.dev session can silently consume Claude Code budget before you start a Claude Code task.</div>
+
+<h2>Continue.dev config with Claude models</h2>
+<p>To use Claude models in Continue.dev, add them to your <code>config.json</code> (at <code>~/.continue/config.json</code> on macOS):</p>
+<pre>{
+  "models": [
+    {
+      "title": "Claude Sonnet",
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-6",
+      "apiKey": "YOUR_ANTHROPIC_API_KEY"
+    }
+  ]
+}</pre>
+<p>With this config, Continue.dev and Claude Code share the same API quota. See the Headroom section below for how to monitor it.</p>
+
+<h2>Monitoring shared quota</h2>
+<p>If you run Continue.dev with Claude models and Claude Code in parallel, both tools drain the same 5h session and 7d weekly rolling windows. Headroom monitors both meters in your menu bar:</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="font-size:.9rem;color:#888">Reads the data Claude Code writes to disk locally. Zero network calls, no API key. macOS 13+, free.</p>
+
+<div class="cta-box">
+<h2>Headroom — usage monitoring for Claude Code</h2>
+<p>Whether you use Continue.dev with Claude models, Claude Code directly, or both together, the 5h/7d rolling windows apply. Headroom keeps both meters visible in your menu bar so you know where you stand before starting a long session.</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="margin:0"><a href="/download">Direct download</a> · <a href="/">About Headroom</a> · <a href="https://github.com/patwalls/headroom">Source on GitHub</a></p>
+</div>
+
+<hr>
+<p>→ <a href="/vscode">Claude Code + VS Code integration</a><br>
+→ <a href="/cursor">Claude Code vs Cursor</a><br>
+→ <a href="/copilot">Claude Code vs GitHub Copilot</a><br>
+→ <a href="/windsurf">Claude Code vs Windsurf</a><br>
+→ <a href="/limits">Claude Code rate limits explained</a><br>
+→ <a href="/session">5-hour session limit</a> · <a href="/weekly">7-day weekly cap</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
   }
 
   if (url.pathname === "/debug") {
