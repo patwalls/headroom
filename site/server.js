@@ -355,6 +355,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/keyboard</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/hooks</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/cursor</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/copilot</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -4081,6 +4082,113 @@ claude   # opens a session in your current directory</pre>
 <p>Claude Code reads <code>.gitignore</code>, respects your project structure, and picks up your <code>CLAUDE.md</code> if you have one. No additional configuration needed to use it alongside Cursor.</p>
 
 <p>→ <a href="/install">Installing Claude Code</a><br>
+→ <a href="/limits">Session and weekly rate limits</a><br>
+→ <a href="/session">5-hour session window explained</a><br>
+→ <a href="/agent">Agent mode and subagents</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/copilot") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code vs GitHub Copilot — Differences, Pricing, and When to Use Each</title>
+<meta name="description" content="Claude Code vs GitHub Copilot: how they differ, pricing, when Claude Code's agent model wins over Copilot's inline completions, and how to use both together.">
+<link rel="canonical" href="https://headroom.walls.sh/copilot">
+<meta property="og:title" content="Claude Code vs GitHub Copilot — Key Differences">
+<meta property="og:description" content="Copilot completes code as you type. Claude Code is an agent that executes tasks. Different tools for different jobs — here's when to use each.">
+<meta property="og:url" content="https://headroom.walls.sh/copilot">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code vs GitHub Copilot">
+<meta name="twitter:description" content="Copilot completes code inline. Claude Code executes multi-step tasks as an agent. Here's how they differ and when to reach for each.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1.1rem;margin:2.2em 0 .35em;color:var(--ink);border-bottom:1px solid #242936;padding-bottom:.3em}
+  h3{font-size:.95rem;margin:1.4em 0 .25em;color:var(--accent)}
+  p{color:#c9c6bd;margin:.35em 0 .7em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.84rem;line-height:1.55;margin:.5em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+  .cta{display:inline-block;margin:1.5em 0;padding:12px 22px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:.97rem}
+  table{width:100%;border-collapse:collapse;margin:.6em 0 1.4em;font-size:.88rem}
+  th{text-align:left;color:var(--dim);font-weight:600;border-bottom:1px solid #242936;padding:6px 10px 6px 0}
+  td{border-bottom:1px solid #1e2230;padding:8px 10px 8px 0;color:#c9c6bd;vertical-align:top}
+  td:first-child{color:var(--ok);font-weight:600;white-space:nowrap;padding-right:20px;min-width:100px}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · copilot</p>
+<h1>Claude Code vs GitHub Copilot</h1>
+<p class="sub">Copilot completes code as you type. Claude Code executes multi-step tasks autonomously. They solve different problems — but knowing which to reach for doubles your throughput with both.</p>
+
+<h2>The fundamental difference</h2>
+<p><strong>GitHub Copilot</strong> lives in your editor. It watches what you type and suggests the next line, block, or function. You stay in control — Copilot accelerates the writing. It's a faster keyboard.</p>
+<p><strong>Claude Code</strong> is a terminal agent. You give it a goal — "add pagination to the posts API and update the tests" — and it figures out the steps: reads files, writes code, runs tests, checks git, iterates on failures. You describe the destination; Claude Code drives.</p>
+<p>The shortest version: Copilot is for when you're writing code. Claude Code is for when you want code written.</p>
+
+<h2>Side-by-side comparison</h2>
+<table>
+<tr><th></th><th>Claude Code</th><th>GitHub Copilot</th></tr>
+<tr><td>Interface</td><td>Terminal / CLI</td><td>IDE extension (VS Code, JetBrains, etc.)</td></tr>
+<tr><td>Interaction</td><td>Describe a goal; agent executes autonomously</td><td>Inline completions as you type; chat sidebar</td></tr>
+<tr><td>File scope</td><td>Whole repo — reads and edits across any files</td><td>Current file + open tabs; repo search in chat</td></tr>
+<tr><td>Runs commands</td><td>Yes — bash, git, npm, test runners, etc.</td><td>No</td></tr>
+<tr><td>Model</td><td>Claude (Anthropic)</td><td>GPT-4o, Claude, Gemini (GitHub-managed)</td></tr>
+<tr><td>Pricing</td><td>Included in Anthropic Claude plans (with limits)</td><td>$10–19/mo individual; free for students/OSS</td></tr>
+<tr><td>Usage limits</td><td>5-hour session + 7-day weekly token windows</td><td>Completion requests/month; chat messages/month</td></tr>
+<tr><td>Best for</td><td>Multi-file tasks, refactors, debugging end-to-end</td><td>Fast inline suggestions, boilerplate, staying in flow</td></tr>
+</table>
+
+<h2>When Claude Code is clearly better</h2>
+<h3>Tasks that span many files</h3>
+<p>Rename a type and update all callers. Extract a module and fix all its imports. Add a new field to a data model and update every layer. Copilot helps one file at a time; Claude Code does the whole thing in one pass.</p>
+<h3>Test-driven iteration</h3>
+<p>Write a failing test, then let Claude Code fix the implementation, run the test, fix again, repeat until green — without you staying in the loop. Copilot can't close that cycle.</p>
+<h3>Codebase-wide questions</h3>
+<p>"Where does this API call happen and are all the error cases handled?" Claude Code reads your whole repo and answers. Copilot chat knows your open files well but can miss things spread across the codebase.</p>
+<h3>Working while you're away</h3>
+<p>Start a well-scoped Claude Code session, step away, come back to a finished diff. Copilot requires your active participation.</p>
+
+<h2>When Copilot is clearly better</h2>
+<h3>Tab-complete suggestions mid-line</h3>
+<p>Inline ghost text that appears as you type and accepts on Tab. Claude Code doesn't have this — it's a separate interactive session, not an editor plugin.</p>
+<h3>Staying in editor flow</h3>
+<p>If your mental model is "I'm writing code in VS Code," Copilot integrates without a context switch to a terminal. For many people this is the majority of their workflow.</p>
+<h3>Quick function generation</h3>
+<p>Write a comment describing what you want, and Copilot fills in the implementation inline. For a single isolated function this is often faster than opening a Claude Code session.</p>
+<h3>Code review in the editor</h3>
+<p>Copilot can suggest inline review comments and explain code right where you're looking at it.</p>
+
+<h2>Using both together</h2>
+<p>They don't conflict. Claude Code runs in your terminal; Copilot runs in your editor. Many developers use this combination: Claude Code for the big tasks (feature scaffolding, large refactors, debugging sessions), Copilot for the inline work (filling in the implementation details, writing comments, quick completions).</p>
+<p>The practical pattern: Claude Code sets up the structure, you fill in the details with Copilot assistance.</p>
+
+<h2>Understanding Claude Code's usage limits</h2>
+<p>Claude Code on the Anthropic Claude Max plan has two rolling windows: a 5-hour session window and a 7-day weekly window. Unlike Copilot, which resets on a monthly calendar, Claude Code's limits are rolling — they depend on exactly when you used it, not the 1st of the month.</p>
+<p>This matters because a heavy afternoon session can eat into the next morning's quota. Copilot doesn't have this dynamic — its monthly limit is simpler to track.</p>
+<div class="note"><p>Headroom shows your Claude Code session (5h) and weekly (7d) utilization as a live % in the macOS menu bar. If you switched from Copilot and find the rolling window confusing, Headroom makes it visible — the number updates in real time as you work, so you always know where you stand.</p></div>
+<a class="cta" href="/download">Download Headroom v${VERSION} — free</a>
+<pre>brew install patwalls/tap/headroom</pre>
+
+<h2>Switching from Copilot to Claude Code</h2>
+<pre>npm install -g @anthropic-ai/claude-code
+claude   # runs in your current repo</pre>
+<p>The learning curve is mainly mental: stop thinking "I need to write this function" and start thinking "I need the payments module to handle webhook retries." Claude Code works best with goal-oriented prompts, not line-by-line instructions.</p>
+
+<p>→ <a href="/cursor">Claude Code vs Cursor</a><br>
 → <a href="/limits">Session and weekly rate limits</a><br>
 → <a href="/session">5-hour session window explained</a><br>
 → <a href="/agent">Agent mode and subagents</a></p>

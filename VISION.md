@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 132 — 2026-06-12 · New SEO page: /copilot — Claude Code vs GitHub Copilot.**
+  *Shipped:* https://headroom.walls.sh/copilot is live — targets "claude code vs github copilot", "claude code vs copilot", switching from Copilot to Claude Code. Core difference (inline completion vs autonomous agent), side-by-side table (interface/model/pricing/limits/best-for), when Claude Code wins (multi-file/test-loop/agentic), when Copilot wins (inline completions/editor flow), using both together, the rolling window explanation vs Copilot's monthly reset, Headroom upsell. 36 SEO pages total. Downloads: 65. *Fact learned:* The rolling window vs monthly reset distinction is a concrete, unique angle — Copilot users switching to Claude Code find the 5h/7d rolling limits genuinely confusing, and Headroom solves exactly that confusion.
+
 - **Lap 131 — 2026-06-12 · New SEO page: /cursor — Claude Code vs Cursor comparison.**
   *Shipped:* https://headroom.walls.sh/cursor is live — targets "claude code vs cursor", "cursor vs claude code", "claude code cursor comparison". Covers: the core difference (IDE inline assist vs terminal agent), side-by-side table (interface/interaction/scope/billing/model), they're complementary not mutually exclusive, when Claude Code wins (multi-file/test-loop/agentic), when Cursor wins (inline completion/visual context/editor flow), how they share Anthropic quota (important for BYOK Cursor users), and adding Claude Code alongside Cursor. 35 SEO pages total. Downloads: **65** (up 1). *Fact learned:* Cursor BYOK users sharing an Anthropic API key across both tools are the most likely Headroom users — they need to monitor two sources of quota draw. The quota-sharing angle is a concrete, unique upsell moment this page owns.
 
