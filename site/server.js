@@ -372,6 +372,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/typescript</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/multifile</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/nextjs</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/docker</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -6705,6 +6706,124 @@ Write a failing test for it first — it should validate format, reject TLDs sho
 → <a href="/refactor">Refactoring with Claude Code</a><br>
 → <a href="/agent">Agent mode and subagents</a><br>
 → <a href="/session">5-hour session limit explained</a> · <a href="/weekly">7-day weekly cap</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/docker") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code + Docker — Dockerfiles, Compose, Container Debugging</title>
+<meta name="description" content="Use Claude Code to write and optimize Dockerfiles, debug Docker Compose issues, write multi-stage builds, fix container networking, and run Claude Code inside containers.">
+<link rel="canonical" href="https://headroom.walls.sh/docker">
+<meta property="og:title" content="Claude Code + Docker — Dockerfiles, Compose, Container Debugging">
+<meta property="og:description" content="Docker workflows with Claude Code: Dockerfile generation, multi-stage builds, Compose debugging, layer caching, and running Claude Code inside containers.">
+<meta property="og:url" content="https://headroom.walls.sh/docker">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude Code + Docker">
+<meta name="twitter:description" content="Write Dockerfiles, debug Compose issues, optimize layer caching, and run Claude Code inside containers.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.4em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.tip{background:#141414;border-left:3px solid #5db85d;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+.warn{background:#141414;border-left:3px solid #d9a657;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · docker</p>
+<h1>Claude Code + Docker</h1>
+<p class="sub">Claude Code handles Docker work well: generating Dockerfiles from a description of what the container needs to do, optimizing slow builds by reorganizing layers, debugging Compose networking issues, and writing multi-stage builds that actually fit in a reasonable image size. This page covers the patterns that save time.</p>
+
+<h2>Writing Dockerfiles from scratch</h2>
+<p>Describe what the container needs to run and Claude Code writes a Dockerfile:</p>
+<pre>claude "write a Dockerfile for a Node.js 20 Express API that runs on port 3000. Use the slim base image, non-root user, and copy only what's needed to run in production."</pre>
+<pre>claude "write a Dockerfile for a Python FastAPI app. Use multi-stage: a build stage that installs all deps, and a runtime stage that copies only the app and installed packages."</pre>
+<p>It reads your package.json, requirements.txt, or go.mod before writing to include the right install commands, entry points, and exposed ports — no generic templates.</p>
+
+<h2>Multi-stage builds</h2>
+<p>Multi-stage builds reduce image size by separating build-time dependencies from runtime. Claude Code writes them correctly:</p>
+<pre>claude "convert the Dockerfile to a multi-stage build. Builder stage: install all dev dependencies and run the TypeScript compile. Runtime stage: copy only dist/ and node_modules (prod only). Target the runtime stage in the final image."</pre>
+<pre>claude "the Docker image is 1.2GB. Read the Dockerfile and suggest multi-stage changes to get it under 200MB. Show the size savings at each layer."</pre>
+<p>Claude Code can also analyze an existing Dockerfile and explain exactly where the bulk comes from — which layers, which packages — before rewriting it.</p>
+
+<h2>Layer caching optimization</h2>
+<p>Slow Docker builds are usually a layer ordering problem. Dependencies that change rarely should be copied and installed before code that changes frequently:</p>
+<pre>claude "read the Dockerfile — the build is slow because npm install runs on every code change. Reorder the layers so COPY package.json and npm install come before COPY src/. Verify the build cache works correctly after."</pre>
+<pre>claude "the Go service Dockerfile copies the full source tree before running go build. Fix the layer order: copy go.mod and go.sum first, run go mod download, then copy source."</pre>
+<div class="tip">The rule is: layers that change rarely go first, layers that change often go last. <code>COPY package.json</code> and <code>npm install</code> belong before <code>COPY . .</code> — package.json changes less often than source files, so Docker reuses that cached layer on most builds.</div>
+
+<h2>Docker Compose debugging</h2>
+<p>When services can't reach each other, volumes aren't mounting, or healthchecks are failing:</p>
+<pre>claude "read docker-compose.yml — the frontend container can't reach the api container. Diagnose the networking issue and fix it. Check service names, network definitions, and port mappings."</pre>
+<pre>claude "the postgres container starts but the app container fails with connection refused. Read the docker-compose.yml and the app's database connection code. Find why the app is connecting before postgres is ready and fix it with a healthcheck."</pre>
+<pre>claude "the volume mount in docker-compose.yml isn't persisting data between restarts. Read the config and fix the volume definition."</pre>
+<p>Claude Code reads both the Compose config and the application code that depends on it — it can see when the app is using a hardcoded hostname that doesn't match the Compose service name, or when the healthcheck condition is wrong.</p>
+
+<h2>Container networking</h2>
+<pre>claude "add a custom bridge network to docker-compose.yml so the services can reference each other by name. The frontend needs to reach the api, the api needs to reach the database."</pre>
+<pre>claude "the nginx container is proxying to the app container. Read the nginx.conf and docker-compose.yml — the proxy_pass target is wrong. Fix it so nginx can reach the app on the correct internal port."</pre>
+
+<h2>Running Claude Code inside a container</h2>
+<p>To run Claude Code in a containerized environment (CI, isolated dev, remote server):</p>
+<pre># Install Node.js and Claude Code in a Dockerfile
+RUN apt-get update &amp;&amp; apt-get install -y nodejs npm
+RUN npm install -g @anthropic-ai/claude-code</pre>
+<p>For CI pipelines using Docker:</p>
+<pre># In GitHub Actions, run Claude Code in a container step
+- name: Run Claude Code task
+  run: |
+    claude --print "review this diff for bugs" &lt; diff.txt</pre>
+<p>See the <a href="/ci">CI integration page</a> for full GitHub Actions workflows with Claude Code.</p>
+
+<h2>Writing docker-compose.yml from scratch</h2>
+<pre>claude "write a docker-compose.yml for a web app with: a Node.js API on port 3000, a PostgreSQL database with a named volume, and a Redis cache. Include healthchecks and the correct depends_on conditions."</pre>
+<pre>claude "add a development override file (docker-compose.override.yml) that mounts the src/ directory as a volume and enables hot reload for the API service."</pre>
+
+<h2>Debugging image size and build issues</h2>
+<pre>claude "run docker images and show me the largest layers in the app image. Find what's adding bulk and suggest removals."</pre>
+<pre>claude "the Docker build fails with a permission error on the COPY step. Read the Dockerfile and the .dockerignore — find why the file can't be copied and fix it."</pre>
+<pre>claude "add a .dockerignore file for this Node.js project — exclude: node_modules, .git, test files, coverage reports, and local .env files."</pre>
+
+<div class="cta-box">
+<h2>Headroom — session usage while Docker builds run</h2>
+<p>Debugging a tricky Compose networking issue or iterating on a multi-stage build optimization can burn through Claude Code session budget quickly — each build-run-inspect cycle accumulates tool calls. Headroom shows your 5h session and 7d weekly utilization live in the macOS menu bar.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>No token, no API key — reads the file Claude Code writes to <code>~/.claude/</code>. Color-coded from calm to amber to red.</p>
+</div>
+
+<hr>
+<p>→ <a href="/ci">Claude Code in GitHub Actions and CI</a><br>
+→ <a href="/refactor">Refactoring with Claude Code</a><br>
+→ <a href="/debug">Debugging with Claude Code</a><br>
+→ <a href="/session">5-hour session limit explained</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
