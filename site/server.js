@@ -363,6 +363,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/install</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
   <url><loc>https://headroom.walls.sh/neovim</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/vim</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/refactor</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -5342,6 +5343,141 @@ OUR_API_KEY=...</pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
+  }
+
+  if (url.pathname === "/refactor") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Refactoring with Claude Code — Patterns, Workflows, and Tips</title>
+<meta name="description" content="How to use Claude Code for large-scale refactors: scoping the task, rename-across-files, extracting patterns, maintaining tests, and managing session budget.">
+<link rel="canonical" href="https://headroom.walls.sh/refactor">
+<meta property="og:title" content="Refactoring with Claude Code">
+<meta property="og:description" content="Large refactors with Claude Code: scope, plan, verify-as-you-go, and keep the tests passing. Workflows and session budget tips.">
+<meta property="og:url" content="https://headroom.walls.sh/refactor">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Refactoring with Claude Code">
+<meta name="twitter:description" content="Claude Code is unusually good at large refactors. Here are the patterns that work and the session budget traps to avoid.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.5em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.tip{background:#141414;border-left:3px solid #5db85d;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+.warn{background:#141414;border-left:3px solid #d9a657;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · refactor</p>
+<h1>Refactoring with Claude Code</h1>
+<p class="sub">Large refactors are where Claude Code earns its keep. It can read a whole module, understand the patterns, plan a coherent transformation, make every edit, and run the tests to verify — while you do something else. This page covers the workflows that produce reliable results and the budget traps to avoid.</p>
+
+<h2>Why refactors are a natural fit</h2>
+<p>Refactors are hard for humans because they require holding the whole system in mind while making many small, consistent edits. Claude Code's context window can hold a full module; its tool calls can grep for every usage, edit every occurrence, and run the test suite to verify. The combination is more reliable than doing it by hand because Claude Code doesn't get tired and doesn't miss occurrences.</p>
+
+<h2>The rename-across-files pattern</h2>
+<p>The most common refactor: rename a function, class, or variable everywhere it appears.</p>
+<pre>Rename the function calculateTax to computeTaxAmount across the entire codebase.
+Update all call sites, imports, and any JSDoc or comments that reference the old name.
+Run the tests after and confirm they pass.
+</pre>
+<p>Claude Code will grep for all occurrences, read each file, make the edits, and run your tests. For a rename that spans 20 files, this takes 2–3 minutes unattended vs. 30 minutes of careful find-and-replace.</p>
+
+<div class="tip"><strong>Tip:</strong> Including "run the tests after and confirm they pass" in your prompt ensures Claude Code verifies its own work. Without it, it may stop after editing. Always close the loop explicitly.</div>
+
+<h2>Extracting a repeated pattern</h2>
+<p>When you have similar logic duplicated across files, Claude Code can find all instances and extract them into a shared utility:</p>
+<pre>There is a pattern of fetching a user and then checking if they are active that
+appears in at least 5 different route handlers. Find all instances of this pattern,
+extract it into a new function getUserIfActive(userId) in src/utils/auth.ts,
+replace all call sites with the new function, and run the tests.
+</pre>
+<p>The prompt describes the pattern by intent, not by exact code — Claude Code reads the files to find the actual occurrences. Describing intent is more robust than writing regex.</p>
+
+<h2>Interface / type migration</h2>
+<p>Migrating from one data shape to another (e.g., API response format changed, database schema updated) is one of the most tedious manual refactors. Describe the before and after shapes:</p>
+<pre>The API now returns { user: { id, name, email } } instead of { userId, userName, userEmail }.
+Update all places in the frontend that destructure or access these fields to use the new shape.
+The relevant files are in src/api/, src/components/, and src/hooks/.
+Run the TypeScript compiler after to confirm there are no type errors.
+</pre>
+<p>Using <code>tsc --noEmit</code> as the verification step is particularly effective for type migrations — TypeScript's compiler catches every missed call site.</p>
+
+<h2>Module reorganization</h2>
+<p>Moving code between files while keeping imports working:</p>
+<pre>Move the validation functions (validateEmail, validatePhone, validatePostalCode)
+from src/utils.ts into a new file src/validation.ts.
+Update all import statements across the codebase to import from the new location.
+The old utils.ts should no longer export these functions.
+Run the build to verify no broken imports.
+</pre>
+<p>The explicit "run the build to verify" step is essential here — broken imports don't always surface in tests.</p>
+
+<h2>Staged refactors for large codebases</h2>
+<p>For a refactor that touches more than 30 files, break it into stages. Large single-step refactors can exhaust Claude Code's context or produce inconsistent edits when the scope is too wide:</p>
+<pre>Stage 1: Refactor only src/auth/ — update the interfaces and all internal call sites.
+Run the auth tests and confirm they pass. Do not touch any other directories yet.
+</pre>
+<pre>Stage 2 (after Stage 1 passes): Now propagate the new auth interface to src/api/
+and src/middleware/. The auth module is already updated; match it.
+</pre>
+<p>Staged refactors also produce cleaner git history — each stage is a reviewable commit.</p>
+
+<div class="warn"><strong>Session budget note:</strong> Large refactors are the second-fastest way to drain your 5h rolling window (after automated test loops). A refactor touching 25 files involves 25+ file reads, 25+ edits, plus test runs — easily 80–120 tool calls. At heavy use, that's 25–35% of a session window. Start large refactors at low utilization, not when you're already at 60%.</div>
+
+<h2>Preserving tests through a refactor</h2>
+<p>The best refactors keep tests green the whole way through. Give Claude Code explicit instructions to maintain test coverage:</p>
+<pre>Refactor the authentication module to use a class-based design instead of
+standalone functions. The public API surface must remain identical — all existing
+tests must continue to pass without modification. Do not change any test files.
+</pre>
+<p>The constraint "do not change any test files" forces Claude Code to make the refactor backward-compatible. If it can't keep tests passing without changing them, it'll tell you — and that's useful information.</p>
+
+<h2>Incremental verification</h2>
+<p>For refactors where you want to review as you go rather than all at once:</p>
+<pre>Refactor src/auth/token.ts only. Show me what changes you plan to make before
+making them. Wait for my approval before proceeding.
+</pre>
+<p>This turns a fully autonomous refactor into a supervised one. Useful when the codebase has subtle invariants you don't trust Claude Code to know about.</p>
+
+<div class="cta-box">
+<h2>Know your headroom before a large refactor</h2>
+<p>Large refactors are some of the most session-intensive Claude Code tasks. Starting a multi-file refactor when you're already at 70% utilization means you may not finish before the 5h window cuts you off mid-edit. Headroom shows your current session and weekly usage in the menu bar.</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="margin:0"><a href="/download">Direct download</a> · <a href="/">About Headroom</a> · <a href="https://github.com/patwalls/headroom">Source on GitHub</a></p>
+</div>
+
+<hr>
+<p>→ <a href="/debug">Debugging with Claude Code</a><br>
+→ <a href="/agent">Agent mode — autonomous task loops</a><br>
+→ <a href="/session">5-hour session limit explained</a><br>
+→ <a href="/tips">Claude Code tips and tricks</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
   }
 
   if (url.pathname === "/vim") {
