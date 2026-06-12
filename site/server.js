@@ -373,6 +373,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/multifile</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/nextjs</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/docker</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/go</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -6709,6 +6710,138 @@ Write a failing test for it first — it should validate format, reject TLDs sho
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/go") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code for Go (Golang) — Tests, Error Handling, Interfaces, go vet</title>
+<meta name="description" content="Use Claude Code with Go: table-driven tests, error wrapping, interface design, go vet and staticcheck integration, goroutine patterns, and session budget tips.">
+<link rel="canonical" href="https://headroom.walls.sh/go">
+<meta property="og:title" content="Claude Code for Go (Golang)">
+<meta property="og:description" content="Go-specific Claude Code workflows: table-driven tests, error handling, interface design, go vet, staticcheck, goroutine patterns, and session budget monitoring.">
+<meta property="og:url" content="https://headroom.walls.sh/go">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude Code for Go (Golang)">
+<meta name="twitter:description" content="Table-driven tests, error wrapping, interfaces, go vet, and session budget tips for Go development with Claude Code.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.4em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.tip{background:#141414;border-left:3px solid #5db85d;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+.warn{background:#141414;border-left:3px solid #d9a657;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · go</p>
+<h1>Claude Code for Go</h1>
+<p class="sub">Go's strong conventions — table-driven tests, explicit error returns, interface-based design — are exactly the kind of patterns Claude Code applies consistently at scale. Writing 50 table test cases, adding error wrapping across 30 functions, or redesigning an interface to satisfy a new constraint: all systematic work that Claude Code handles well. This page covers Go-specific workflows.</p>
+
+<h2>CLAUDE.md for Go projects</h2>
+<pre>## Build and test
+- Build: go build ./...
+- Test: go test ./...
+- Vet: go vet ./...
+- Lint: staticcheck ./...
+- Race: go test -race ./...
+
+## Conventions
+- Error wrapping: fmt.Errorf("context: %w", err)
+- No naked returns in functions longer than 3 lines
+- All exported types and functions need doc comments
+- Table-driven tests — no single-case test functions</pre>
+<p>Claude Code reads this at session start. It will use <code>go test ./...</code> as the verification step and apply error wrapping consistently rather than mixing styles.</p>
+
+<h2>Table-driven tests</h2>
+<p>Go's table-driven test pattern is idiomatic and Claude Code applies it correctly:</p>
+<pre>claude "add table-driven tests for the Parse function in pkg/parser/parser.go — cover happy paths, malformed input, empty input, and boundary cases. Run go test ./pkg/parser/... after."</pre>
+<p>Claude Code reads the function signature and returns, writes a <code>[]struct</code> test table covering the cases you specify, and runs the tests to confirm they pass. It follows the existing test file style — if your project uses <code>t.Run</code> subtests, it will too.</p>
+<div class="tip">Ask for "boundary cases" explicitly. Claude Code will cover the cases you name, but boundary conditions (empty slice, zero value, max int, nil pointer) need to be requested — it won't add them unless you say so.</div>
+
+<h2>Error handling and wrapping</h2>
+<p>Adding consistent error wrapping across a package:</p>
+<pre>claude "find all functions in pkg/storage/ that return errors without wrapping context. Add fmt.Errorf wrapping with a description of what operation failed. Run go vet after."</pre>
+<pre>claude "the error messages in this package are inconsistent — some say 'failed to X', some say 'X failed', some say 'error X-ing'. Standardize them to 'failed to X: ...' format across pkg/api/."</pre>
+<p>Claude Code reads each function, finds the bare <code>return err</code> statements, and wraps them with a description of what the function was doing when the error occurred — not just the generic function name, but the specific operation.</p>
+
+<h2>Interface design</h2>
+<p>Extracting interfaces from concrete types (the Go "accept interfaces, return structs" pattern):</p>
+<pre>claude "the database package passes a *sql.DB everywhere. Extract a DB interface with just the methods we actually call, and update the callers to use the interface. This will make the code testable with a mock."</pre>
+<pre>claude "design a Cache interface that both the in-memory cache and the Redis cache should implement. Read both implementations first and extract the common method set."</pre>
+<p>Claude Code reads the concrete type usage, identifies which methods are actually called, and writes the minimal interface — not one method more than necessary.</p>
+
+<h2>go vet and staticcheck</h2>
+<pre>claude "run go vet ./... and staticcheck ./... — fix every warning. Don't suppress them with nolint comments unless there's a genuine reason."</pre>
+<p>Claude Code works through vet and staticcheck output systematically. For each warning it reads the flagged code, understands why the linter flagged it, and fixes the underlying issue — not the symptom.</p>
+<p>Common issues it fixes correctly:</p>
+<ul>
+<li>Misaligned struct fields (memory layout warnings)</li>
+<li>Copying a mutex value (copies of sync.Mutex)</li>
+<li>Printf format string mismatches</li>
+<li>Unreachable code after return</li>
+<li>Deprecated API usage (staticcheck SA1019)</li>
+</ul>
+
+<h2>Concurrency patterns</h2>
+<pre>claude "the worker pool in pkg/processor/pool.go uses a channel but leaks goroutines on context cancellation. Read the code and fix the cancellation handling."</pre>
+<pre>claude "add a semaphore to limit concurrent goroutines in the batch processor — max 10 at a time. Use a buffered channel, not sync primitives."</pre>
+<pre>claude "run go test -race ./... — there's a data race in the cache. Find it and fix it with proper synchronization."</pre>
+<p>For concurrency bugs, the race detector output is exactly the kind of structured error message Claude Code can act on — it names the goroutines and the memory address involved.</p>
+
+<h2>Adding JSON and struct tags</h2>
+<p>Go struct tags use backtick syntax. Claude Code handles them correctly:</p>
+<pre>claude "add json tags to all exported struct fields in pkg/models/ — use snake_case for the field names. Add omitempty to pointer and slice fields."</pre>
+<pre>claude "add validate tags to the UserRequest struct fields using the go-playground/validator conventions: required, email, min, max."</pre>
+<p>Claude Code reads the struct, infers the correct tag values from field names and types, and writes idiomatic tags — including <code>omitempty</code> for optional fields and <code>-</code> for fields that should be excluded from marshaling.</p>
+
+<h2>Module and dependency management</h2>
+<pre>claude "run go mod tidy and explain what changed — which dependencies were added, removed, or version-bumped."</pre>
+<pre>claude "there's a dependency conflict between pkg/a and pkg/b on different versions of the same module. Read go.mod and go.sum, find the conflict, and resolve it with a replace directive or version upgrade."</pre>
+
+<div class="warn"><strong>Session budget note:</strong> Go projects tend to have many small files with consistent patterns. Adding table tests to 20 functions or fixing vet warnings across a large package can accumulate 40–60 tool calls before you notice. Check your session usage before starting a codebase-wide sweep.</div>
+
+<h2>Monitor session usage during Go development</h2>
+<div class="cta-box">
+<h2>Headroom — live session usage for Go developers</h2>
+<p>Systematic Go work — adding tests, fixing vet warnings, wrapping errors across a package — accumulates Claude Code session budget faster than individual edits. Headroom shows your 5h session and 7d weekly utilization live in the macOS menu bar. No token, no API key — reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Color-coded from calm to amber to red. Know your headroom before a codebase-wide test sweep.</p>
+</div>
+
+<hr>
+<p>→ <a href="/test">Writing tests with Claude Code</a><br>
+→ <a href="/refactor">Refactoring with Claude Code</a><br>
+→ <a href="/zed">Claude Code + Zed editor</a><br>
+→ <a href="/session">5-hour session limit explained</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </div></body></html>`);
