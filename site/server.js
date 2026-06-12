@@ -365,6 +365,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/vim</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/refactor</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/test</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/jetbrains</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -6698,6 +6699,159 @@ Write a failing test for it first — it should validate format, reject TLDs sho
 → <a href="/refactor">Refactoring with Claude Code</a><br>
 → <a href="/agent">Agent mode and subagents</a><br>
 → <a href="/session">5-hour session limit explained</a> · <a href="/weekly">7-day weekly cap</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/jetbrains") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code + JetBrains — IntelliJ, PyCharm, WebStorm Integration</title>
+<meta name="description" content="How to use Claude Code with JetBrains IDEs: IntelliJ IDEA, PyCharm, WebStorm, GoLand, and more. Plugin install, terminal workflow, and sharing project context.">
+<link rel="canonical" href="https://headroom.walls.sh/jetbrains">
+<meta property="og:title" content="Claude Code + JetBrains — IntelliJ, PyCharm, WebStorm Integration">
+<meta property="og:description" content="Use Claude Code inside any JetBrains IDE. Covers the plugin, embedded terminal workflow, passing project context, and monitoring session usage.">
+<meta property="og:url" content="https://headroom.walls.sh/jetbrains">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude Code + JetBrains">
+<meta name="twitter:description" content="Claude Code with IntelliJ, PyCharm, WebStorm, GoLand — plugin, terminal workflow, and session budget tips.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.4em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.tip{background:#141414;border-left:3px solid #5db85d;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+.warn{background:#141414;border-left:3px solid #d9a657;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+table{width:100%;border-collapse:collapse;margin:1em 0 1.4em;font-size:.92rem}
+th{text-align:left;color:#888;font-weight:600;padding:8px 10px;border-bottom:1px solid #2a2a2a}
+td{color:#c8c4bb;padding:8px 10px;border-bottom:1px solid #1e1e1e;vertical-align:top}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · jetbrains</p>
+<h1>Claude Code + JetBrains</h1>
+<p class="sub">Claude Code works inside any JetBrains IDE — IntelliJ IDEA, PyCharm, WebStorm, GoLand, Rider, and the rest — through its official plugin and the built-in terminal. This page covers both approaches, when to use each, and how to get the most out of the combination.</p>
+
+<h2>Two ways to use Claude Code in JetBrains</h2>
+<p>There's a dedicated Claude Code plugin for JetBrains IDEs, and there's the embedded terminal. They're complementary — the plugin brings Claude Code into the IDE sidebar; the terminal is the full agent with no restrictions.</p>
+
+<table>
+<tr><th>Approach</th><th>Best for</th><th>Tradeoffs</th></tr>
+<tr><td><strong>JetBrains plugin</strong></td><td>Inline assistance, quick edits, staying in the editor flow</td><td>Not the full agentic terminal experience</td></tr>
+<tr><td><strong>Embedded terminal</strong></td><td>Multi-file refactors, test-fix loops, autonomous runs</td><td>Requires switching focus to the terminal panel</td></tr>
+</table>
+
+<h2>Installing the Claude Code plugin</h2>
+<ol>
+<li>Open any JetBrains IDE</li>
+<li>Go to <strong>Settings → Plugins → Marketplace</strong></li>
+<li>Search for <strong>Claude Code</strong></li>
+<li>Install and restart the IDE</li>
+</ol>
+<p>The plugin adds a Claude Code panel to the IDE sidebar. You can ask questions about code in context, get inline explanations, and trigger edits without leaving the editor. Authentication uses the same Claude account as the CLI — log in once and both work.</p>
+
+<h2>The embedded terminal workflow (the full agent)</h2>
+<p>The JetBrains embedded terminal gives you the complete Claude Code experience — the same terminal agent as anywhere else, with full tool access, multi-file edits, and unattended runs. Open it with <strong>Alt+F12</strong> (Windows/Linux) or <strong>⌥F12</strong> (macOS).</p>
+<p>The terminal opens at the project root automatically, so Claude Code sees the same working directory as the IDE:</p>
+<pre>claude "refactor the service layer in src/services/ to use dependency injection — run tests after"</pre>
+<p>While the terminal runs, you stay in the IDE — view diffs in the editor, run the debugger, use the file tree. The terminal pane sits below the editor; you can watch the agent work and switch back to code as it writes.</p>
+
+<div class="tip">Pin the terminal to the bottom of the IDE (not a floating window) so you can watch Claude Code's output while keeping the editor and file tree visible. In IntelliJ, drag the terminal tab to the bottom tool window row.</div>
+
+<h2>Passing project context from JetBrains</h2>
+<p>Claude Code reads files relative to the directory it starts in — which is the project root when launched from the JetBrains terminal. That means you can reference any project path directly:</p>
+<pre>claude "add Javadoc to all public methods in src/main/java/com/example/api/"</pre>
+<p>Or reference the currently open file by name (check the editor tab):</p>
+<pre>claude "explain the auth flow in AuthService.java and suggest where to add rate limiting"</pre>
+<p>For longer context, use <code>@file</code> references at the prompt:</p>
+<pre>claude "@src/main/java/com/example/UserRepository.java write unit tests for every public method"</pre>
+
+<h2>CLAUDE.md for JetBrains projects</h2>
+<p>Add a <code>CLAUDE.md</code> at the project root to give Claude Code persistent context about the project. JetBrains projects often have specific build systems (Maven, Gradle, sbt) and conventions worth encoding:</p>
+<pre>## Build
+- Build: mvn clean install
+- Test: mvn test -pl module-name
+- Lint: ./gradlew checkstyleMain
+
+## Conventions
+- Java 17, Spring Boot 3.x
+- All services in src/main/java/com/example/services/
+- Tests in src/test/java/ mirroring the source tree
+- No Lombok — use explicit getters/setters</pre>
+<p>Claude Code reads <code>CLAUDE.md</code> at the start of every session. You never need to re-explain the project structure.</p>
+
+<h2>JetBrains + Claude Code vs JetBrains AI</h2>
+<table>
+<tr><th></th><th>Claude Code</th><th>JetBrains AI</th></tr>
+<tr><td>Model</td><td>Claude (Anthropic)</td><td>Multiple (JetBrains-managed)</td></tr>
+<tr><td>Interaction</td><td>Terminal agent — writes and runs code</td><td>In-editor inline assistant</td></tr>
+<tr><td>Multi-file edits</td><td>Yes — reads and edits any file in the project</td><td>Limited — focused on open files</td></tr>
+<tr><td>Shell / terminal access</td><td>Yes — runs commands, tests, builds</td><td>No</td></tr>
+<tr><td>Autonomous runs</td><td>Yes — write → run → fix → repeat</td><td>No</td></tr>
+<tr><td>Billing</td><td>Claude Pro/Max subscription or API</td><td>JetBrains AI subscription</td></tr>
+<tr><td>Offline / local</td><td>No</td><td>Some local model support</td></tr>
+</table>
+<p>They're complementary. JetBrains AI handles inline completions and quick questions while you type. Claude Code handles the heavier autonomous work — test-fix loops, refactors across dozens of files, build debugging — that benefits from a full agent with shell access.</p>
+
+<h2>Practical workflow: IDE + terminal agent</h2>
+<p>A typical session in IntelliJ + Claude Code:</p>
+<ol>
+<li>Open the project in IntelliJ IDEA as usual</li>
+<li>Open the terminal pane (<code>Alt+F12</code>) — it's already in the project root</li>
+<li>Start Claude Code: <code>claude</code></li>
+<li>Give it the task: write the failing test, fix the imports, run the build</li>
+<li>While it works, stay in the editor — review the diffs as they appear in the file tree</li>
+<li>Use IntelliJ's diff viewer (<code>Ctrl+D</code> on a changed file) to see exactly what Claude Code wrote</li>
+<li>Run the debugger on the result if needed</li>
+</ol>
+
+<h2>GoLand and Go projects</h2>
+<pre>claude "add error wrapping to all functions in pkg/storage/ that return errors — use fmt.Errorf with %w, run go vet after"</pre>
+<p>GoLand's project root matches where Claude Code starts, so package paths like <code>./pkg/storage/...</code> work directly in <code>go test</code> commands Claude Code runs.</p>
+
+<h2>PyCharm and Python projects</h2>
+<pre>claude "add type hints to all functions in src/api/ that are missing them — use the existing patterns in the file as a guide, run mypy after"</pre>
+<p>Point Claude Code at the virtualenv if needed via <code>CLAUDE.md</code>: <code>Test: python -m pytest</code>. It will use that command consistently throughout the session.</p>
+
+<h2>Monitor session usage during long runs</h2>
+<div class="cta-box">
+<h2>Headroom — session usage in your menu bar while JetBrains runs</h2>
+<p>Autonomous Claude Code runs from the JetBrains terminal burn session budget silently — test loops, build cycles, and multi-file refactors are fast. Headroom shows your Claude Code session (5h) and weekly (7d) utilization live in the macOS menu bar. No token, no API key: it reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Color-coded from calm to amber to red. You see your headroom without leaving IntelliJ — it's always in the corner of the screen.</p>
+</div>
+
+<hr>
+<p>→ <a href="/vscode">Claude Code + VS Code integration</a><br>
+→ <a href="/neovim">Claude Code + Neovim integration</a><br>
+→ <a href="/refactor">Refactoring with Claude Code</a><br>
+→ <a href="/test">Writing tests with Claude Code</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
