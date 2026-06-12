@@ -358,6 +358,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/copilot</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/windsurf</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/vscode</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/debug</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -5337,6 +5338,156 @@ OUR_API_KEY=...</pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
+  }
+
+  if (url.pathname === "/debug") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Debugging with Claude Code — Workflows, Patterns, and Tips</title>
+<meta name="description" content="How to debug effectively with Claude Code: the test-fix loop, sharing stack traces, isolating root causes, and monitoring session usage during long debug sessions.">
+<link rel="canonical" href="https://headroom.walls.sh/debug">
+<meta property="og:title" content="Debugging with Claude Code — Workflows and Patterns">
+<meta property="og:description" content="The test-fix loop, stack traces, log analysis, and how to guide Claude Code through a real debugging session without burning your 5h window.">
+<meta property="og:url" content="https://headroom.walls.sh/debug">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Debugging with Claude Code">
+<meta name="twitter:description" content="Real debug workflows with Claude Code: test-fix loops, stack traces, log analysis, and session budget tips.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.4em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.tip{background:#141414;border-left:3px solid #5db85d;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+.warn{background:#141414;border-left:3px solid #d9a657;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+.num{color:#666;font-size:.85em;margin-right:.4em}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · debug</p>
+<h1>Debugging with Claude Code</h1>
+<p class="sub">Claude Code can drive a debugging session from stack trace to fixed test — but the pattern matters. Give it the full error, the relevant code, and a way to verify the fix. This page covers the workflows that work, the patterns that waste session budget, and how to keep long debug sessions from hitting the 5h wall.</p>
+
+<h2>The basic pattern: error → context → fix → verify</h2>
+<p>The most effective debug prompt gives Claude Code four things at once:</p>
+<pre>I'm getting this error when I run the test suite:
+
+TypeError: Cannot read properties of undefined (reading 'userId')
+  at verifyToken (src/auth.ts:42:18)
+  at middleware (src/middleware.ts:15:5)
+
+Here is src/auth.ts. The verifyToken function is supposed to decode a JWT
+and return the user object, but something is wrong with how it handles
+expired tokens. Please find and fix the issue.
+</pre>
+<p>The pattern: error message + stack trace + relevant file + what you expected. Claude Code can read additional files itself, but starting with the most relevant one saves a round trip.</p>
+
+<h2>The test-fix loop</h2>
+<p>For bugs covered by tests, the most reliable workflow is the automated test-fix loop:</p>
+<pre>Run the test suite. There are 3 failing tests — all related to the auth module.
+Find the root cause of each failure, fix it, and confirm the tests pass.
+Don't stop until all 3 pass.
+</pre>
+<p>Claude Code will run the tests, read the failures, trace the code, make edits, and re-run tests — looping until the tests pass or it hits a blocker. You don't need to be in the loop for each iteration.</p>
+
+<div class="tip"><strong>Tip:</strong> Give Claude Code permission to run your test command without asking. If you're using Claude Code's permissions config, add your test runner to the allow list so the loop doesn't pause to confirm on each run. See <a href="/permissions">permissions setup</a>.</div>
+
+<h2>Sharing logs and stack traces</h2>
+<p>Long stack traces are better piped in than typed:</p>
+<pre>npm test 2>&1 | claude "These tests are failing. Find the root cause and fix it."</pre>
+<p>Or reference a log file directly:</p>
+<pre>claude "Here is the server log from the crash: @logs/error.log — find the cause and fix it."</pre>
+<p>The <code>@</code> prefix tells Claude Code to read the file directly. For very large logs, it's better to grep the relevant section first:</p>
+<pre>grep -A 20 "FATAL\|Error\|Exception" logs/error.log | claude "Find the root cause of these errors."</pre>
+
+<h2>Isolating root causes across files</h2>
+<p>When a bug spans multiple files, the most effective prompt names the symptom and lets Claude Code do the tracing:</p>
+<pre>Users are getting a 500 error when they try to reset their password. The reset
+email sends successfully (we can see it in SendGrid), but clicking the link
+returns a 500. Find why and fix it. The relevant code is in src/auth/, src/routes/,
+and src/email/.
+</pre>
+<p>Claude Code will read all three directories, trace the request flow, and identify where the failure occurs. It's faster than manually reading through three files yourself and forming a hypothesis.</p>
+
+<h3>Narrowing scope when the bug is hard to find</h3>
+<p>If Claude Code can't find the root cause in one pass, narrow the scope:</p>
+<pre>We've established the bug is in the token validation step. Here is the exact
+function in question and the test that's failing. What is wrong with this
+specific function?
+</pre>
+<p>Forcing Claude Code to focus on a single function avoids it re-reading the whole codebase on each attempt.</p>
+
+<h2>Reproducing before fixing</h2>
+<p>For subtle bugs, ask Claude Code to reproduce the issue as a failing test first:</p>
+<pre>Before fixing anything, write a failing test that reproduces this bug. Once
+we have a test that reliably fails, then fix the code to make it pass.
+</pre>
+<p>This ensures the fix actually addresses the root cause, not just the symptom — and leaves you with a regression test.</p>
+
+<h2>Debugging in --print mode (scripted)</h2>
+<p>For automated debugging pipelines, <code>--print</code> runs Claude Code non-interactively and returns the output:</p>
+<pre>npm test 2>&1 | claude --print "These tests are failing. Return a JSON object with keys: root_cause (string), affected_files (array), and fix_description (string)."</pre>
+<p>Useful in CI pipelines that automatically open a debugging session when tests fail.</p>
+<p>→ <a href="/ci">Claude Code in CI / GitHub Actions</a></p>
+
+<h2>Session budget: debug sessions drain fast</h2>
+<p>Debugging sessions have a particular pattern: many short tool calls (read file, grep, run test) adding up to a high utilization. A 30-minute debug session can consume 20–30% of the 5h rolling window — more than you'd expect, because each test run and file read counts.</p>
+<div class="warn"><strong>Watch out:</strong> automated test loops are the fastest way to drain session budget. Each iteration of read → edit → run test → read output is 4–6 tool calls. 10 iterations = 40–60 tool calls. At moderate complexity, that's 15–25% of a session window.</div>
+<p>The 5h window resets 5 hours after the <em>oldest</em> request in the window — not when you started Claude Code. So a morning debug session doesn't fully "free up" until the afternoon.</p>
+
+<div class="cta-box">
+<h2>Know your headroom before a long debug session</h2>
+<p>Starting a debug session when you're already at 70% utilization means you might hit the limit mid-diagnosis. Headroom shows your Claude Code session (5h) and weekly (7d) usage in the menu bar, color-coded before a hard stop interrupts you.</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="margin:0"><a href="/download">Direct download</a> · <a href="/">About Headroom</a> · <a href="https://github.com/patwalls/headroom">Source on GitHub</a></p>
+</div>
+
+<h2>Common debug anti-patterns</h2>
+
+<h3>Giving only the error, not the code</h3>
+<p>A stack trace without the relevant code forces Claude Code to read the entire file to find the function. Include the function or file in the prompt.</p>
+
+<h3>Asking to fix without asking to verify</h3>
+<p>Always include "run the tests to verify" or "confirm this doesn't break anything else." Without an explicit verify step, Claude Code may stop after making the edit.</p>
+
+<h3>Long context with stale files</h3>
+<p>If you've been debugging in a session for an hour, Claude Code's context includes the original (broken) versions of files it read earlier. If you've made changes, tell it: "the file has changed since you read it — re-read auth.ts before continuing."</p>
+
+<h3>Too broad a scope on a subtle bug</h3>
+<p>For subtle logic bugs, a prompt like "something is wrong with authentication" sends Claude Code on a wide search. Narrow it to the specific function or the specific test case.</p>
+
+<hr>
+<p>→ <a href="/session">5-hour session limit explained</a><br>
+→ <a href="/agent">Claude Code agent mode — automated loops</a><br>
+→ <a href="/ci">Claude Code in CI / GitHub Actions</a><br>
+→ <a href="/tips">Claude Code tips and tricks</a><br>
+→ <a href="/limits">Rate limits reference</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
   }
 
   if (url.pathname === "/vscode") {
