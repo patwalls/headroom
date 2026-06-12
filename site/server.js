@@ -364,6 +364,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/neovim</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/vim</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/refactor</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/test</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -6551,6 +6552,152 @@ hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
 → <a href="/alternatives">All Claude Code usage monitor alternatives</a><br>
 → <a href="/limits">Claude Code rate limits explained</a><br>
 → <a href="/session">5-hour session limit</a> · <a href="/weekly">7-day weekly cap</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/test") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Writing Tests with Claude Code — TDD, Test-Fix Loop, Coverage</title>
+<meta name="description" content="How to write unit tests, drive TDD workflows, and add coverage to existing code with Claude Code. Includes the test-fix loop, framework patterns, and session budget tips.">
+<link rel="canonical" href="https://headroom.walls.sh/test">
+<meta property="og:title" content="Writing Tests with Claude Code — TDD and Test-Fix Loop">
+<meta property="og:description" content="The test-fix loop, TDD workflows, adding coverage to existing code, and how to avoid burning your 5h session on automated test cycles.">
+<meta property="og:url" content="https://headroom.walls.sh/test">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Writing Tests with Claude Code">
+<meta name="twitter:description" content="TDD workflows, test-fix loops, and coverage with Claude Code. Includes session budget tips for long test runs.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.4em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.tip{background:#141414;border-left:3px solid #5db85d;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+.warn{background:#141414;border-left:3px solid #d9a657;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+table{width:100%;border-collapse:collapse;margin:1em 0 1.4em;font-size:.92rem}
+th{text-align:left;color:#888;font-weight:600;padding:8px 10px;border-bottom:1px solid #2a2a2a}
+td{color:#c8c4bb;padding:8px 10px;border-bottom:1px solid #1e1e1e;vertical-align:top}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · test</p>
+<h1>Writing Tests with Claude Code</h1>
+<p class="sub">Claude Code can write tests, run them, read the failures, fix the code, and repeat — unattended. The test-fix loop is one of its strongest workflows. This page covers how to drive TDD, add coverage to existing code, and keep long test sessions from quietly draining your 5-hour window.</p>
+
+<h2>The test-fix loop — Claude Code's core workflow</h2>
+<p>Give Claude Code a failing test (or ask it to write one), and it will enter a loop: write → run → read output → fix → run again. This is the workflow it was built for.</p>
+<pre>claude "write tests for src/auth.js, run them, and fix any failures"</pre>
+<p>What happens:</p>
+<ol>
+<li>It reads <code>src/auth.js</code> and any existing test files</li>
+<li>Writes a new test file targeting the exported functions</li>
+<li>Runs the test suite</li>
+<li>Reads any failures and edits the source or test accordingly</li>
+<li>Reruns until green</li>
+</ol>
+<p>The loop is automatic — you don't need to supervise each cycle. Start it, check back when it's done.</p>
+
+<h2>TDD: write the failing test first</h2>
+<p>Claude Code handles strict TDD well. Ask for the test before the implementation:</p>
+<pre>claude "I want to add a validateEmail function to src/utils.js.
+Write a failing test for it first — it should validate format, reject TLDs shorter than 2 chars, and accept subdomains. Don't implement it yet."</pre>
+<p>Once you've reviewed the test spec:</p>
+<pre>claude "now implement validateEmail to make those tests pass"</pre>
+<p>This keeps the test as the contract. Claude Code reads the failing test to understand what's expected, then writes code to satisfy it exactly — not the other way around.</p>
+<div class="tip">The "write test first, implement second" two-step works best as two separate commands — it forces Claude Code to treat the test as the spec rather than reverse-engineering the test from an implementation it already has in mind.</div>
+
+<h2>Adding tests to existing code</h2>
+<p>The most common request: a module with no tests. Give Claude Code the module and a coverage goal:</p>
+<pre>claude "add unit tests for src/parser.js — cover the happy path, malformed input, and edge cases like empty strings and null. Use the existing test framework in package.json."</pre>
+<p>It will:</p>
+<ul>
+<li>Read <code>src/parser.js</code> to understand what to test</li>
+<li>Check <code>package.json</code> for the test runner (Jest, Vitest, Mocha, etc.)</li>
+<li>Look at any existing test files to match the project's conventions</li>
+<li>Write tests that run against the real code, then verify they pass</li>
+</ul>
+<p>If you want a specific coverage target:</p>
+<pre>claude "add tests for src/parser.js. Run coverage after — I want 80%+ line coverage."</pre>
+
+<h2>Whole-module test generation</h2>
+<p>For a directory with no tests at all:</p>
+<pre>claude "write tests for everything in src/models/ — one test file per module, placed in test/models/. Match the naming convention test-{module}.js. Run the suite after writing."</pre>
+<p>Claude Code reads each file, infers the public API, writes tests, and runs the suite. Failures in one file don't stop it from writing the others — it logs failures and continues across the directory.</p>
+
+<h2>Framework-specific patterns</h2>
+
+<h3>Jest / Vitest (JavaScript)</h3>
+<pre>claude "add Jest tests for src/api/users.js — mock the database with jest.mock, test each exported function, run with npm test"</pre>
+<p>Claude Code understands <code>jest.mock()</code>, <code>beforeEach</code>/<code>afterEach</code>, snapshot testing, and async patterns. Ask it to match your project's existing test style and it will read the existing files before writing a single line.</p>
+
+<h3>pytest (Python)</h3>
+<pre>claude "write pytest tests for app/services/auth.py — use fixtures, parametrize the edge cases, and run pytest -v after"</pre>
+<p>It understands fixtures, <code>parametrize</code>, monkeypatching, and the difference between unit and integration tests. Passing <code>-v</code> in the run command gives readable failure output Claude Code can act on.</p>
+
+<h3>Go testing</h3>
+<pre>claude "add table-driven tests for pkg/parser/parser.go — follow the existing patterns in the repo, run go test ./pkg/parser/..."</pre>
+<p>Go's table-driven test pattern is idiomatic and Claude Code follows it correctly. Giving it the run command with the right package path avoids the "tests not found" confusion from running in the wrong directory.</p>
+
+<h3>Swift / XCTest</h3>
+<pre>claude "write XCTest cases for Sources/Auth/TokenManager.swift — cover the happy path and the error cases, add them to the existing test target"</pre>
+<p>For Swift packages, Claude Code will add tests to the correct <code>Tests/</code> directory and wire them into the package's test target — it reads the package manifest before writing.</p>
+
+<h2>Piping test output into Claude Code</h2>
+<p>If you're running tests manually and want Claude Code to fix the failures:</p>
+<pre>npm test 2&gt;&amp;1 | claude --print "read this test output and fix any failing tests"</pre>
+<p>The <code>--print</code> flag makes Claude Code non-interactive — it reads the piped output, fixes what it can, and exits. Useful for scripted pipelines, CI integration, and post-test hooks.</p>
+<p>Or pass the output inline:</p>
+<pre>claude "here is my test output — find what is failing and fix it:
+
+[paste failure output here]"</pre>
+
+<h2>Keeping tests in sync during refactors</h2>
+<p>When you rename or restructure code that has tests, tell Claude Code about both:</p>
+<pre>claude "rename getUserById to fetchUser across the codebase. Update the implementation, all call sites, and all tests. Run the test suite after to confirm nothing broke."</pre>
+<p>The critical addition is "run the test suite after" — it verifies the rename was consistent rather than assuming the edits were correct.</p>
+
+<div class="warn"><strong>Session budget warning:</strong> the test-fix loop is the fastest way to drain your 5-hour session window. Each iteration reads files, edits code, and runs the suite — typically 6–10 tool calls per cycle. Fifteen iterations of a complex test loop can consume 25–35% of your session budget without a visible pause. Check your usage before starting a long test run.</div>
+
+<h2>Know your headroom before a long test run</h2>
+<div class="cta-box">
+<h2>Headroom — live session usage in your menu bar</h2>
+<p>The test-fix loop burns session budget silently. Headroom shows your Claude Code session utilization (5h window) and weekly utilization (7d cap) live in the macOS menu bar — updated as the loop runs. No token, no API key: it reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Color-coded from calm to amber to red as your window fills. Start a long test run when you're at 20% — not when you're at 70% and two cycles from a hard stop.</p>
+</div>
+
+<hr>
+<p>→ <a href="/debug">Debugging with Claude Code</a><br>
+→ <a href="/refactor">Refactoring with Claude Code</a><br>
+→ <a href="/agent">Agent mode and subagents</a><br>
+→ <a href="/session">5-hour session limit explained</a> · <a href="/weekly">7-day weekly cap</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
