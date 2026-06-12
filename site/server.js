@@ -357,6 +357,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/cursor</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/copilot</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/windsurf</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/vscode</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -5336,6 +5337,173 @@ OUR_API_KEY=...</pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
+  }
+
+  if (url.pathname === "/vscode") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code + VS Code — Extension Setup, Workflow Tips, and VS Code Integration</title>
+<meta name="description" content="How to use Claude Code with VS Code: install the extension, open diffs in your editor, run Claude Code in the VS Code terminal, and set up the statusLineHook for Headroom.">
+<link rel="canonical" href="https://headroom.walls.sh/vscode">
+<meta property="og:title" content="Claude Code + VS Code — Extension and Workflow">
+<meta property="og:description" content="Claude Code has a first-party VS Code extension. Here's how to set it up, how the workflow feels, and how it compares to GitHub Copilot.">
+<meta property="og:url" content="https://headroom.walls.sh/vscode">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude Code + VS Code">
+<meta name="twitter:description" content="Claude Code has a VS Code extension. Here's how it works, how to set it up, and what it adds over using Claude Code in a standalone terminal.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+table{width:100%;border-collapse:collapse;margin:1.2em 0 2em;font-size:.95rem}
+th{text-align:left;padding:10px 14px;background:#161616;color:#999;font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;border-bottom:2px solid #222}
+td{padding:11px 14px;border-bottom:1px solid #1e1e1e;color:#c8c4bb;vertical-align:top}
+tr:last-child td{border-bottom:none}
+td:first-child{color:#e8e4da;font-weight:500}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.4em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.kbd{display:inline-block;background:#1e1e1e;border:1px solid #333;border-radius:4px;padding:1px 7px;font-family:ui-monospace,Menlo,monospace;font-size:.83rem;color:#ccc}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+.note{background:#141414;border-left:3px solid #d97757;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · vscode</p>
+<h1>Claude Code + VS Code</h1>
+<p class="sub">Claude Code has a first-party VS Code extension. It wires Claude Code's terminal agent directly into your editor: diffs open in VS Code, files are linked, the terminal runs inline. This page covers installing the extension, the workflow, and how to get Headroom monitoring your usage alongside it.</p>
+
+<h2>The VS Code extension</h2>
+<p>The Claude Code extension for VS Code is published by Anthropic. It adds:</p>
+<ul>
+  <li><strong>Inline diff view</strong> — when Claude Code edits a file, the diff opens in VS Code's native diff viewer instead of in the terminal</li>
+  <li><strong>File link integration</strong> — file paths in Claude Code's output are clickable and open in your editor</li>
+  <li><strong>Terminal integration</strong> — Claude Code runs in VS Code's integrated terminal with full access to your workspace</li>
+  <li><strong>Sidebar panel</strong> — a dedicated panel for Claude Code conversations alongside your file tree</li>
+</ul>
+
+<h2>Installing the extension</h2>
+<ol>
+  <li>Open VS Code → Extensions panel (<span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">X</span>)</li>
+  <li>Search for <strong>Claude Code</strong> — published by <code>anthropic</code></li>
+  <li>Click Install</li>
+  <li>If you haven't installed the Claude Code CLI: <code>npm install -g @anthropic-ai/claude-code</code></li>
+  <li>Open a new terminal in VS Code (<span class="kbd">Ctrl</span>+<span class="kbd">\`</span>) and type <code>claude</code></li>
+</ol>
+<p>The extension detects the CLI automatically. On first launch, Claude Code installs its statusLine hook (which is what Headroom reads).</p>
+
+<div class="note">If you already have Claude Code installed and running, the extension wires into the same config at <code>~/.claude/</code>. No re-setup needed — just install the extension and open the terminal.</div>
+
+<h2>The workflow: Claude Code in VS Code</h2>
+<p>The typical workflow once the extension is installed:</p>
+<ol>
+  <li>Open your project in VS Code</li>
+  <li>Open the integrated terminal (<span class="kbd">Ctrl</span>+<span class="kbd">\`</span>)</li>
+  <li>Type <code>claude</code> to start a session</li>
+  <li>Give Claude Code a task: <em>"Add error handling to the API client"</em></li>
+  <li>Claude Code reads files, plans changes, and edits — diffs open in VS Code automatically</li>
+  <li>Accept or reject changes in the diff viewer, give feedback in the terminal</li>
+</ol>
+<p>The flow is: you stay in VS Code, Claude Code works in the terminal below. You see every edit as a native VS Code diff before it's applied.</p>
+
+<h2>VS Code settings.json and the statusLineHook</h2>
+<p>Claude Code's settings live at <code>~/.claude/settings.json</code> — separate from VS Code's <code>settings.json</code>. The key setting for Headroom is the <code>statusLineHook</code> entry, which Claude Code installs automatically on first launch:</p>
+<pre>{
+  "hooks": {
+    "statusLineHook": {
+      "type": "command",
+      "command": "node ~/.claude/headroom-hook.mjs"
+    }
+  }
+}</pre>
+<p>This hook runs each time Claude Code processes a prompt and writes your current usage to <code>~/.claude/headroom-usage.json</code>. Headroom reads that file every 15 seconds — the same data Claude Code shows with <code>/usage</code>, surfaced in your menu bar.</p>
+<p>→ <a href="/hook">How the statusLineHook works</a> · <a href="/settings">Full settings.json reference</a></p>
+
+<h2>Claude Code vs GitHub Copilot in VS Code</h2>
+<p>Both can be active in VS Code simultaneously. They serve different moments:</p>
+<table>
+<thead><tr><th>Moment</th><th>Reach for</th></tr></thead>
+<tbody>
+<tr><td>Completing the current line as you type</td><td>GitHub Copilot</td></tr>
+<tr><td>"Add error handling to all these endpoints"</td><td>Claude Code</td></tr>
+<tr><td>Reviewing and explaining existing code</td><td>Either (Copilot Chat or Claude Code)</td></tr>
+<tr><td>Debugging a test that's been failing for an hour</td><td>Claude Code (loops until tests pass)</td></tr>
+<tr><td>Writing a new component from a description</td><td>Claude Code</td></tr>
+<tr><td>Quick inline rename / boilerplate</td><td>Copilot</td></tr>
+</tbody>
+</table>
+<p>If you use Copilot with Claude models (BYOK), both tools draw from the same Anthropic API quota — your Claude Code 5h/7d windows are shared with Copilot's Claude usage.</p>
+<p>→ <a href="/copilot">Full Claude Code vs Copilot comparison</a></p>
+
+<h2>Project-level CLAUDE.md in VS Code</h2>
+<p>Drop a <code>CLAUDE.md</code> file in your project root and Claude Code reads it as project context — similar to how VS Code reads <code>.vscode/settings.json</code> for editor preferences, but for AI instructions:</p>
+<pre># This project
+
+- TypeScript, strict mode
+- Tests with Vitest — run \`npm test\`
+- Never edit generated files in \`dist/\`
+- Prefer functional patterns; avoid classes</pre>
+<p>VS Code users often already have <code>.vscode/settings.json</code> in their project — <code>CLAUDE.md</code> is the equivalent for Claude Code's project context.</p>
+<p>→ <a href="/memory">Full CLAUDE.md guide</a></p>
+
+<h2>Keyboard shortcuts in VS Code + Claude Code</h2>
+<p>Inside the Claude Code terminal (the integrated terminal running <code>claude</code>):</p>
+<table>
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><span class="kbd">Esc</span></td><td>Interrupt Claude Code mid-response (while it's running)</td></tr>
+<tr><td><span class="kbd">Ctrl</span>+<span class="kbd">C</span></td><td>Cancel current operation</td></tr>
+<tr><td><span class="kbd">↑</span> / <span class="kbd">↓</span></td><td>Navigate prompt history</td></tr>
+<tr><td><span class="kbd">Tab</span></td><td>Autocomplete file paths</td></tr>
+<tr><td><span class="kbd">Ctrl</span>+<span class="kbd">D</span></td><td>Exit Claude Code session</td></tr>
+</tbody>
+</table>
+<p>Pressing <span class="kbd">Esc</span> early — before Claude Code goes too far down a wrong path — saves session budget. Each model call counts toward your 5h rolling window.</p>
+<p>→ <a href="/keyboard">Full Claude Code keyboard reference</a></p>
+
+<h2>Monitoring usage while working in VS Code</h2>
+<p>VS Code fills the screen — you're watching diffs and file trees, not a terminal. Claude Code's session (5h) and weekly (7d) usage meters are invisible unless you run <code>/usage</code> manually. Headroom keeps them in your menu bar, color-coded before a limit stops you mid-session:</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="font-size:.9rem;color:#888">Reads the same data the VS Code extension uses. Zero network calls, no API key. macOS 13+, free.</p>
+
+<div class="cta-box">
+<h2>Headroom — usage monitoring for VS Code + Claude Code</h2>
+<p>When you're deep in a Claude Code session in VS Code — reviewing diffs, accepting edits, staying in flow — the last thing you want is a surprise rate limit. Headroom shows both meters in your menu bar so you always know where you stand.</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="margin:0"><a href="/download">Direct download</a> · <a href="/">About Headroom</a> · <a href="https://github.com/patwalls/headroom">Source on GitHub</a></p>
+</div>
+
+<hr>
+<p>→ <a href="/settings">Claude Code settings.json reference</a><br>
+→ <a href="/hooks">Hooks: PreToolUse, PostToolUse, statusLineHook</a><br>
+→ <a href="/keyboard">Claude Code keyboard shortcuts</a><br>
+→ <a href="/copilot">Claude Code vs GitHub Copilot</a><br>
+→ <a href="/windsurf">Claude Code vs Windsurf</a><br>
+→ <a href="/cursor">Claude Code vs Cursor</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
   }
 
   if (url.pathname === "/windsurf") {
