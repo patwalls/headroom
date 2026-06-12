@@ -361,6 +361,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/debug</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/continue</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/install</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://headroom.walls.sh/neovim</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -5340,6 +5341,165 @@ OUR_API_KEY=...</pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
+  }
+
+  if (url.pathname === "/neovim") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code + Neovim — Integration, Workflow Tips, and Usage Monitoring</title>
+<meta name="description" content="How to use Claude Code with Neovim: terminal workflow, toggling between editor and Claude, shell prompt integration, and monitoring session usage from the menu bar.">
+<link rel="canonical" href="https://headroom.walls.sh/neovim">
+<meta property="og:title" content="Claude Code + Neovim — Integration and Workflow">
+<meta property="og:description" content="Claude Code runs in the terminal alongside Neovim. Here is how to wire them together: split terminals, statusline usage, and the Headroom menu bar monitor.">
+<meta property="og:url" content="https://headroom.walls.sh/neovim">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude Code + Neovim">
+<meta name="twitter:description" content="Claude Code runs in the terminal — a natural fit for Neovim users. Split pane, statusline integration, shell prompt, and menu bar monitoring.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.5em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.note{background:#141414;border-left:3px solid #d97757;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+.kbd{display:inline-block;background:#1e1e1e;border:1px solid #333;border-radius:4px;padding:1px 7px;font-family:ui-monospace,Menlo,monospace;font-size:.83rem;color:#ccc}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · neovim</p>
+<h1>Claude Code + Neovim</h1>
+<p class="sub">Claude Code is a terminal agent — and Neovim users already live in the terminal. The integration is natural: split pane or tmux window, run Claude Code alongside your editor, pass it file paths and tasks, get diffs back. This page covers the workflows that work well and how to wire usage data into your Neovim statusline.</p>
+
+<h2>Why Claude Code fits Neovim's workflow</h2>
+<p>Most IDE-based AI tools bolt onto a GUI editor and feel like a plugin. Claude Code is a CLI that reads and writes files — the same primitives Neovim is built on. There is no IDE required: run <code>claude</code> in a terminal pane, give it a task, and let it work while you stay in your editor.</p>
+<p>The terminal-first design means Claude Code is editor-agnostic. Any Neovim split, tmux pane, or terminal multiplexer becomes a Claude Code workspace without any configuration.</p>
+
+<h2>Basic workflow: split terminal or tmux</h2>
+<p>The most common setup is a vertical split: Neovim on the left, Claude Code on the right.</p>
+
+<h3>With a terminal multiplexer (tmux)</h3>
+<pre>tmux new-session -s dev
+# Pane 1: nvim
+nvim src/main.py
+# Pane 2: claude (Ctrl+b then %)
+claude</pre>
+<p>In tmux, <span class="kbd">Ctrl-b</span> + <span class="kbd">%</span> creates a vertical split. <span class="kbd">Ctrl-b</span> + arrow key navigates between panes. Run Claude Code in one pane, Neovim in the other — <code>:w</code> in Neovim saves, Claude Code picks up the changes on its next file read.</p>
+
+<h3>With Neovim's built-in terminal</h3>
+<p>Open a terminal split inside Neovim:</p>
+<pre>:vsplit | terminal
+" or in a horizontal split:
+:split | terminal</pre>
+<p>Then in the terminal buffer, run <code>claude</code>. Switch between the editor and terminal with <span class="kbd">Ctrl-w</span> + <span class="kbd">h/l</span>. Exit Claude Code's terminal input mode with <span class="kbd">Ctrl-\</span> <span class="kbd">Ctrl-n</span>.</p>
+
+<h3>Keymaps for quick toggling</h3>
+<p>Add these to your <code>init.lua</code> or <code>init.vim</code> for fast Claude Code access:</p>
+<pre>-- Lua (init.lua)
+vim.keymap.set("n", "&lt;leader&gt;cc", function()
+  vim.cmd("vsplit | terminal claude")
+end, { desc = "Open Claude Code in vertical split" })
+
+vim.keymap.set("n", "&lt;leader&gt;ct", function()
+  vim.cmd("tabnew | terminal claude")
+end, { desc = "Open Claude Code in new tab" })</pre>
+
+<h2>Passing context from Neovim to Claude Code</h2>
+<p>The simplest way to share context is to pass file paths in your Claude Code prompt:</p>
+<pre>claude "Refactor the function in src/auth.py to handle token expiry properly"</pre>
+<p>Or reference the current buffer by passing the path from Neovim. With a terminal pane open, you can set a shell variable from inside Neovim:</p>
+<pre>:let g:current_file = expand('%:p')
+" Then in the terminal:
+" claude "Explain what this function does: @$current_file"</pre>
+
+<h2>Statusline integration: live usage in Neovim</h2>
+<p>Claude Code writes your session and weekly usage to <code>~/.claude/headroom-usage.json</code> via the statusLineHook. You can read that file in your Neovim statusline with a simple Lua function:</p>
+<pre>-- In your statusline config (e.g. lualine, heirline, or custom)
+local function claude_usage()
+  local f = io.open(os.getenv("HOME") .. "/.claude/headroom-usage.json", "r")
+  if not f then return "" end
+  local ok, data = pcall(vim.json.decode, f:read("*a"))
+  f:close()
+  if not ok or not data then return "" end
+  local s = data.sessionUsagePct
+  local w = data.weeklyUsagePct
+  if not s or not w then return "" end
+  return string.format("CC %d%%·%d%%", math.floor(s), math.floor(w))
+end</pre>
+<p>Add this function to your statusline configuration. It reads from disk on each statusline refresh (typically every few seconds) — same data Claude Code shows in <code>/usage</code>, in your Neovim statusline.</p>
+
+<h3>lualine example</h3>
+<pre>require("lualine").setup({
+  sections = {
+    lualine_x = { claude_usage, "encoding", "fileformat", "filetype" }
+  }
+})</pre>
+
+<h2>Shell prompt integration</h2>
+<p>If you launch Neovim from a terminal with a configured shell prompt, you can show Claude Code usage in your prompt before launching Neovim:</p>
+<pre># In ~/.zshrc or ~/.bashrc
+claude_usage_prompt() {
+  local f="$HOME/.claude/headroom-usage.json"
+  [ -f "$f" ] || return
+  local s w
+  s=$(jq -r '.sessionUsagePct // empty' "$f" 2>/dev/null)
+  w=$(jq -r '.weeklyUsagePct // empty' "$f" 2>/dev/null)
+  [ -z "$s" ] && return
+  printf "CC %d%%·%d%% " "\${s%.*}" "\${w%.*}"
+}
+# Then add $(claude_usage_prompt) to your PS1</pre>
+<p>→ <a href="/shell">Full shell prompt integration guide</a> · <a href="/starship">Starship module</a></p>
+
+<h2>tmux status bar</h2>
+<p>For tmux users, add usage to the status bar:</p>
+<pre># In ~/.tmux.conf
+set -g status-right '#(jq -r "\"CC \" + (.sessionUsagePct|floor|tostring) + \"%\" + \"·\" + (.weeklyUsagePct|floor|tostring) + \"%\"" ~/.claude/headroom-usage.json 2>/dev/null || echo "CC --") | %H:%M'</pre>
+<p>→ <a href="/tmux">Full tmux integration guide</a></p>
+
+<h2>Menu bar monitoring with Headroom</h2>
+<p>The statusline and tmux integrations show usage when you're looking at them. When you're deep in a Neovim session — focused on a debugging loop, reading a large file, reviewing diffs — Headroom shows the meters in your macOS menu bar so you see them without leaving your editor.</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="font-size:.9rem;color:#888">Reads from the same <code>~/.claude/headroom-usage.json</code> file your statusline script uses. Zero network calls, no API key. macOS 13+, free.</p>
+
+<div class="cta-box">
+<h2>Headroom — usage monitoring alongside Neovim</h2>
+<p>The statusline integration is great for at-a-glance numbers. But when you're in a long Claude Code session running tests or refactoring a module, Headroom's color-coded menu bar icon alerts you before a hard stop interrupts your flow.</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="margin:0"><a href="/download">Direct download</a> · <a href="/">About Headroom</a> · <a href="https://github.com/patwalls/headroom">Source on GitHub</a></p>
+</div>
+
+<hr>
+<p>→ <a href="/tmux">tmux status bar integration</a><br>
+→ <a href="/shell">Shell prompt integration</a><br>
+→ <a href="/starship">Starship module</a><br>
+→ <a href="/hook">statusLineHook setup</a><br>
+→ <a href="/debug">Debugging with Claude Code</a><br>
+→ <a href="/keyboard">Claude Code keyboard shortcuts</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
   }
 
   if (url.pathname === "/install") {
