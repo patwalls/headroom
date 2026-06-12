@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 129 — 2026-06-11 · New SEO page: /keyboard — Claude Code keyboard shortcuts reference.**
+  *Shipped:* https://headroom.walls.sh/keyboard is live — targets "claude code keyboard shortcuts", "claude code hotkeys", "claude code key bindings". Covers: Escape (interrupt mid-response), Ctrl+C (cancel), Ctrl+D (exit), Tab file completion, Up/Down history; special prefixes (/commands, @file-refs, ! shell passthrough, # context); readline line editing (Ctrl+A/E/K/U/W/R, Alt+arrows); Shift+Return multi-line input; tool-use interrupt semantics; VS Code extension bindings; practical tips on using Escape early. 33 SEO pages total. Downloads: 64. *Fact learned:* The Escape key tip (interrupt early rather than waiting for a wrong path to finish) is the most actionable piece of Headroom upsell on the page — it directly frames the 5h budget as something worth monitoring.
+
 - **Lap 128 — 2026-06-11 · New SEO page: /ci — Claude Code in GitHub Actions and non-interactive mode.**
   *Shipped:* https://headroom.walls.sh/ci is live — targets "claude code github actions", "claude code CI", "run claude code non-interactive", "--print flag claude code". Covers: --print for non-interactive CI, basic GitHub Actions workflow with secret injection, three ready-to-copy patterns (PR review with comment, TODO flagging, release note generation), all CI-relevant flags table (--print, --output-format json, --max-turns, CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC, --allowedTools), piping stdin, exit code handling, and cost control. 32 SEO pages total. Downloads: 64. *Fact learned:* The CI page has the most concrete copy-paste value of any page on the site — three complete GitHub Actions workflows. Concrete examples are more shareable than explanations.
 

@@ -352,6 +352,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/memory</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/env</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/ci</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/keyboard</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -3699,6 +3700,122 @@ fi</pre>
 → <a href="/agent">Agent mode and subagents</a><br>
 → <a href="/permissions">Permissions and allow rules</a><br>
 → <a href="/limits">Rate limits and windows</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/keyboard") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Keyboard Shortcuts — Complete Hotkey Reference</title>
+<meta name="description" content="Every Claude Code keyboard shortcut: Escape to interrupt, Ctrl+C to cancel, Tab for file completion, slash command prefixes, @ for context, ! for shell commands, and IDE hotkeys.">
+<link rel="canonical" href="https://headroom.walls.sh/keyboard">
+<meta property="og:title" content="Claude Code Keyboard Shortcuts — Complete Hotkey Reference">
+<meta property="og:description" content="Every Claude Code keyboard shortcut and special key — interrupt, cancel, history, file completion, context refs, and IDE hotkeys.">
+<meta property="og:url" content="https://headroom.walls.sh/keyboard">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code Keyboard Shortcuts">
+<meta name="twitter:description" content="Complete Claude Code hotkey reference — Escape, Ctrl+C, Tab completion, @-refs, ! shell commands, and more.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1.1rem;margin:2.2em 0 .35em;color:var(--ink);border-bottom:1px solid #242936;padding-bottom:.3em}
+  h3{font-size:.95rem;margin:1.4em 0 .25em;color:var(--accent)}
+  p{color:#c9c6bd;margin:.35em 0 .7em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.84rem;line-height:1.55;margin:.5em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+  .cta{display:inline-block;margin:1.5em 0;padding:12px 22px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:.97rem}
+  kbd{display:inline-block;padding:2px 8px;background:var(--panel);border:1px solid #333a4a;border-bottom-width:2px;border-radius:5px;font:600 .82rem/1.6 ui-monospace,Menlo,monospace;color:var(--ink);white-space:nowrap}
+  table{width:100%;border-collapse:collapse;margin:.6em 0 1.2em;font-size:.88rem}
+  th{text-align:left;color:var(--dim);font-weight:600;border-bottom:1px solid #242936;padding:6px 10px 6px 0}
+  td{border-bottom:1px solid #1e2230;padding:8px 10px 8px 0;color:#c9c6bd;vertical-align:top}
+  td:first-child{white-space:nowrap;padding-right:20px}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · keyboard</p>
+<h1>Claude Code keyboard shortcuts</h1>
+<p class="sub">Every key that changes Claude Code's behavior — interrupting, navigating, referencing files, and running shell commands inline.</p>
+
+<h2>The most important keys</h2>
+<table>
+<tr><th>Key</th><th>What it does</th></tr>
+<tr><td><kbd>Escape</kbd></td><td>Interrupt the current Claude Code response mid-generation. Claude Code stops and shows what it had so far. Use this when it's going in the wrong direction — faster than waiting for it to finish.</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td><td>Cancel the current operation immediately — stops generation, aborts tool use, exits any confirmation prompt. Also exits Claude Code when pressed on an empty input line.</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td>Exit Claude Code cleanly (same as typing <code>/quit</code>).</td></tr>
+<tr><td><kbd>Tab</kbd></td><td>Autocomplete file paths and directory names after <code>@</code>. Type <code>@src/</code> then Tab to browse.</td></tr>
+<tr><td><kbd>↑</kbd> / <kbd>↓</kbd></td><td>Navigate your prompt history within the session. Up goes to previous prompts; Down returns toward the current empty input.</td></tr>
+</table>
+
+<h2>Special input prefixes</h2>
+<p>These aren't keyboard shortcuts per se, but they change how Claude Code interprets your input:</p>
+<table>
+<tr><th>Prefix</th><th>What it does</th></tr>
+<tr><td><kbd>/</kbd></td><td>Slash command — <code>/help</code>, <code>/clear</code>, <code>/compact</code>, <code>/model</code>, <code>/memory</code>. See the <a href="/commands">full command list</a>.</td></tr>
+<tr><td><kbd>@</kbd></td><td>Reference a file or directory — adds its contents to context. <code>@README.md</code>, <code>@src/</code>. Tab-completes paths.</td></tr>
+<tr><td><kbd>!</kbd></td><td>Run a shell command directly without sending it to Claude Code. <code>! git log --oneline -5</code> outputs to your terminal; Claude Code doesn't see it. Useful for quick lookups mid-session.</td></tr>
+<tr><td><kbd>#</kbd></td><td>Add a file or note to the conversation memory for the session (depends on version — check <code>/help</code> for availability).</td></tr>
+</table>
+
+<h2>Line editing shortcuts</h2>
+<p>Claude Code uses standard readline-style line editing at the prompt:</p>
+<table>
+<tr><th>Key</th><th>What it does</th></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>A</kbd></td><td>Jump to the beginning of the line</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>E</kbd></td><td>Jump to the end of the line</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>K</kbd></td><td>Delete everything from cursor to end of line</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>U</kbd></td><td>Delete everything from cursor to beginning of line</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>W</kbd></td><td>Delete the previous word</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>R</kbd></td><td>Reverse search through prompt history (type to filter)</td></tr>
+<tr><td><kbd>Alt</kbd>+<kbd>←</kbd> / <kbd>Alt</kbd>+<kbd>→</kbd></td><td>Move cursor one word left / right</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>L</kbd></td><td>Clear the terminal screen (keeps session context)</td></tr>
+</table>
+
+<h2>Multi-line input</h2>
+<p>For long prompts — a detailed spec, a block of code to paste, a multi-paragraph question — Claude Code supports multi-line input:</p>
+<table>
+<tr><th>Key</th><th>What it does</th></tr>
+<tr><td><kbd>Shift</kbd>+<kbd>Return</kbd></td><td>Insert a newline without submitting — continue writing on the next line</td></tr>
+<tr><td><kbd>Return</kbd></td><td>Submit the prompt (even if it spans multiple lines)</td></tr>
+</table>
+<p>This is useful when you want to paste a code block or write a structured prompt with numbered steps before Claude Code starts working.</p>
+
+<h2>During tool use</h2>
+<p>When Claude Code is executing a tool (running a bash command, reading files, editing code), the interaction model changes slightly:</p>
+<table>
+<tr><th>Key</th><th>What it does</th></tr>
+<tr><td><kbd>Escape</kbd></td><td>Request Claude Code to stop after the current tool call completes. It won't interrupt mid-file-write but will pause before starting the next action.</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td><td>Hard-interrupt the current operation. If Claude Code is running a bash command, this sends SIGINT to the subprocess.</td></tr>
+</table>
+
+<h2>VS Code extension shortcuts</h2>
+<p>If you use Claude Code through the VS Code extension, additional keybindings are available. Open the Keyboard Shortcuts editor (<kbd>Cmd</kbd>+<kbd>K</kbd> <kbd>Cmd</kbd>+<kbd>S</kbd>) and search for "Claude" to see and customize them. The extension adds bindings for opening the Claude Code panel, inserting the selected code into context, and accepting suggestions.</p>
+
+<h2>Tips for faster sessions</h2>
+<p>Escape early and often — the moment a response looks wrong, hit Escape and redirect. Waiting for a 50-tool-call sequence to finish before correcting is the main source of wasted quota.</p>
+<p>Use <code>! git diff</code> or <code>! cat file.txt</code> with the <code>!</code> prefix when you need to quickly check something yourself without burning a Claude Code turn.</p>
+<p>The Up arrow restores your last prompt for editing — useful when you want to repeat a task with a small variation.</p>
+<div class="note"><p>Every Claude Code session runs against a 5-hour token budget. Knowing when to hit Escape and redirect (rather than letting a wrong path run to completion) is one of the best ways to stretch it. Headroom shows that budget as a live % in your menu bar so you always know where you stand.</p></div>
+<a class="cta" href="/download">Download Headroom v${VERSION} — free</a>
+<pre>brew install patwalls/tap/headroom</pre>
+
+<p>→ <a href="/commands">Slash commands reference</a><br>
+→ <a href="/tips">Claude Code tips and tricks</a><br>
+→ <a href="/compact">/compact and context management</a><br>
+→ <a href="/session">Session (5h) window explained</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
