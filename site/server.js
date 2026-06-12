@@ -371,6 +371,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/python</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/typescript</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/multifile</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/nextjs</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -6704,6 +6705,137 @@ Write a failing test for it first — it should validate format, reject TLDs sho
 → <a href="/refactor">Refactoring with Claude Code</a><br>
 → <a href="/agent">Agent mode and subagents</a><br>
 → <a href="/session">5-hour session limit explained</a> · <a href="/weekly">7-day weekly cap</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/nextjs") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code + Next.js — App Router, API Routes, Server Components, Testing</title>
+<meta name="description" content="Use Claude Code with Next.js: App Router patterns, API routes, Server Components, data fetching, testing with Playwright and Jest, and session budget tips.">
+<link rel="canonical" href="https://headroom.walls.sh/nextjs">
+<meta property="og:title" content="Claude Code + Next.js — App Router, API Routes, Server Components">
+<meta property="og:description" content="Next.js-specific Claude Code workflows: App Router, Server Components, API routes, data fetching, Zod validation, Playwright tests, and session budget monitoring.">
+<meta property="og:url" content="https://headroom.walls.sh/nextjs">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude Code + Next.js">
+<meta name="twitter:description" content="App Router, Server Components, API routes, Playwright testing, and session budget tips for Next.js with Claude Code.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.4em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.tip{background:#141414;border-left:3px solid #5db85d;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+.warn{background:#141414;border-left:3px solid #d9a657;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · nextjs</p>
+<h1>Claude Code + Next.js</h1>
+<p class="sub">Next.js projects have patterns Claude Code handles particularly well: App Router file conventions, API routes with Zod validation, Server vs Client Component decisions, and Playwright test generation. This page covers the workflows that save the most time.</p>
+
+<h2>CLAUDE.md for Next.js projects</h2>
+<p>Give Claude Code the project conventions once, and it applies them every session:</p>
+<pre>## Stack
+- Next.js 14+ (App Router)
+- TypeScript strict mode
+- Tailwind CSS
+- Prisma + PostgreSQL
+
+## Commands
+- Dev: npm run dev
+- Type check: npx tsc --noEmit
+- Build: npm run build
+- Test: npx playwright test
+- Lint: npm run lint
+
+## Conventions
+- Server Components by default — add "use client" only when needed
+- API routes use Zod for request validation
+- All database access goes through src/lib/db.ts
+- No inline styles — Tailwind classes only</pre>
+<p>Claude Code reads this at session start and respects these rules. It won't add "use client" unnecessarily or bypass Prisma for raw SQL unless you ask it to.</p>
+
+<h2>App Router: adding new routes and pages</h2>
+<p>Claude Code understands the App Router file convention (<code>app/route/page.tsx</code>, <code>layout.tsx</code>, <code>loading.tsx</code>, <code>error.tsx</code>):</p>
+<pre>claude "add a /dashboard/settings page to the App Router — read the existing /dashboard/page.tsx first to match the layout and data-fetching style"</pre>
+<pre>claude "add a loading.tsx and error.tsx to app/dashboard/ — follow the patterns from app/profile/ which already has them"</pre>
+<p>The "read the existing page first" instruction helps Claude Code match your specific patterns — whether you use <code>async/await</code> directly in Server Components, a data layer abstraction, or React Query for client-side fetching.</p>
+
+<h2>Server Components and Client Components</h2>
+<p>The most common Next.js question Claude Code handles well: what should be a Server Component vs a Client Component.</p>
+<pre>claude "read app/products/page.tsx. The product list needs to be filterable client-side. Extract the filterable part into a Client Component and keep the data fetching in the Server Component."</pre>
+<pre>claude "find all components in app/components/ that use useState or useEffect but don't need to — convert them to Server Components if their data can be fetched server-side"</pre>
+<p>Claude Code reads the component, checks what it uses (hooks, event handlers, browser APIs), and makes the correct Server/Client decision based on those dependencies.</p>
+
+<div class="tip">Tell Claude Code the rule explicitly: "Server Components by default, add 'use client' only when the component uses hooks, event handlers, or browser APIs." It will apply this consistently across a refactor rather than guessing.</div>
+
+<h2>API routes with validation</h2>
+<pre>claude "add a POST /api/users route in app/api/users/route.ts — validate the request body with Zod (name: string, email: string, role: enum), write to the database via Prisma, return proper error responses"</pre>
+<pre>claude "read all API routes in app/api/ — add Zod validation to any that currently parse request bodies without validation. Use a consistent error response format."</pre>
+<p>Claude Code will write the Zod schema, parse the request body, handle validation errors with a 400 response, and return typed data on success — all in one pass.</p>
+
+<h2>Data fetching patterns</h2>
+<pre>claude "the /products page fetches data directly in the component. Extract the data fetching into src/lib/products.ts with proper TypeScript return types, and update the page to call it"</pre>
+<pre>claude "add revalidation to the /blog page — it should revalidate every 60 seconds using Next.js cache tags. Follow the pattern from /news which already uses this."</pre>
+<pre>claude "the dashboard makes 3 sequential data fetches. Convert them to parallel fetches using Promise.all and measure the improvement in the dev server logs"</pre>
+
+<h2>Middleware and authentication</h2>
+<pre>claude "add Next.js middleware to protect all /dashboard routes — redirect to /login if the session cookie is missing or invalid. Read the existing auth utilities in src/lib/auth.ts first."</pre>
+<pre>claude "add rate limiting to the API routes in app/api/ using a simple in-memory counter. Log rate limit events and return 429 with a Retry-After header."</pre>
+
+<h2>Testing with Playwright</h2>
+<pre>claude "write Playwright tests for the login flow — test: valid credentials succeed, invalid credentials show error message, remember-me checkbox persists the session"</pre>
+<pre>claude "the checkout flow has no tests. Write Playwright e2e tests for: add to cart, view cart, enter shipping, enter payment, confirm order. Use page object pattern."</pre>
+<p>Claude Code generates complete Playwright tests that run against the dev server. Ask it to use page objects for flows with multiple steps — it keeps the tests readable as the UI changes.</p>
+
+<h2>Migrating from Pages Router to App Router</h2>
+<pre>claude "migrate pages/about.tsx to the App Router — create app/about/page.tsx with the equivalent Server Component. Remove the getStaticProps and convert it to async data fetching directly in the component."</pre>
+<pre>claude "audit pages/ for routes that can be migrated to App Router. For each, assess: does it use getServerSideProps (→ Server Component), getStaticProps (→ static generation), or client-only (→ Client Component with 'use client')."</pre>
+<p>Migration benefits from the audit first — knowing what each page uses helps Claude Code choose the right App Router equivalent rather than doing a mechanical rename.</p>
+
+<div class="warn"><strong>Session budget note:</strong> Next.js projects often have many files (components, pages, API routes, types, tests). A comprehensive audit of a medium-sized Next.js app — reading all pages and components to assess the Server/Client split — can be 30–50 read tool calls before any edits start.</div>
+
+<h2>Monitor session usage during Next.js work</h2>
+<div class="cta-box">
+<h2>Headroom — live session usage while Next.js builds run</h2>
+<p>Next.js migrations and test generation sessions can run long. Headroom shows your Claude Code session (5h) and weekly (7d) utilization live in the macOS menu bar — no token, no API key, reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Color-coded from calm to amber to red. Know your headroom before you start a full Pages Router → App Router migration.</p>
+</div>
+
+<hr>
+<p>→ <a href="/typescript">Claude Code for TypeScript</a><br>
+→ <a href="/test">Writing tests with Claude Code</a><br>
+→ <a href="/multifile">Multi-file editing with Claude Code</a><br>
+→ <a href="/refactor">Refactoring with Claude Code</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
