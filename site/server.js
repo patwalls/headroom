@@ -348,6 +348,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/commands</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/warp</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://headroom.walls.sh/agent</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/permissions</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -3084,6 +3085,193 @@ print(f'Weekly  resets in: {fmt(wr)}')
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/hook">Hook docs</a> · <a href="/faq">FAQ</a> · <a href="/reset">Reset timing</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/permissions") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Permissions — Allow Commands Without Prompting</title>
+<meta name="description" content="How to configure Claude Code tool permissions: allow and deny rules in settings.json, common patterns for git, npm, and bash, and when to use dangerously-skip-permissions.">
+<link rel="canonical" href="https://headroom.walls.sh/permissions">
+<meta property="og:title" content="Claude Code Permissions — Allow Commands Without Prompting">
+<meta property="og:description" content="Configure allow/deny rules in settings.json to stop Claude Code from asking permission for every git commit and npm run command.">
+<meta property="og:url" content="https://headroom.walls.sh/permissions">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code Permissions — Allow Without Prompting">
+<meta name="twitter:description" content="Stop Claude Code from asking permission for every command — allow/deny rules in settings.json.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1.1rem;margin:2.2em 0 .35em;color:var(--ink);border-bottom:1px solid #242936;padding-bottom:.3em}
+  h3{font-size:.95rem;margin:1.4em 0 .25em;color:var(--accent)}
+  p{color:#c9c6bd;margin:.35em 0 .7em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.84rem;line-height:1.55;margin:.5em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  .warn{border-left-color:var(--warn)}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+  table{width:100%;border-collapse:collapse;margin:.6em 0 1.2em;font-size:.88rem}
+  th{text-align:left;color:var(--dim);font-weight:600;border-bottom:1px solid #242936;padding:6px 10px 6px 0}
+  td{border-bottom:1px solid #1e2230;padding:7px 10px 7px 0;color:#c9c6bd;vertical-align:top}
+  td:first-child{color:var(--ok);font-family:ui-monospace,Menlo,monospace;font-size:.84rem;white-space:nowrap}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · permissions</p>
+<h1>Claude Code permissions</h1>
+<p class="sub">Stop Claude Code from asking permission for every command — configure allow and deny rules once in <code>settings.json</code>.</p>
+
+<h2>Why permissions exist</h2>
+<p>Claude Code can run shell commands, read and write files, and call external APIs. By default it asks for confirmation before any action that could have side effects — a bash command, a file write, a network request. This is safe but noisy once you've decided to trust Claude Code in a given context.</p>
+<p>The <code>permissions</code> block in <code>settings.json</code> lets you pre-approve (or pre-block) specific patterns so Claude Code doesn't interrupt you for things you'd always allow.</p>
+
+<h2>The permissions block</h2>
+<pre>{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(npm run *)",
+      "Read(**)",
+      "Edit(**)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(sudo *)"
+    ]
+  }
+}</pre>
+<p>Each entry is <code>ToolName(pattern)</code>. <strong>Deny takes precedence over allow</strong> — if an action matches both, it's blocked.</p>
+
+<h2>Tool names</h2>
+<table>
+<tr><th>Tool</th><th>What it covers</th></tr>
+<tr><td>Bash</td><td>Any shell command. Pattern matches the full command string.</td></tr>
+<tr><td>Read</td><td>Reading a file. Pattern matches the file path.</td></tr>
+<tr><td>Edit</td><td>Editing an existing file. Pattern matches the file path.</td></tr>
+<tr><td>Write</td><td>Writing a new file. Pattern matches the file path.</td></tr>
+<tr><td>WebFetch</td><td>Fetching a URL. Pattern matches the URL.</td></tr>
+<tr><td>WebSearch</td><td>Web searches. Pattern matches the query.</td></tr>
+<tr><td>mcp__*__*</td><td>MCP server tools. Pattern: <code>mcp__servername__toolname</code>.</td></tr>
+</table>
+
+<h2>Pattern syntax</h2>
+<table>
+<tr><th>Pattern</th><th>Meaning</th></tr>
+<tr><td>*</td><td>Matches anything within a single path segment or word</td></tr>
+<tr><td>**</td><td>Matches anything including path separators — use for file paths</td></tr>
+<tr><td>git *</td><td>Any git subcommand and flags</td></tr>
+<tr><td>npm run *</td><td>Any npm run script</td></tr>
+</table>
+
+<h2>Common allow patterns</h2>
+
+<h3>Git (all operations)</h3>
+<pre>"Bash(git *)"</pre>
+
+<h3>npm / yarn / pnpm</h3>
+<pre>"Bash(npm *)",
+"Bash(yarn *)",
+"Bash(pnpm *)"</pre>
+
+<h3>Build tools</h3>
+<pre>"Bash(make *)",
+"Bash(cargo *)",
+"Bash(go *)",
+"Bash(swift *)"</pre>
+
+<h3>Testing</h3>
+<pre>"Bash(pytest *)",
+"Bash(jest *)",
+"Bash(rspec *)",
+"Bash(npm test)"</pre>
+
+<h3>File operations (all files)</h3>
+<pre>"Read(**)",
+"Edit(**)",
+"Write(**)"</pre>
+
+<h3>File operations (project only)</h3>
+<pre>"Read(src/**)",
+"Edit(src/**)"</pre>
+
+<h3>Web fetching</h3>
+<pre>"WebFetch(*)"</pre>
+
+<h2>Common deny patterns</h2>
+<pre>"Bash(rm -rf *)",
+"Bash(sudo *)",
+"Bash(curl * | bash)",
+"Bash(chmod 777 *)"</pre>
+
+<h2>Where to put permissions</h2>
+<p>Two scopes — pick based on trust level:</p>
+<table>
+<tr><th>File</th><th>Use when</th></tr>
+<tr><td>~/.claude/settings.json</td><td>You trust Claude Code with git/npm/read globally — same rules everywhere</td></tr>
+<tr><td>.claude/settings.json</td><td>Project-specific tools (Docker, kubectl, deploy scripts) — commit with the repo</td></tr>
+</table>
+<p>Project-level rules apply on top of user-level. Both <code>allow</code> lists merge; deny takes precedence across both.</p>
+
+<h2>A practical starting config</h2>
+<pre>{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(npm *)",
+      "Bash(make *)",
+      "Bash(cat *)",
+      "Bash(ls *)",
+      "Bash(echo *)",
+      "Bash(which *)",
+      "Bash(pwd)",
+      "Read(**)",
+      "Edit(**)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(sudo *)"
+    ]
+  }
+}</pre>
+<p>This eliminates most prompts for typical development work while blocking the most dangerous patterns.</p>
+
+<h2>--dangerously-skip-permissions</h2>
+<p>For fully automated / headless use (CI, scripts), pass <code>--dangerously-skip-permissions</code> to skip all confirmation prompts:</p>
+<pre>claude --dangerously-skip-permissions --print "Run the test suite and report failures"</pre>
+<div class="note warn"><p>This bypasses ALL confirmation prompts including destructive operations. Only use in sandboxed environments, containers, or CI where the blast radius is bounded. Never in an interactive session on your main machine.</p></div>
+
+<h2>Add the statusLineHook while you're here</h2>
+<p>The <code>permissions</code> block lives in the same <code>~/.claude/settings.json</code> as the <code>statusLineHook</code> that powers Headroom's live usage display. If you're editing settings.json to fix permissions, it takes one more line to get your Claude Code session and weekly usage in the menu bar:</p>
+<pre>{
+  "statusLineHook": "cat ~/.claude/headroom-usage.json 2>/dev/null | jq -r '\"CC \\(.sessionUsagePct|floor)%·\\(.weeklyUsagePct|floor)%\"' 2>/dev/null || echo 'CC --%'",
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(npm *)",
+      "Read(**)",
+      "Edit(**)"
+    ]
+  }
+}</pre>
+<p><a href="/">Headroom</a> reads that file and shows your session (5h) and weekly (7d) usage as a live % in the menu bar — color-coded before a limit stops you.</p>
+<pre>brew install --cask patwalls/tap/headroom</pre>
+
+<p>→ <a href="/settings">Full settings.json reference</a><br>
+→ <a href="/hook">statusLineHook setup</a><br>
+→ <a href="/mcp">MCP server configuration</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
