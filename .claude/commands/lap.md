@@ -4,6 +4,12 @@ argument-hint: "[optional focus, e.g. 'keychain' or 'notarize']"
 allowed-tools: Bash, Read, Edit, Write, Glob, Grep, Agent
 ---
 
+## ⏸ Pause guard (check FIRST, before anything)
+
+If `~/.claude/LOOPS_PAUSED` exists (`test -f ~/.claude/LOOPS_PAUSED`), Pat has paused all
+loops (usually: out of credits). Say "loops are paused — not running this lap" and STOP
+immediately. Do no work, schedule no wakeups. Pat resumes with /resume-loops in walls.
+
 ## Context (auto-injected)
 
 - Repo: !`pwd` on branch !`git branch --show-current`
