@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 131 — 2026-06-12 · New SEO page: /cursor — Claude Code vs Cursor comparison.**
+  *Shipped:* https://headroom.walls.sh/cursor is live — targets "claude code vs cursor", "cursor vs claude code", "claude code cursor comparison". Covers: the core difference (IDE inline assist vs terminal agent), side-by-side table (interface/interaction/scope/billing/model), they're complementary not mutually exclusive, when Claude Code wins (multi-file/test-loop/agentic), when Cursor wins (inline completion/visual context/editor flow), how they share Anthropic quota (important for BYOK Cursor users), and adding Claude Code alongside Cursor. 35 SEO pages total. Downloads: **65** (up 1). *Fact learned:* Cursor BYOK users sharing an Anthropic API key across both tools are the most likely Headroom users — they need to monitor two sources of quota draw. The quota-sharing angle is a concrete, unique upsell moment this page owns.
+
 - **Lap 130 — 2026-06-11 · New SEO page: /hooks — Claude Code hooks system (PreToolUse, PostToolUse, statusLineHook).**
   *Shipped:* https://headroom.walls.sh/hooks is live — targets "claude code hooks", "claude code pretooluse hook", "claude code statuslinehook". Covers: all five hook types (PreToolUse/PostToolUse/Stop/SubagentStop/statusLineHook) with when/can-block table; full settings.json config syntax; practical PreToolUse examples (block rm -rf, log every call); PostToolUse notification hook; Stop/SubagentStop cleanup; statusLineHook polling model; chaining multiple hooks. The Headroom upsell is the most natural on the site — statusLineHook IS how Headroom works. 34 SEO pages total. Downloads: 64. *Fact learned:* The /hooks page is the tightest funnel to Headroom — someone reading about statusLineHook is already 90% of the way to installing it; the page just closes the loop.
 

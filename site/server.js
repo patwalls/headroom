@@ -354,6 +354,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/ci</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/keyboard</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/hooks</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/cursor</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -3978,6 +3979,111 @@ fi</pre>
 → <a href="/settings">settings.json reference</a><br>
 → <a href="/permissions">Tool permissions and allow rules</a><br>
 → <a href="/log">Logging Claude Code usage over time</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/cursor") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code vs Cursor — Differences, When to Use Each, and Using Both</title>
+<meta name="description" content="Claude Code vs Cursor: key differences, when to use each, how to run both together, and how your Anthropic API quota works across tools.">
+<link rel="canonical" href="https://headroom.walls.sh/cursor">
+<meta property="og:title" content="Claude Code vs Cursor — Differences and When to Use Each">
+<meta property="og:description" content="Claude Code and Cursor both use Claude models but work differently. Here's when to reach for each and how to use both without burning through your API quota.">
+<meta property="og:url" content="https://headroom.walls.sh/cursor">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code vs Cursor — When to Use Each">
+<meta name="twitter:description" content="Both use Claude, both write code — but they work very differently. Here's how to choose and how to use both together.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1.1rem;margin:2.2em 0 .35em;color:var(--ink);border-bottom:1px solid #242936;padding-bottom:.3em}
+  h3{font-size:.95rem;margin:1.4em 0 .25em;color:var(--accent)}
+  p{color:#c9c6bd;margin:.35em 0 .7em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.84rem;line-height:1.55;margin:.5em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+  .cta{display:inline-block;margin:1.5em 0;padding:12px 22px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:.97rem}
+  table{width:100%;border-collapse:collapse;margin:.6em 0 1.4em;font-size:.88rem}
+  th{text-align:left;color:var(--dim);font-weight:600;border-bottom:1px solid #242936;padding:6px 10px 6px 0}
+  td{border-bottom:1px solid #1e2230;padding:8px 10px 8px 0;color:#c9c6bd;vertical-align:top}
+  td:first-child{color:var(--ok);font-weight:600;white-space:nowrap;padding-right:20px;min-width:110px}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · cursor</p>
+<h1>Claude Code vs Cursor</h1>
+<p class="sub">Both use Claude models. Both write and edit code. The difference is in the interaction model — and knowing when to reach for which one makes you faster with both.</p>
+
+<h2>The core difference</h2>
+<p><strong>Cursor</strong> is an IDE — a fork of VS Code with AI deeply integrated into the editor. You write code in Cursor; the AI assists inline. Tab-complete, inline edits, Ctrl+K rewrites, the sidebar chat. The unit of work is a file or selection.</p>
+<p><strong>Claude Code</strong> is a terminal agent. You give it goals, not edits. It reads files, writes code, runs tests, checks git, searches the codebase, and iterates — autonomously. The unit of work is a task.</p>
+<p>The practical dividing line: use Cursor when you're in the editor driving. Use Claude Code when you want to describe what needs doing and let the agent figure out the steps.</p>
+
+<h2>Side-by-side comparison</h2>
+<table>
+<tr><th></th><th>Claude Code</th><th>Cursor</th></tr>
+<tr><td>Interface</td><td>Terminal / CLI</td><td>IDE (VS Code fork)</td></tr>
+<tr><td>Interaction</td><td>Describe a goal; agent executes</td><td>Inline assist; you drive</td></tr>
+<tr><td>File scope</td><td>Whole repo — reads, searches, edits across files</td><td>Current file or selection</td></tr>
+<tr><td>Can run commands</td><td>Yes — bash, git, npm, tests</td><td>Limited (terminal tab)</td></tr>
+<tr><td>Best for</td><td>Multi-file tasks, refactors, debugging, new features</td><td>Writing code with AI assist, quick edits, completions</td></tr>
+<tr><td>Context window</td><td>Sends relevant files; manages via /compact</td><td>Cursor indexes your repo with embeddings</td></tr>
+<tr><td>Billing</td><td>Anthropic API usage against your plan limits</td><td>Cursor subscription (separate cost) or bring-your-own-key</td></tr>
+<tr><td>Model</td><td>Claude (your Anthropic account)</td><td>Claude, GPT-4, Gemini (configurable)</td></tr>
+</table>
+
+<h2>They're not mutually exclusive</h2>
+<p>Many developers use both in the same session. A common pattern: Claude Code for the heavy lifting (spec a feature, generate the scaffold, write the tests), then Cursor for the fine-grained editing (tweak the UI, iterate on variable names, fix the edge cases while reading the output).</p>
+<p>They don't conflict. Claude Code operates in your terminal; Cursor operates in your editor. They both modify files on disk — just don't have both running simultaneous edits on the same file.</p>
+
+<h2>When Claude Code wins</h2>
+<h3>Multi-file changes</h3>
+<p>When a task touches 10 files — rename a function everywhere, update all callers, fix the tests — Claude Code does this in one go. In Cursor you'd be doing it file by file.</p>
+<h3>Running and iterating on tests</h3>
+<p>Claude Code can run <code>npm test</code>, see the failure, fix the code, run again. Cursor can't close that loop on its own.</p>
+<h3>Codebase exploration</h3>
+<p>"Find all places we call this API and check they handle errors correctly." Claude Code reads your codebase and comes back with an answer. Cursor's chat knows the current file context well but not the full repo by default.</p>
+<h3>Agentic tasks while you do something else</h3>
+<p>Start a Claude Code session on a well-specified task, switch away, come back when it's done. Cursor requires you to drive.</p>
+
+<h2>When Cursor wins</h2>
+<h3>Inline completions</h3>
+<p>Tab to accept a suggestion mid-line, right where you're typing. Claude Code doesn't have this.</p>
+<h3>Visual context</h3>
+<p>You're looking at a function and want to tweak it — Cursor sees exactly what you see, in context. Ctrl+K rewrites a selection. Natural for visual, in-the-moment edits.</p>
+<h3>Staying in the editor flow</h3>
+<p>If your workflow is "write code in an editor," Cursor integrates into that without a context switch to a terminal.</p>
+
+<h2>Quota: how they share your Anthropic limits</h2>
+<p>If you're on the Anthropic Claude Max plan, Claude Code has a 5-hour session window and a 7-day weekly window. Cursor with "bring your own key" (BYOK) mode makes API calls against the same key — so Cursor usage counts toward the same limits.</p>
+<p>Cursor's default subscription mode uses Cursor's own API allocation (not yours), so there's no overlap. But if you switched Cursor to use your Anthropic API key directly, you're sharing the quota across both tools.</p>
+<div class="note"><p>Headroom shows your Claude Code session (5h) and weekly (7d) utilization live in the macOS menu bar. If you're running Cursor BYOK alongside Claude Code and wondering why your quota is burning faster than expected, Headroom gives you the live number to watch.</p></div>
+<a class="cta" href="/download">Download Headroom v${VERSION} — free</a>
+<pre>brew install patwalls/tap/headroom</pre>
+
+<h2>Adding Claude Code if you're a Cursor user</h2>
+<pre>npm install -g @anthropic-ai/claude-code
+claude   # opens a session in your current directory</pre>
+<p>Claude Code reads <code>.gitignore</code>, respects your project structure, and picks up your <code>CLAUDE.md</code> if you have one. No additional configuration needed to use it alongside Cursor.</p>
+
+<p>→ <a href="/install">Installing Claude Code</a><br>
+→ <a href="/limits">Session and weekly rate limits</a><br>
+→ <a href="/session">5-hour session window explained</a><br>
+→ <a href="/agent">Agent mode and subagents</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
