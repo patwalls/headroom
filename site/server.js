@@ -350,6 +350,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/agent</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/permissions</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/memory</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/env</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -3409,6 +3410,137 @@ Node.js 20, Postgres 16, Stripe SDK v14. No ORM — raw SQL via pg.
 → <a href="/hook">statusLineHook setup</a><br>
 → <a href="/commands">slash commands</a><br>
 → <a href="/tips">Claude Code tips</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/env") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Environment Variables — ANTHROPIC_API_KEY and Config</title>
+<meta name="description" content="How to configure Claude Code environment variables: setting ANTHROPIC_API_KEY, using .env files with direnv, per-project env, and all supported env vars explained.">
+<link rel="canonical" href="https://headroom.walls.sh/env">
+<meta property="og:title" content="Claude Code Environment Variables — ANTHROPIC_API_KEY Setup">
+<meta property="og:description" content="Where and how to set ANTHROPIC_API_KEY and other environment variables for Claude Code — shell profile, direnv, .env files, and per-project config.">
+<meta property="og:url" content="https://headroom.walls.sh/env">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code Environment Variables — ANTHROPIC_API_KEY">
+<meta name="twitter:description" content="Set ANTHROPIC_API_KEY and other Claude Code env vars — shell profile, direnv, .env files explained.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1.1rem;margin:2.2em 0 .35em;color:var(--ink);border-bottom:1px solid #242936;padding-bottom:.3em}
+  h3{font-size:.95rem;margin:1.4em 0 .25em;color:var(--accent)}
+  p{color:#c9c6bd;margin:.35em 0 .7em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.84rem;line-height:1.55;margin:.5em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+  .cta{display:inline-block;margin:1.5em 0;padding:12px 22px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:.97rem}
+  table{width:100%;border-collapse:collapse;margin:.6em 0 1.2em;font-size:.88rem}
+  th{text-align:left;color:var(--dim);font-weight:600;border-bottom:1px solid #242936;padding:6px 10px 6px 0}
+  td{border-bottom:1px solid #1e2230;padding:7px 10px 7px 0;color:#c9c6bd;vertical-align:top}
+  td:first-child{color:var(--ok);font-family:ui-monospace,Menlo,monospace;font-size:.84rem;white-space:nowrap}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · env</p>
+<h1>Claude Code environment variables</h1>
+<p class="sub">Where to set <code>ANTHROPIC_API_KEY</code>, what other env vars Claude Code reads, and how to manage per-project environment without leaking secrets.</p>
+
+<h2>The one required variable</h2>
+<p>Claude Code needs <code>ANTHROPIC_API_KEY</code> to call the Anthropic API. If you installed via the Claude desktop app or Homebrew, this is set for you. If you're running <code>claude</code> from a fresh terminal and it asks for a key, this is what's missing.</p>
+<pre>export ANTHROPIC_API_KEY="sk-ant-..."</pre>
+<p>Where you put this depends on whether you want it globally or per-project.</p>
+
+<h2>Global setup — shell profile</h2>
+<p>The simplest option: add the export to your shell's startup file. This makes the key available in every terminal session on your machine.</p>
+<h3>zsh (macOS default)</h3>
+<pre># ~/.zshrc or ~/.zprofile
+export ANTHROPIC_API_KEY="sk-ant-api03-..."</pre>
+<p>Then reload: <code>source ~/.zshrc</code> (or open a new terminal).</p>
+<h3>bash</h3>
+<pre># ~/.bashrc or ~/.bash_profile
+export ANTHROPIC_API_KEY="sk-ant-api03-..."</pre>
+<p>Use <code>~/.bash_profile</code> on macOS (login shells) and <code>~/.bashrc</code> on Linux.</p>
+<div class="note"><p>Never commit your shell profile to version control if it contains secrets. If your dotfiles are in a public repo, put secrets in a separate file (<code>~/.secrets</code>) and <code>source ~/.secrets</code> from your profile instead.</p></div>
+
+<h2>Per-project setup — direnv and .envrc</h2>
+<p>For project-specific keys or overrides — a different Anthropic account, a test key, a key with limited permissions — use <a href="https://direnv.net">direnv</a>. It automatically loads and unloads env vars when you <code>cd</code> into a directory.</p>
+<pre># Install
+brew install direnv
+
+# Add to ~/.zshrc (or ~/.bashrc)
+eval "\$(direnv hook zsh)"</pre>
+<p>Then in your project directory:</p>
+<pre># .envrc
+export ANTHROPIC_API_KEY="sk-ant-api03-..."
+export ANTHROPIC_BASE_URL="https://api.anthropic.com"</pre>
+<pre>direnv allow   # run once to trust this .envrc</pre>
+<p>Add <code>.envrc</code> to <code>.gitignore</code> if it contains real keys. If you want to commit a template, create a <code>.envrc.example</code> with placeholder values and gitignore the real one.</p>
+
+<h2>All environment variables Claude Code reads</h2>
+<table>
+<tr><th>Variable</th><th>What it does</th></tr>
+<tr><td>ANTHROPIC_API_KEY</td><td>Your Anthropic API key. Required if not authenticated via the desktop app.</td></tr>
+<tr><td>ANTHROPIC_BASE_URL</td><td>Override the API endpoint. Useful for proxies, local models, or enterprise deployments.</td></tr>
+<tr><td>ANTHROPIC_MODEL</td><td>Override the default model for the session. Same as the <code>model</code> field in <code>settings.json</code>.</td></tr>
+<tr><td>CLAUDE_CODE_MAX_OUTPUT_TOKENS</td><td>Cap output token length per request. Useful for cost control in automated pipelines.</td></tr>
+<tr><td>HTTP_PROXY / HTTPS_PROXY</td><td>Route Claude Code's API calls through a proxy (corporate network, debugging).</td></tr>
+<tr><td>NO_PROXY</td><td>Comma-separated list of hosts to bypass the proxy for.</td></tr>
+<tr><td>DISABLE_AUTOUPDATER</td><td>Set to <code>1</code> to stop Claude Code from auto-updating itself.</td></tr>
+<tr><td>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC</td><td>Set to <code>1</code> to disable telemetry and update checks (useful in CI).</td></tr>
+</table>
+
+<h2>The env block in settings.json</h2>
+<p>You can also set environment variables in <code>~/.claude/settings.json</code> under the <code>env</code> key. These are merged with your shell environment — useful for org-wide defaults in a shared config.</p>
+<pre>{
+  "model": "claude-opus-4-8",
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.anthropic.com",
+    "DISABLE_AUTOUPDATER": "1"
+  }
+}</pre>
+<p>Don't put your API key here if this file is shared or version-controlled. Shell profile or direnv is safer for secrets.</p>
+
+<h2>CI and GitHub Actions</h2>
+<p>In CI, set <code>ANTHROPIC_API_KEY</code> as a repository secret and inject it as an environment variable in your workflow:</p>
+<pre>- name: Run Claude Code
+  env:
+    ANTHROPIC_API_KEY: \${{ secrets.ANTHROPIC_API_KEY }}
+    CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+  run: claude --print "review this PR for obvious bugs"</pre>
+<p>See the <a href="/ci">CI guide</a> for the full setup including non-interactive mode and output handling.</p>
+
+<h2>Verifying your setup</h2>
+<pre># Check the key is set (shows only the first few chars)
+echo \${ANTHROPIC_API_KEY:0:12}...
+
+# Quick Claude Code test
+claude --print "say hello" 2>&1 | head -3</pre>
+<p>If <code>claude --print</code> returns a response, your key is configured correctly.</p>
+
+<h2>The ~/.claude directory</h2>
+<p>Once Claude Code is working, the <code>~/.claude/</code> directory holds your config: <code>settings.json</code> for hooks and model preferences, <code>CLAUDE.md</code> for project instructions. The <a href="/hook">statusLineHook</a> in <code>settings.json</code> is what Headroom reads to show your session and weekly usage live in the menu bar.</p>
+<div class="note"><p>Headroom shows your Claude Code session (5h) and weekly (7d) utilization as a live % in the macOS menu bar. Zero network — it reads the numbers Claude Code's own status line writes to disk. Free.</p></div>
+<a class="cta" href="/download">Download Headroom v${VERSION} — free</a>
+<pre>brew install patwalls/tap/headroom</pre>
+
+<p>→ <a href="/settings">settings.json reference</a><br>
+→ <a href="/memory">CLAUDE.md and memory</a><br>
+→ <a href="/ci">Claude Code in CI</a><br>
+→ <a href="/hook">statusLineHook setup</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>

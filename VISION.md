@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 127 — 2026-06-11 · New SEO page: /env — Claude Code environment variables and ANTHROPIC_API_KEY setup.**
+  *Shipped:* https://headroom.walls.sh/env is live — targets "claude code environment variables", "ANTHROPIC_API_KEY claude code", "how to set api key claude code". Covers: global shell profile setup (zsh/bash), per-project direnv/.envrc, the full table of all env vars Claude Code reads (ANTHROPIC_API_KEY, ANTHROPIC_BASE_URL, ANTHROPIC_MODEL, CLAUDE_CODE_MAX_OUTPUT_TOKENS, HTTP_PROXY, DISABLE_AUTOUPDATER, CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC), the env block in settings.json, CI/GitHub Actions injection, verification commands, and the ~/.claude connection to Headroom. 31 SEO pages total. Downloads: 64. *Fact learned:* The env vars page is the highest-intent entry point — users searching "how to set ANTHROPIC_API_KEY" are in active setup mode, minutes away from their first Claude Code session, and will see Headroom at exactly the right moment.
+
 - **Lap 126 — 2026-06-11 · New SEO page: /memory — Claude Code CLAUDE.md and memory system.**
   *Shipped:* https://headroom.walls.sh/memory is live — targets "claude code memory", "CLAUDE.md", "claude code project instructions". Covers: what memory is for, CLAUDE.md format and best practices, the three-tier scope (user/project/subdirectory), /memory slash command, what belongs vs doesn't, templates for minimal and user-level CLAUDE.md, and the ~/.claude connection (CLAUDE.md lives next to settings.json where statusLineHook lives). 30 SEO pages total. Downloads: 64. *Fact learned:* CLAUDE.md is one of the most distinctive Claude Code features and a high-search term — users who understand it well are power users who care enough to customize their workflow, making them a strong Headroom audience.
 
