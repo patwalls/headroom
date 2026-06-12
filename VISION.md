@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 126 — 2026-06-11 · New SEO page: /memory — Claude Code CLAUDE.md and memory system.**
+  *Shipped:* https://headroom.walls.sh/memory is live — targets "claude code memory", "CLAUDE.md", "claude code project instructions". Covers: what memory is for, CLAUDE.md format and best practices, the three-tier scope (user/project/subdirectory), /memory slash command, what belongs vs doesn't, templates for minimal and user-level CLAUDE.md, and the ~/.claude connection (CLAUDE.md lives next to settings.json where statusLineHook lives). 30 SEO pages total. Downloads: 64. *Fact learned:* CLAUDE.md is one of the most distinctive Claude Code features and a high-search term — users who understand it well are power users who care enough to customize their workflow, making them a strong Headroom audience.
+
 - **Lap 125 — 2026-06-11 · v0.3.5: single-number menu bar title + display toggle + Update Headroom button.**
   *Shipped:* `Render.decide()` now accepts `compact: Bool` — in compact mode the title shows only the higher of session/week (`CC 85%`) instead of all three numbers (`CC 6%·85%·83%`). Compact is the new default (via `UserDefaults.register(defaults:)`). Dropdown gains "Show All Stats / Show Top Stat Only" toggle and a new "Update Headroom" button that downloads the latest zip, removes quarantine, tries an in-place bundle replace, and relaunches. v0.3.5 notarized + stapled, deployed to Railway. Downloads: **62** (up 5 from 57). *Fact learned:* The three-number title is visually noisy for most people — the max utilization is the one number that matters (the thing closest to the limit). The compact default lets the title breathe while the toggle preserves the power-user view.
 

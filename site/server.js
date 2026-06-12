@@ -349,6 +349,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/warp</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://headroom.walls.sh/agent</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/permissions</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/memory</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -3269,6 +3270,145 @@ print(f'Weekly  resets in: {fmt(wr)}')
 <p>→ <a href="/settings">Full settings.json reference</a><br>
 → <a href="/hook">statusLineHook setup</a><br>
 → <a href="/mcp">MCP server configuration</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/memory") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Memory — CLAUDE.md, /memory Command, Project Instructions</title>
+<meta name="description" content="How Claude Code's memory system works: CLAUDE.md project instructions, the /memory slash command, user vs project scope, and practical examples for persistent context.">
+<link rel="canonical" href="https://headroom.walls.sh/memory">
+<meta property="og:title" content="Claude Code Memory — CLAUDE.md and Project Instructions">
+<meta property="og:description" content="CLAUDE.md gives Claude Code persistent context about your project — coding style, architecture rules, test commands. Here's how the whole memory system works.">
+<meta property="og:url" content="https://headroom.walls.sh/memory">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code Memory — CLAUDE.md Explained">
+<meta name="twitter:description" content="CLAUDE.md, /memory command, user vs project scope — Claude Code's full memory system explained.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1.1rem;margin:2.2em 0 .35em;color:var(--ink);border-bottom:1px solid #242936;padding-bottom:.3em}
+  h3{font-size:.95rem;margin:1.4em 0 .25em;color:var(--accent)}
+  p{color:#c9c6bd;margin:.35em 0 .7em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.84rem;line-height:1.55;margin:.5em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+  .cta{display:inline-block;margin:1.5em 0;padding:12px 22px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:.97rem}
+  table{width:100%;border-collapse:collapse;margin:.6em 0 1.2em;font-size:.88rem}
+  th{text-align:left;color:var(--dim);font-weight:600;border-bottom:1px solid #242936;padding:6px 10px 6px 0}
+  td{border-bottom:1px solid #1e2230;padding:7px 10px 7px 0;color:#c9c6bd;vertical-align:top}
+  td:first-child{color:var(--ok);font-family:ui-monospace,Menlo,monospace;font-size:.84rem;white-space:nowrap}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · memory</p>
+<h1>Claude Code memory</h1>
+<p class="sub">CLAUDE.md files and the <code>/memory</code> command give Claude Code persistent context that survives across sessions — project conventions, architecture rules, commands to run.</p>
+
+<h2>What memory is for</h2>
+<p>Claude Code has no built-in recollection between sessions. Every time you open a new session, it starts fresh. Memory files solve this: you write persistent instructions once, and Claude Code reads them at the start of every session in that directory.</p>
+<p>This is how you stop re-explaining your stack, your test command, or your commit message format every single time.</p>
+
+<h2>CLAUDE.md — the project instructions file</h2>
+<p>The primary memory mechanism. Create a file called <code>CLAUDE.md</code> in your project root (or any directory Claude Code runs in). Claude Code reads it automatically at session start, before any other context.</p>
+<pre># Project: payments-service
+
+## Stack
+Node.js 20, Postgres 16, Stripe SDK v14. No ORM — raw SQL via pg.
+
+## Commands
+- Test: \`npm test\` (runs jest, needs Docker for Postgres)
+- Lint: \`npm run lint\` (eslint + prettier)
+- Deploy: \`railway up\` from the repo root
+
+## Conventions
+- All money values in cents (integer), never floats
+- Use \`snake_case\` for database columns, \`camelCase\` for JS
+- Commit messages: conventional commits (\`feat:\`, \`fix:\`, \`chore:\`)
+- Never commit directly to main — always a branch + PR
+
+## Architecture
+- \`src/routes/\` — Express route handlers (thin, no business logic)
+- \`src/services/\` — business logic
+- \`src/db/\` — SQL query files
+- \`src/jobs/\` — cron workers</pre>
+<p>Keep it short and factual. Claude Code loads the whole file into context every session — a 200-line CLAUDE.md is fine; a 2000-line one eats context unnecessarily.</p>
+
+<h2>Memory scope — where the file lives</h2>
+<p>Claude Code looks for CLAUDE.md files in a hierarchy, merging all of them:</p>
+<table>
+<tr><th>Location</th><th>Scope</th><th>Use for</th></tr>
+<tr><td>~/.claude/CLAUDE.md</td><td>All projects</td><td>Personal style, global aliases, your preferred response format</td></tr>
+<tr><td>~/projects/myapp/CLAUDE.md</td><td>This project</td><td>Stack, architecture, test commands, team conventions</td></tr>
+<tr><td>~/projects/myapp/src/CLAUDE.md</td><td>This subdirectory</td><td>Module-specific rules, file ownership notes</td></tr>
+</table>
+<p>Project-level CLAUDE.md overrides user-level for conflicting instructions. Subdirectory CLAUDE.md files are loaded when Claude Code operates in that directory.</p>
+
+<h2>The /memory slash command</h2>
+<p>Running <code>/memory</code> in a Claude Code session opens your CLAUDE.md in your editor so you can update it mid-session. Changes take effect immediately — Claude Code re-reads the file before the next message.</p>
+<pre>/memory</pre>
+<p>You can also ask Claude Code to add something to memory directly:</p>
+<pre>Remember: always use async/await, never raw .then() chains in this project</pre>
+<p>Claude Code will append it to your project's CLAUDE.md (or create the file if it doesn't exist).</p>
+
+<h2>What belongs in CLAUDE.md</h2>
+<h3>Good candidates</h3>
+<p>Commands Claude Code needs to know (<code>npm test</code>, <code>make build</code>, deploy steps). Architecture overview so it doesn't have to re-read the whole codebase every session. Non-obvious conventions — things that aren't clear from reading the code (money in cents, snake_case vs camelCase boundaries). Things Claude Code keeps getting wrong — a short correction at the top of CLAUDE.md is often more reliable than repeating it.</p>
+
+<h3>Skip these</h3>
+<p>Things already obvious from the code (language, framework — Claude Code can see the imports). Long documentation that belongs in README.md. Secrets or API keys — CLAUDE.md may be committed to version control.</p>
+
+<h2>Practical CLAUDE.md templates</h2>
+<h3>Minimal (any project)</h3>
+<pre># CLAUDE.md
+
+## Commands
+- Build: \`[your build command]\`
+- Test: \`[your test command]\`
+- Lint: \`[your lint command]\`
+
+## Key conventions
+- [one or two things Claude Code keeps getting wrong]</pre>
+
+<h3>User-level (~/.claude/CLAUDE.md)</h3>
+<pre># Personal Claude Code settings
+
+## Response style
+- Be concise — no recap of what you just did
+- No apologies, no "certainly!", just do the thing
+- Prefer editing existing files over creating new ones
+
+## Shell
+- I use zsh on macOS, homebrew for packages
+- My preferred editor is nvim</pre>
+
+<h2>Memory and the ~/.claude directory</h2>
+<p>CLAUDE.md at the user level lives at <code>~/.claude/CLAUDE.md</code>, in the same directory as Claude Code's other config files. While you're there, <code>~/.claude/settings.json</code> is where hooks live — including the hook that powers Headroom.</p>
+<div class="note"><p>Headroom reads the same data Claude Code writes to its status line hook — session (5h) and weekly (7d) utilization, live in your menu bar. The hook entry goes in <code>~/.claude/settings.json</code>, right next to your CLAUDE.md.</p></div>
+<a class="cta" href="/download">Download Headroom v${VERSION} — free</a>
+<pre>brew install patwalls/tap/headroom</pre>
+
+<h2>CLAUDE.md and version control</h2>
+<p>Whether to commit CLAUDE.md to your repo is a team decision. Committed = team-shared conventions, automatically picked up by every contributor. Gitignored = personal workflow notes that don't make sense to share. Many teams commit a project-level CLAUDE.md (team conventions) and gitignore a personal one (<code>CLAUDE.local.md</code> or their own additions to <code>~/.claude/CLAUDE.md</code>).</p>
+
+<p>→ <a href="/settings">settings.json reference</a><br>
+→ <a href="/hook">statusLineHook setup</a><br>
+→ <a href="/commands">slash commands</a><br>
+→ <a href="/tips">Claude Code tips</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/settings">settings.json</a> · <a href="/limits">Rate limits</a> · <a href="/tips">Tips</a> · <a href="https://github.com/patwalls/headroom">Source</a>
