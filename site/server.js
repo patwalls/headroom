@@ -360,6 +360,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/vscode</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/debug</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/continue</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/install</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
 </urlset>`);
   }
 
@@ -5339,6 +5340,161 @@ OUR_API_KEY=...</pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
+  }
+
+  if (url.pathname === "/install") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to Install Claude Code — macOS, Linux, Windows Setup Guide</title>
+<meta name="description" content="Step-by-step guide to installing Claude Code on macOS, Linux, and Windows. npm install, first run, authentication, and verifying your setup.">
+<link rel="canonical" href="https://headroom.walls.sh/install">
+<meta property="og:title" content="How to Install Claude Code">
+<meta property="og:description" content="Install Claude Code via npm, authenticate, verify it works, and set up the statusLineHook so Headroom shows your usage in the menu bar.">
+<meta property="og:url" content="https://headroom.walls.sh/install">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How to Install Claude Code">
+<meta name="twitter:description" content="npm install, first run, authentication — complete Claude Code install guide for macOS, Linux, and Windows.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.9rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.6em}
+li code{font-size:.88em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.step{background:#141414;border:1px solid #222;border-radius:10px;padding:20px 24px;margin:1.2em 0}
+.step-num{font:700 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:8px}
+.step h3{margin:.2em 0 .5em;color:#fff;font-size:1.05rem}
+.ok{color:#5db85d;font-weight:600}
+.warn{background:#141414;border-left:3px solid #d9a657;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · install</p>
+<h1>How to Install Claude Code</h1>
+<p class="sub">Claude Code is a CLI tool published by Anthropic. It installs via npm and requires a Claude Pro or Max subscription (or an Anthropic API key). This guide covers installation on macOS, Linux, and Windows, plus how to verify everything is working.</p>
+
+<h2>Prerequisites</h2>
+<ul>
+  <li><strong>Node.js 18+</strong> — check with <code>node --version</code>. Install from <a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a> or via Homebrew: <code>brew install node</code></li>
+  <li><strong>A Claude subscription</strong> — Claude Pro ($20/mo) or Max ($100/mo) includes Claude Code. Or use an Anthropic API key (pay-per-token).</li>
+</ul>
+
+<h2>Install</h2>
+<div class="step">
+<div class="step-num">Step 1</div>
+<h3>Install the Claude Code CLI via npm</h3>
+<pre>npm install -g @anthropic-ai/claude-code</pre>
+<p style="margin:.5em 0 0;color:#888;font-size:.9rem">The <code>-g</code> flag installs globally so the <code>claude</code> command is available everywhere. This downloads ~50 MB.</p>
+</div>
+
+<div class="step">
+<div class="step-num">Step 2</div>
+<h3>Verify the install</h3>
+<pre>claude --version</pre>
+<p style="margin:.5em 0 0;color:#888;font-size:.9rem">You should see a version number like <code>1.x.x</code>. If you get "command not found," your npm global bin directory isn't in your PATH — see troubleshooting below.</p>
+</div>
+
+<div class="step">
+<div class="step-num">Step 3</div>
+<h3>First launch and authentication</h3>
+<pre>claude</pre>
+<p style="margin:.5em 0 0;color:#888;font-size:.9rem">On first run, Claude Code opens a browser window to authenticate with your Anthropic account. Sign in with the account that has your Claude Pro or Max subscription. After auth, the CLI stores a credential in your system keychain (macOS) or <code>~/.anthropic</code> (Linux/Windows).</p>
+</div>
+
+<div class="step">
+<div class="step-num">Step 4</div>
+<h3>Verify it works</h3>
+<pre>claude "Say hello in one sentence"</pre>
+<p style="margin:.5em 0 0;color:#888;font-size:.9rem">If you see a response, Claude Code is fully installed and authenticated. If you see an auth error, re-run <code>claude</code> to re-trigger the login flow.</p>
+</div>
+
+<h2>Platform notes</h2>
+
+<h3>macOS</h3>
+<p>The recommended install path on macOS. Credentials are stored in the macOS Keychain. The statusLineHook (which Headroom reads) is written to <code>~/.claude/settings.json</code> on first launch.</p>
+<p>If you use Homebrew's Node and get a permissions error, use <code>npm install -g @anthropic-ai/claude-code</code> without <code>sudo</code> — Homebrew Node is user-owned.</p>
+
+<h3>Linux</h3>
+<p>Works on any Linux with Node 18+. Credentials are stored in <code>~/.anthropic/</code>. The <code>claude</code> binary goes to your npm global bin, typically <code>~/.npm-global/bin/</code> or <code>/usr/local/bin/</code> depending on your npm config.</p>
+<p>To check where npm installs globals: <code>npm config get prefix</code> — ensure that path's <code>bin/</code> subdirectory is in your <code>PATH</code>.</p>
+
+<h3>Windows</h3>
+<p>Claude Code works on Windows via WSL2 (Windows Subsystem for Linux) or PowerShell. WSL2 is the recommended path — you get a full Linux environment and the behavior matches macOS/Linux exactly. Install Node in WSL2 and follow the Linux steps.</p>
+<p>In native PowerShell, the install command is the same, but some shell integration features (statusLineHook, prompt integration) require a bash-compatible shell.</p>
+
+<h2>Troubleshooting</h2>
+
+<h3>"command not found: claude" after install</h3>
+<p>npm's global bin directory isn't in your PATH. Find it with:</p>
+<pre>npm config get prefix</pre>
+<p>Then add the <code>bin/</code> subdirectory to your shell profile. For macOS/Linux with zsh:</p>
+<pre>echo 'export PATH="$(npm config get prefix)/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc</pre>
+
+<h3>Authentication fails or loops</h3>
+<p>Try clearing the stored credentials and re-authenticating:</p>
+<pre>claude auth logout
+claude</pre>
+<p>If you're using an API key instead of OAuth, set it as an environment variable:</p>
+<pre>export ANTHROPIC_API_KEY="sk-ant-..."
+claude</pre>
+<p>→ <a href="/env">Environment variables reference</a></p>
+
+<h3>Permissions errors on npm install</h3>
+<p>Never use <code>sudo npm install -g</code> — it can break your npm permissions. Instead, configure npm to install globals to a user-owned directory:</p>
+<pre>mkdir -p ~/.npm-global
+npm config set prefix '~/.npm-global'
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.zshrc
+source ~/.zshrc
+npm install -g @anthropic-ai/claude-code</pre>
+
+<h3>Claude Code shows "CC —%" in the menu bar status</h3>
+<p>This means the statusLineHook hasn't written data yet. Run at least one Claude Code command (e.g., <code>claude "hello"</code>) to trigger the hook and populate <code>~/.claude/headroom-usage.json</code>.</p>
+
+<h2>After install: check your usage</h2>
+<p>Once Claude Code is running, it writes your session and weekly usage to <code>~/.claude/headroom-usage.json</code> via its statusLineHook. Headroom reads that file and shows both meters in your menu bar — so you always know where you stand before starting a session:</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="font-size:.9rem;color:#888">Free, zero config, ~267 KB. macOS 13+, signed and notarized. Works alongside Claude Code immediately after install.</p>
+
+<div class="cta-box">
+<h2>Make your Claude Code limits visible</h2>
+<p>Claude Code has a 5-hour session window and a 7-day weekly cap — both rolling, both invisible unless you run <code>/usage</code> manually. Headroom shows both in your menu bar from the moment you start a session.</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="margin:0"><a href="/download">Direct download</a> · <a href="/">About Headroom</a> · <a href="https://github.com/patwalls/headroom">Source on GitHub</a></p>
+</div>
+
+<hr>
+<p>→ <a href="/settings">Claude Code settings.json reference</a><br>
+→ <a href="/env">Environment variables</a><br>
+→ <a href="/brew">Homebrew install guide</a><br>
+→ <a href="/faq">Frequently asked questions</a><br>
+→ <a href="/limits">Rate limits explained</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
   }
 
   if (url.pathname === "/continue") {
