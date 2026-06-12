@@ -368,6 +368,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/jetbrains</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/git</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/zed</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/python</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -6701,6 +6702,141 @@ Write a failing test for it first — it should validate format, reject TLDs sho
 → <a href="/refactor">Refactoring with Claude Code</a><br>
 → <a href="/agent">Agent mode and subagents</a><br>
 → <a href="/session">5-hour session limit explained</a> · <a href="/weekly">7-day weekly cap</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/python") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code for Python — pytest, Type Hints, Django, FastAPI, Data Science</title>
+<meta name="description" content="Use Claude Code with Python projects: pytest test generation, type annotation, Django and FastAPI workflows, data science tasks, and session budget tips for long analysis runs.">
+<link rel="canonical" href="https://headroom.walls.sh/python">
+<meta property="og:title" content="Claude Code for Python — pytest, Django, FastAPI, Data Science">
+<meta property="og:description" content="Python-specific Claude Code workflows: pytest, mypy, virtualenvs, Django, FastAPI, pandas/numpy, and monitoring session usage during long data analysis runs.">
+<meta property="og:url" content="https://headroom.walls.sh/python">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude Code for Python">
+<meta name="twitter:description" content="pytest, type hints, Django, FastAPI, data science workflows with Claude Code. Session budget tips for long Python runs.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.4em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.tip{background:#141414;border-left:3px solid #5db85d;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+.warn{background:#141414;border-left:3px solid #d9a657;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · python</p>
+<h1>Claude Code for Python</h1>
+<p class="sub">Claude Code handles the parts of Python work that are tedious at scale: writing test suites, adding type annotations, refactoring across many files, fixing mypy errors, and iterating on data analysis scripts. This page covers the patterns that work well for Python projects.</p>
+
+<h2>CLAUDE.md for Python projects</h2>
+<p>Put a <code>CLAUDE.md</code> in your project root to give Claude Code persistent context about the Python environment and conventions:</p>
+<pre>## Environment
+- Python 3.11, virtualenv in .venv/
+- Install deps: pip install -e ".[dev]"
+- Test: pytest tests/ -v
+- Lint: ruff check . &amp;&amp; ruff format --check .
+- Types: mypy src/ --strict
+
+## Conventions
+- All new functions need type annotations
+- Use pathlib.Path, not os.path
+- Prefer dataclasses for simple value types
+- No bare except — use except Exception as e</pre>
+<p>Claude Code reads this at the start of every session. It will use <code>pytest tests/ -v</code> when running tests and <code>mypy src/ --strict</code> when checking types — without being told each time.</p>
+
+<h2>pytest: writing and fixing tests</h2>
+<p>The test-fix loop works well for Python. Start it with a clear target:</p>
+<pre>claude "add pytest tests for app/services/auth.py — cover the happy path, invalid token, and expired token cases. Use fixtures, run pytest after."</pre>
+<p>For parametrized tests across edge cases:</p>
+<pre>claude "write parametrized pytest tests for the validate_email function — test valid addresses, invalid formats, missing TLD, and unicode domains"</pre>
+<p>When tests are failing and you want a full fix loop:</p>
+<pre>claude "run pytest, read the failures, fix the code (not the tests), run again — repeat until green"</pre>
+
+<h2>Type annotations and mypy</h2>
+<p>Adding type hints to an existing codebase is repetitive — Claude Code handles it systematically:</p>
+<pre>claude "add type annotations to all functions in src/api/ that are missing them. Run mypy src/ after to verify."</pre>
+<p>For fixing a batch of mypy errors:</p>
+<pre>claude "run mypy src/ --strict, read the errors, fix each one. Don't use Any unless there's no alternative — prefer proper types."</pre>
+<p>On a large codebase, do it module by module:</p>
+<pre>claude "add type annotations to src/models/user.py only — run mypy on that file after, fix any errors it introduces"</pre>
+
+<div class="tip">Type annotations spread across function signatures, return types, and class attributes. Ask Claude Code to do one module at a time — it's easier to review, and mypy errors in one file don't cascade into unrelated failures.</div>
+
+<h2>Virtual environments and dependencies</h2>
+<p>Claude Code can set up a virtualenv, install dependencies, and verify the environment:</p>
+<pre>claude "set up a virtualenv in .venv/, install the project in editable mode with dev extras, verify pytest runs"</pre>
+<p>For dependency issues:</p>
+<pre>claude "pip install is failing with a conflict. Read requirements.txt and pyproject.toml, identify the conflict, and fix it."</pre>
+<p>If you're migrating from requirements.txt to pyproject.toml:</p>
+<pre>claude "migrate requirements.txt and requirements-dev.txt to a pyproject.toml with [project] and [project.optional-dependencies] sections. Keep all version pins."</pre>
+
+<h2>Django workflows</h2>
+<pre>claude "add a new DRF endpoint for user preferences — model, serializer, view, URL registration, and tests. Follow the patterns in the existing users/ app."</pre>
+<pre>claude "write a Django migration for adding a nullable preferences JSONField to the User model. Make it reversible."</pre>
+<pre>claude "the Django test suite is slow. Run it, identify the slowest tests, and look for N+1 queries using select_related/prefetch_related"</pre>
+<p>Claude Code reads your <code>urls.py</code>, <code>models.py</code>, and existing test files before writing new code — it follows the project's existing patterns rather than inventing new ones.</p>
+
+<h2>FastAPI workflows</h2>
+<pre>claude "add a POST /users/{id}/preferences endpoint to the FastAPI app. Include Pydantic models for request/response, add it to the router, write tests with TestClient."</pre>
+<pre>claude "add response_model annotations to all endpoints in app/routers/ that are missing them — infer the types from what the functions return"</pre>
+<pre>claude "the /search endpoint is slow. Profile it with a simple timer, identify whether it's the DB query or the serialization, and fix the bottleneck."</pre>
+
+<h2>Data science and analysis scripts</h2>
+<p>For analysis work, Claude Code can iterate on scripts with you:</p>
+<pre>claude "read data/sales.csv, compute monthly revenue by region, and write a summary to output/summary.csv — use pandas"</pre>
+<pre>claude "the feature engineering in notebooks/prepare.py is slow on large DataFrames. Profile it and optimize the worst functions."</pre>
+<pre>claude "convert this analysis notebook to a clean Python script — remove the cells, keep the logic, add docstrings and type annotations"</pre>
+
+<div class="warn"><strong>Session budget note:</strong> data analysis loops — read data, process, check output, adjust, repeat — can accumulate tool calls quickly. Each iteration of "read the output, adjust the script, run again" is 3–6 tool calls. Long exploratory sessions burn through the 5h window faster than most coding tasks.</div>
+
+<h2>Refactoring Python codebases</h2>
+<pre>claude "find all functions in src/ that take more than 5 positional arguments and refactor them to use keyword-only arguments or dataclass params"</pre>
+<pre>claude "replace all string concatenation for SQL queries in src/db/ with parameterized queries — look for % formatting and f-strings in execute() calls"</pre>
+<pre>claude "the logging module is used inconsistently — some files use print(), some use logging.info(). Standardize on the logging module across src/"</pre>
+
+<h2>Keep an eye on your session while Python runs</h2>
+<div class="cta-box">
+<h2>Headroom — live session usage for Python developers</h2>
+<p>Test-fix loops, mypy batch fixes, and data analysis iterations all burn Claude Code session budget faster than a simple edit. Headroom shows your 5h session and 7d weekly utilization live in the macOS menu bar — no token, no API key, reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Color-coded from calm to amber to red. Know your headroom before you start a long pytest run or a mypy sweep across the whole project.</p>
+</div>
+
+<hr>
+<p>→ <a href="/test">Writing tests with Claude Code</a><br>
+→ <a href="/refactor">Refactoring with Claude Code</a><br>
+→ <a href="/debug">Debugging with Claude Code</a><br>
+→ <a href="/session">5-hour session limit explained</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
