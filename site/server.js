@@ -347,6 +347,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/log</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/commands</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/warp</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://headroom.walls.sh/agent</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -3083,6 +3084,122 @@ print(f'Weekly  resets in: {fmt(wr)}')
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/hook">Hook docs</a> · <a href="/faq">FAQ</a> · <a href="/reset">Reset timing</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</main></body></html>`);
+  }
+
+  if (url.pathname === "/agent") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Agent Mode — How Subagents Work and Affect Your Rate Limits</title>
+<meta name="description" content="How Claude Code's agent mode works: autonomous subagent spawning, how each subagent draws from your shared session and weekly quota, and how to track usage when running agents.">
+<link rel="canonical" href="https://headroom.walls.sh/agent">
+<meta property="og:title" content="Claude Code Agent Mode — Subagents and Rate Limits">
+<meta property="og:description" content="How Claude Code agents work, how subagents share your quota, and how to monitor usage when running autonomous tasks.">
+<meta property="og:url" content="https://headroom.walls.sh/agent">
+<meta property="og:image" content="https://headroom.walls.sh/dropdown.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code Agent Mode — Subagents and Rate Limits">
+<meta name="twitter:description" content="Subagents share your session and weekly quota — here's how to track it all.">
+<meta name="twitter:image" content="https://headroom.walls.sh/dropdown.png">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e8e6e0;--dim:#9a978e;--accent:#d97757;--ok:#7bb97e;--warn:#d9a657;--bad:#d96157}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  main{max-width:680px;margin:0 auto;padding:64px 24px}
+  h1{font-size:2.1rem;line-height:1.2;margin:.3em 0 .2em}
+  .sub{color:var(--dim);font-size:1.1rem;margin:0 0 2.2em}
+  h2{font-size:1.1rem;margin:2.2em 0 .35em;color:var(--ink);border-bottom:1px solid #242936;padding-bottom:.3em}
+  h3{font-size:.95rem;margin:1.4em 0 .25em;color:var(--accent)}
+  p{color:#c9c6bd;margin:.35em 0 .7em}
+  pre{background:var(--panel);border:1px solid #242936;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:.84rem;line-height:1.55;margin:.5em 0 1em}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.87em;background:var(--panel);border:1px solid #242936;border-radius:4px;padding:1px 5px}
+  .note{background:var(--panel);border:1px solid #242936;border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:1em 0;font-size:.93rem;color:#c9c6bd}
+  .note p{margin:0}
+  .warn{border-left-color:var(--warn)}
+  a{color:var(--accent)}
+  footer{margin-top:4em;color:var(--dim);font-size:.85rem}
+  .tag{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+</style></head><body><main>
+<p class="tag">headroom.walls.sh · agent</p>
+<h1>Claude Code agent mode</h1>
+<p class="sub">How autonomous subagents work, how they share your session and weekly quota, and what to watch when running long agent tasks.</p>
+
+<h2>What agent mode is</h2>
+<p>When you give Claude Code a complex multi-step task, it can decompose the work and spawn <strong>subagents</strong> — separate Claude instances that each handle a focused subtask in parallel or in sequence. This is agent mode (sometimes called agentic mode).</p>
+<p>Examples that trigger subagent spawning:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+  <li>Refactoring multiple files across a large codebase</li>
+  <li>Running a research task that reads many files before writing</li>
+  <li>A long autonomous loop (like <code>/loop</code> or a custom <code>/go</code> command)</li>
+  <li>Any task where Claude Code decides parallel work is faster</li>
+</ul>
+<p>Each subagent is a full Claude invocation — it sees its own context window and produces its own output. The orchestrating session coordinates them and synthesizes the results.</p>
+
+<h2>How subagents affect your rate limits</h2>
+<p>Every subagent draws from the <strong>same</strong> session (5h) and weekly (7d) usage pool as your main session. There's no separate quota for agents — it's one shared meter.</p>
+<div class="note warn"><p><strong>Agent tasks drain limits fast.</strong> A single agentic run can spawn 5–20 subagents, each consuming tokens. A task that "should take 10 minutes" can burn 30–40% of your session window if it fans out aggressively.</p></div>
+<p>This is the main reason to monitor your usage before starting an agent task. The worst case: you launch an autonomous agent at 70% session usage, it runs for 20 minutes, and hits the limit mid-task with no clean stopping point.</p>
+
+<h2>Check usage before starting an agent task</h2>
+<p>Run <code>/usage</code> inside any Claude Code session before a big agentic task:</p>
+<pre>/usage
+# Session (5h):  34% used · resets in 2h 44m
+# Weekly (7d):   61% used · resets in 2d 7h</pre>
+<p>Or read the file directly:</p>
+<pre>jq '{session: "\(.sessionUsagePct | floor)%", weekly: "\(.weeklyUsagePct | floor)%", sessionResetsIn: "\(.sessionResetSec / 3600 * 10 | floor / 10)h"}' ~/.claude/headroom-usage.json</pre>
+<p>Rule of thumb: don't start a long agent task above 60% session. If the task is critical, wait for a reset.</p>
+<p>→ <a href="/session">5-hour session window explained</a> · <a href="/weekly">7-day weekly window explained</a></p>
+
+<h2>The --print flag for scripted agents</h2>
+<p>For non-interactive agent use in scripts or CI, use <code>--print</code> to get Claude Code's response on stdout and exit:</p>
+<pre>claude --print "Analyze the security of this file: $(cat src/auth.ts)"</pre>
+<p>Combine with <code>--model</code> to use a lighter model for scripted tasks and preserve session budget for interactive work:</p>
+<pre>claude --model claude-haiku-4-5-20251001 --print "Summarize the diff: $(git diff HEAD~1 --stat)"</pre>
+
+<h2>Custom agent commands</h2>
+<p>You can define your own agentic workflows as slash commands in <code>.claude/commands/</code>. Each <code>.md</code> file becomes a <code>/command-name</code> with the file content as the prompt template:</p>
+<pre># .claude/commands/audit.md
+Do a full security audit of the codebase:
+1. Check for SQL injection in all database queries
+2. Review authentication and session handling
+3. Look for hardcoded credentials or secrets
+4. Check dependency versions against known CVEs
+Report each finding with file + line number and severity.</pre>
+<p>Run with <code>/audit</code>. These commands can trigger multi-step agentic flows automatically.</p>
+<p>→ <a href="/commands">All slash commands reference</a></p>
+
+<h2>Autonomous loops</h2>
+<p>Claude Code's <code>/loop</code> command runs a prompt repeatedly, self-pacing between iterations. An autonomous loop that spawns subagents in every iteration can consume your weekly limit across a day if left running unsupervised.</p>
+<p>Before running a long autonomous loop:</p>
+<ul style="color:#c9c6bd;padding-left:1.4em">
+  <li>Check weekly usage — not just session</li>
+  <li>Set a time limit or iteration cap if possible</li>
+  <li>Monitor the weekly meter, not just session (session resets every 5h; weekly doesn't)</li>
+</ul>
+<p>→ <a href="/weekly">7-day weekly limit — the slow drain trap</a></p>
+
+<h2>Monitoring usage during agent runs</h2>
+<p>Because agent tasks run unattended, you can't manually run <code>/usage</code> mid-task. Two approaches:</p>
+
+<h3>Shell poll (while the agent runs in another pane)</h3>
+<pre>watch -n 30 "jq '{s: \"\(.sessionUsagePct | floor)%\", w: \"\(.weeklyUsagePct | floor)%\"}' ~/.claude/headroom-usage.json"</pre>
+
+<h3>Menu bar (always visible, no extra window)</h3>
+<p><a href="/">Headroom</a> shows your session (5h) and weekly (7d) usage as a live % in the macOS menu bar. It updates as Claude Code runs — even during unattended agent tasks. Color-coded: calm → amber at 70% → red at 90%. No polling command, no extra terminal pane.</p>
+<pre>brew install --cask patwalls/tap/headroom</pre>
+<p>The meter updates because Headroom reads <code>~/.claude/headroom-usage.json</code>, which Claude Code refreshes during active sessions including agent runs. Zero network calls.</p>
+
+<hr style="border:none;border-top:1px solid #242936;margin:2.8em 0 2em">
+
+<p>→ <a href="/limits">Rate limits explained</a><br>
+→ <a href="/reset">When do limits reset?</a><br>
+→ <a href="/compact">/compact to free context mid-agent</a><br>
+→ <a href="/tips">Claude Code tips and tricks</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/session">Session window</a> · <a href="/weekly">Weekly window</a> · <a href="https://github.com/patwalls/headroom">Source</a>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
