@@ -362,6 +362,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/continue</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/install</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
   <url><loc>https://headroom.walls.sh/neovim</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://headroom.walls.sh/vim</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`);
   }
 
@@ -5341,6 +5342,158 @@ OUR_API_KEY=...</pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
+  }
+
+  if (url.pathname === "/vim") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code + Vim — Integration, Workflow Tips, and Usage Monitoring</title>
+<meta name="description" content="How to use Claude Code with Vim: terminal workflow, split windows, shell integration, statusline usage display, and Headroom for menu bar monitoring.">
+<link rel="canonical" href="https://headroom.walls.sh/vim">
+<meta property="og:title" content="Claude Code + Vim — Integration and Workflow">
+<meta property="og:description" content="Claude Code runs in the terminal alongside Vim. Split windows, terminal jobs, shell integration, and menu bar monitoring with Headroom.">
+<meta property="og:url" content="https://headroom.walls.sh/vim">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude Code + Vim">
+<meta name="twitter:description" content="Claude Code and Vim are both terminal tools — split window, terminal job, shell integration, and menu bar monitoring.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.5em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.kbd{display:inline-block;background:#1e1e1e;border:1px solid #333;border-radius:4px;padding:1px 7px;font-family:ui-monospace,Menlo,monospace;font-size:.83rem;color:#ccc}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · vim</p>
+<h1>Claude Code + Vim</h1>
+<p class="sub">Vim and Claude Code are both terminal tools. There is no plugin required, no IDE overhead — split your terminal, run Claude Code in one pane, edit in another. This page covers the workflows that work well for Vim users and how to surface usage data in your statusline.</p>
+
+<h2>The natural fit</h2>
+<p>Vim users already work in the terminal and are comfortable switching between shell and editor. Claude Code fits into that workflow without friction: it reads and writes files the same way shell scripts do, and it returns control when done. No GUI, no Electron, no context switching outside the terminal.</p>
+
+<h2>Basic workflow: split terminal</h2>
+
+<h3>With tmux (recommended)</h3>
+<p>The most common setup is a tmux session with two panes:</p>
+<pre>tmux new-session
+# Left pane: vim
+vim src/main.py
+# Right pane (Ctrl-b then %): claude
+claude</pre>
+<p><span class="kbd">Ctrl-b</span> + <span class="kbd">%</span> creates a vertical split. Navigate with <span class="kbd">Ctrl-b</span> + arrow keys. <code>:w</code> in Vim saves the file; Claude Code reads it on the next tool call.</p>
+
+<h3>Using Vim's built-in terminal</h3>
+<p>Vim 8.1+ has a built-in terminal. Open a split terminal with:</p>
+<pre>:terminal
+" or vertical split:
+:vertical terminal</pre>
+<p>Then run <code>claude</code> in the terminal buffer. Switch between the editor and terminal with <span class="kbd">Ctrl-w</span> + <span class="kbd">h/l</span>. Exit terminal mode with <span class="kbd">Ctrl-\</span> <span class="kbd">Ctrl-n</span>.</p>
+
+<h3>Using :! for quick single commands</h3>
+<p>For quick one-off Claude Code commands without a persistent session:</p>
+<pre>:!claude --print "Explain this function: %"</pre>
+<p>The <code>%</code> expands to the current filename. The output appears in Vim's command output area. Useful for quick questions; for multi-turn debugging sessions, use a proper split.</p>
+
+<h2>vimrc keymaps for fast access</h2>
+<pre>" Open Claude Code in a vertical split terminal
+nnoremap &lt;leader&gt;cc :vertical terminal claude&lt;CR&gt;
+
+" Open Claude Code in a new tab
+nnoremap &lt;leader&gt;ct :tabnew \| terminal claude&lt;CR&gt;
+
+" Quick: run claude --print on current file
+nnoremap &lt;leader&gt;cq :!claude --print "Summarize what this file does: %"&lt;CR&gt;</pre>
+
+<h2>Statusline: live usage in Vim</h2>
+<p>Vim's statusline can call shell commands via <code>system()</code>. Read Claude Code's usage JSON from Vim's statusline function:</p>
+<pre>" Add to your .vimrc
+function! ClaudeUsage()
+  let l:file = expand('~') . '/.claude/headroom-usage.json'
+  if !filereadable(l:file)
+    return ''
+  endif
+  let l:data = system('jq -r "\"CC \" + (.sessionUsagePct|floor|tostring) + \"%\" + \"·\" + (.weeklyUsagePct|floor|tostring) + \"%\"" ' . l:file . ' 2>/dev/null')
+  return substitute(l:data, "\\n", "", "g")
+endfunction
+
+set statusline+=%{ClaudeUsage()}</pre>
+<p>This calls <code>jq</code> on each statusline redraw. If you find it slow, wrap it in a timer that updates a global variable every 30 seconds instead.</p>
+
+<h3>Optimized version (cached, updates every 30s)</h3>
+<pre>let g:claude_usage_cache = ''
+let g:claude_usage_last = 0
+
+function! ClaudeUsageCached()
+  let l:now = localtime()
+  if l:now - g:claude_usage_last > 30
+    let l:file = expand('~') . '/.claude/headroom-usage.json'
+    if filereadable(l:file)
+      let l:raw = system('jq -r "\"CC \" + (.sessionUsagePct|floor|tostring) + \"%·\" + (.weeklyUsagePct|floor|tostring) + \"%\"" ' . l:file . ' 2>/dev/null')
+      let g:claude_usage_cache = substitute(l:raw, "\\n", "", "g")
+    endif
+    let g:claude_usage_last = l:now
+  endif
+  return g:claude_usage_cache
+endfunction
+
+set statusline+=%{ClaudeUsageCached()}</pre>
+
+<h2>Shell prompt before launching Vim</h2>
+<p>Show usage in your shell prompt, visible before you enter Vim:</p>
+<pre># In ~/.bashrc or ~/.zshrc
+claude_usage() {
+  local f="$HOME/.claude/headroom-usage.json"
+  [ -f "$f" ] && jq -r '"CC " + (.sessionUsagePct|floor|tostring) + "%·" + (.weeklyUsagePct|floor|tostring) + "%" ' "$f" 2>/dev/null || true
+}
+export PS1='$(claude_usage) \w \$ '</pre>
+<p>→ <a href="/shell">Full shell prompt integration</a> · <a href="/starship">Starship module</a> · <a href="/tmux">tmux status bar</a></p>
+
+<h2>Menu bar monitoring with Headroom</h2>
+<p>The statusline integration works when you're looking at Vim. But during a long Claude Code run — debugging a test suite, doing a multi-file refactor — Headroom shows both meters in the macOS menu bar as a persistent ambient display, no vim required:</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="font-size:.9rem;color:#888">Reads from <code>~/.claude/headroom-usage.json</code> — same file your statusline script uses. Zero network calls, no API key. macOS 13+, free.</p>
+
+<div class="cta-box">
+<h2>Headroom — ambient usage monitoring for Vim users</h2>
+<p>The Vim statusline tells you your usage when you glance at it. Headroom's color-coded menu bar icon alerts you passively — turns orange at 70%, red at 90% — so a session limit never interrupts you mid-task.</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="margin:0"><a href="/download">Direct download</a> · <a href="/">About Headroom</a> · <a href="https://github.com/patwalls/headroom">Source on GitHub</a></p>
+</div>
+
+<hr>
+<p>→ <a href="/neovim">Claude Code + Neovim</a><br>
+→ <a href="/tmux">tmux status bar integration</a><br>
+→ <a href="/shell">Shell prompt integration</a><br>
+→ <a href="/debug">Debugging with Claude Code</a><br>
+→ <a href="/keyboard">Claude Code keyboard shortcuts</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
   }
 
   if (url.pathname === "/neovim") {

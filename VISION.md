@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 139 — 2026-06-12 · New SEO page: /vim — Claude Code + Vim integration.**
+  *Shipped:* https://headroom.walls.sh/vim is live — targets "vim claude code", "claude code vim integration", "vim claude code workflow". Covers: why terminal-first Claude Code fits Vim, tmux split workflow, Vim 8.1+ built-in terminal, :! for quick one-offs, .vimrc keymaps, statusline integration via system()/jq (plus optimized cached variant updating every 30s), shell PS1, tmux status bar. Headroom upsell as ambient color-coded alert beyond statusline. Pairs with /neovim to cover both communities. 43 SEO pages total. Downloads: 69 (up 1). *Fact learned:* Vim's statusline system() calls fire on every redraw — for a jq invocation, that's potentially dozens of shell forks per second. The cached variant (global var + 30s timer) is the right default; calling jq on every redraw would noticeably slow Vim for large buffers.
+
 - **Lap 138 — 2026-06-12 · New SEO page: /neovim — Claude Code + Neovim integration.**
   *Shipped:* https://headroom.walls.sh/neovim is live — targets "neovim claude code", "claude code neovim integration", "neovim claude code workflow". Covers: why terminal-first Claude Code fits Neovim's workflow (same primitives), split terminal via tmux and Neovim's built-in terminal, init.lua keymaps for quick Claude Code toggle, passing file context, Lua statusline function to show CC session/weekly %, lualine config example, shell prompt PS1 integration (with ${} escaping fix), tmux status bar. Headroom upsell as the menu bar complement to statusline (color-coded, always visible without leaving the editor). 42 SEO pages total. Downloads: 68. *Fact learned:* Shell scripts inside template literals must escape both `\${...}` (template interpolation) and backticks — the two most common sources of silent crashes. Always `node --check` before deploy.
 
