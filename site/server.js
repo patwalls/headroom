@@ -356,6 +356,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/hooks</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/cursor</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/copilot</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/windsurf</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -5335,6 +5336,152 @@ OUR_API_KEY=...</pre>
 <br>Built in public · <a href="https://walls.sh">walls.sh</a>
 </footer>
 </main></body></html>`);
+  }
+
+  if (url.pathname === "/windsurf") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code vs Windsurf — Differences, When to Use Each, and How They Work Together</title>
+<meta name="description" content="Claude Code vs Windsurf (Cascade): how they differ, when the terminal agent beats the AI IDE, when Windsurf wins, and how to use both without burning your quota.">
+<link rel="canonical" href="https://headroom.walls.sh/windsurf">
+<meta property="og:title" content="Claude Code vs Windsurf — Key Differences">
+<meta property="og:description" content="Windsurf is an AI-first IDE. Claude Code is a terminal agent. Different tools, different strengths — here's when each wins and how they complement each other.">
+<meta property="og:url" content="https://headroom.walls.sh/windsurf">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude Code vs Windsurf">
+<meta name="twitter:description" content="Windsurf is an AI IDE. Claude Code is a terminal agent. Different tools for different jobs — here's how to use both.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+table{width:100%;border-collapse:collapse;margin:1.2em 0 2em;font-size:.95rem}
+th{text-align:left;padding:10px 14px;background:#161616;color:#999;font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;border-bottom:2px solid #222}
+td{padding:11px 14px;border-bottom:1px solid #1e1e1e;color:#c8c4bb;vertical-align:top}
+tr:last-child td{border-bottom:none}
+td:first-child{color:#e8e4da;font-weight:500;white-space:nowrap}
+.win{color:#5db85d}
+.lose{color:#888}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.badge{display:inline-block;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:2px 10px;font-size:.8rem;font-weight:600;margin-left:6px;color:#888;vertical-align:middle}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · windsurf</p>
+<h1>Claude Code vs Windsurf</h1>
+<p class="sub">Both use AI to write code. But Windsurf is an IDE with AI built in — you open files and the AI assists inline. Claude Code is a terminal agent that executes tasks autonomously, reads and writes files itself, runs tests, and loops until done. Understanding which to reach for — and how to use both — is what this page is about.</p>
+
+<h2>The fundamental difference</h2>
+<p>Windsurf puts AI inside your editor. You're driving — the AI suggests, completes, and (via Cascade) executes tasks in-IDE. Claude Code inverts this: you describe a task and Claude Code executes it independently in the terminal, calling tools and making decisions without your continuous attention.</p>
+<p>Neither is strictly "better." They solve different moments in a developer's day.</p>
+
+<table>
+<thead><tr><th>Dimension</th><th>Windsurf</th><th>Claude Code</th></tr></thead>
+<tbody>
+<tr><td>Interaction style</td><td>IDE-embedded, editor-first</td><td>Terminal agent, runs autonomously</td></tr>
+<tr><td>Primary use</td><td>Inline completions + Cascade agent tasks</td><td>Multi-step agentic tasks, refactors, debugging loops</td></tr>
+<tr><td>Editor</td><td>Windsurf (VS Code fork)</td><td>Any editor — editor-agnostic</td></tr>
+<tr><td>Model</td><td>Codeium models + optional Claude via API</td><td>Claude (Sonnet / Opus / Fable)</td></tr>
+<tr><td>Pricing</td><td>Free tier + Windsurf Pro ~$15/mo; credits-based</td><td>Included in Claude Pro/Max subscription</td></tr>
+<tr><td>Usage limits</td><td>Windsurf credits (refreshes monthly)</td><td>Rolling 5h session + 7d weekly windows</td></tr>
+<tr><td>Offline / local</td><td>No</td><td>No (API-backed)</td></tr>
+<tr><td>Context awareness</td><td>File tree, open tabs, editor context</td><td>Full shell, git, file system — whatever you pass</td></tr>
+<tr><td>Multi-repo / system ops</td><td>Limited to workspace</td><td>Any path, any command — full shell access</td></tr>
+</tbody>
+</table>
+
+<h2>When Claude Code wins</h2>
+
+<h3>Multi-file refactors that touch dozens of files</h3>
+<p>Claude Code can read your entire repo, plan a refactor, make all the edits, run the tests, fix the failures, and commit — autonomously, while you do something else. Cascade in Windsurf can do multi-file work, but it's designed to keep you in the loop at every step. Claude Code is designed to run unattended.</p>
+
+<h3>Debugging loops: reproduce → isolate → fix → verify</h3>
+<p>Claude Code runs your test suite, reads the failure, traces the stack, forms a hypothesis, edits the code, and re-runs tests — looping until the tests pass. This test-loop pattern is where terminal agents shine: they don't need to pause at every step to update an IDE UI.</p>
+
+<h3>Shell and infra tasks</h3>
+<p>Claude Code has unrestricted shell access. Docker builds, migration scripts, CI config, git history analysis — anything that needs a real shell. Windsurf's Cascade operates in a sandboxed file context and doesn't have the same shell freedom.</p>
+
+<h3>Long-running sessions (30+ minutes)</h3>
+<p>For a session that will touch 20+ files across multiple directories, Claude Code's terminal-agent model is cleaner: one task, one context, runs to completion. IDE agents tend to be better for shorter, more interactive bursts.</p>
+
+<h2>When Windsurf wins</h2>
+
+<h3>Inline completions while you type</h3>
+<p>Windsurf's inline AI completions (Codeium-powered) are Windsurf's strongest moat. Claude Code doesn't have inline completions — it's a conversation interface. For the flow state of building new code with AI suggestions in real time, Windsurf is the right tool.</p>
+
+<h3>Visual context from the editor</h3>
+<p>When your work is tightly coupled to what's visible on screen — understanding a complex type in a hover, seeing two files side by side, navigating a call graph visually — an IDE-integrated agent has richer context than a terminal agent working from file paths and grep.</p>
+
+<h3>Non-terminal developers</h3>
+<p>Claude Code requires comfort with the terminal. If your workflow is editor-first, Windsurf is a smoother experience. Cascade handles most IDE users' agentic needs without ever leaving the editor.</p>
+
+<h2>Using both together</h2>
+<p>Many developers use Windsurf for inline completions and short Cascade tasks, and Claude Code for the longer autonomous work that benefits from terminal freedom. This is a natural split:</p>
+<ul style="color:#c8c4bb;padding-left:1.4em;margin:0 0 1em">
+  <li style="margin-bottom:.5em">Windsurf: active coding, completions, quick Cascade refactors in context</li>
+  <li style="margin-bottom:.5em">Claude Code: "go implement this feature and run the tests," overnight refactors, complex debugging, infra scripts</li>
+</ul>
+<p>If you use Claude models in Windsurf via BYOK (bring-your-own-key), both tools draw from the same Anthropic API quota — your 5h session window and 7d weekly cap are shared. Hitting Claude Code's limit will affect your Windsurf Claude model responses, and vice versa.</p>
+
+<h2>The limits difference: credits vs rolling windows</h2>
+<p>Windsurf uses a credits system that resets monthly — predictable, calendar-based. Claude Code uses rolling windows: a 5-hour session window and a 7-day weekly cap, both of which can fill up at any point depending on how you've used the service in the recent past.</p>
+<p>Rolling windows are less intuitive. You can have a perfectly normal Monday, then hit the weekly cap on Thursday because Tuesday was a heavy day. The cap doesn't care that it's a new week — it looks back 7 rolling days, not calendar days.</p>
+<p>This is the window Headroom monitors. The menu bar shows your current utilization of both the 5h and 7d windows, color-coded before you hit them:</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="font-size:.9rem;color:#888">Zero network calls, no API key. Reads the data Claude Code already writes to disk. macOS 13+, ~267 KB, free.</p>
+
+<div class="cta-box">
+<h2>Headroom — live usage for Claude Code</h2>
+<p>Windsurf's credit system is easy to track — it resets monthly. Claude Code's rolling 5h/7d windows are not. Headroom keeps both meters visible in your menu bar, color-coded orange when you're burning fast and red before a hard stop.</p>
+<div class="brew">brew install --cask patwalls/tap/headroom</div>
+<p style="margin:0"><a href="/download">Direct download</a> · <a href="/">About Headroom</a> · <a href="https://github.com/patwalls/headroom">Source on GitHub</a></p>
+</div>
+
+<h2>Quick comparison: Cascade vs Claude Code agent mode</h2>
+<p>Both Windsurf's Cascade and Claude Code have an "agent mode" — the ability to plan and execute multi-step tasks. The key differences:</p>
+<table>
+<thead><tr><th>Feature</th><th>Windsurf Cascade</th><th>Claude Code agent</th></tr></thead>
+<tbody>
+<tr><td>Entry point</td><td>Editor panel (stays in IDE)</td><td>Terminal / <code>claude</code> CLI</td></tr>
+<tr><td>Shell access</td><td>Limited, sandboxed</td><td>Full — any command</td></tr>
+<tr><td>Unattended run</td><td>Requires confirmation at each step by default</td><td>Can run fully autonomously with permissions configured</td></tr>
+<tr><td>File scope</td><td>Workspace / open project</td><td>Any path</td></tr>
+<tr><td>Test loop</td><td>Can run tests; manual verification flow</td><td>Built-in: edit → test → fix → repeat</td></tr>
+<tr><td>Multi-repo</td><td>No</td><td>Yes — multiple paths in one session</td></tr>
+<tr><td>Custom hooks</td><td>No</td><td>Yes — PreToolUse/PostToolUse/statusLineHook</td></tr>
+</tbody>
+</table>
+
+<hr>
+<p>→ <a href="/cursor">Claude Code vs Cursor</a><br>
+→ <a href="/copilot">Claude Code vs GitHub Copilot</a><br>
+→ <a href="/alternatives">All Claude Code usage monitor alternatives</a><br>
+→ <a href="/limits">Claude Code rate limits explained</a><br>
+→ <a href="/session">5-hour session limit</a> · <a href="/weekly">7-day weekly cap</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
   }
 
   if (url.pathname === "/") {
