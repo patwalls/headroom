@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 const BUILD_ZIP = join(ROOT, "public", "Headroom.zip");
 const DATA_DIR = process.env.DATA_DIR || join(ROOT, "data");
 const COUNTER = join(DATA_DIR, "downloads.json");
-const VERSION = "0.3.4";
+const VERSION = "0.3.5";
 
 function loadCount() {
   try { return JSON.parse(readFileSync(COUNTER, "utf8")).downloads || 0; } catch { return 0; }

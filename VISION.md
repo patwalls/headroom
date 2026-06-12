@@ -115,6 +115,9 @@ run it is [`LOOP.md`](LOOP.md).
 
 ### Loop log (newest first)
 
+- **Lap 125 — 2026-06-11 · v0.3.5: single-number menu bar title + display toggle + Update Headroom button.**
+  *Shipped:* `Render.decide()` now accepts `compact: Bool` — in compact mode the title shows only the higher of session/week (`CC 85%`) instead of all three numbers (`CC 6%·85%·83%`). Compact is the new default (via `UserDefaults.register(defaults:)`). Dropdown gains "Show All Stats / Show Top Stat Only" toggle and a new "Update Headroom" button that downloads the latest zip, removes quarantine, tries an in-place bundle replace, and relaunches. v0.3.5 notarized + stapled, deployed to Railway. Downloads: **62** (up 5 from 57). *Fact learned:* The three-number title is visually noisy for most people — the max utilization is the one number that matters (the thing closest to the limit). The compact default lets the title breathe while the toggle preserves the power-user view.
+
 - **Lap 124 — 2026-06-11 · New SEO page: /permissions — Claude Code tool permissions reference.**
   *Shipped:* https://headroom.walls.sh/permissions is live — targets "claude code permissions", "claude code allow commands without prompting", "how to stop claude code asking permission" queries. Covers: the permissions block syntax, all tool names (Bash/Read/Edit/Write/WebFetch/WebSearch/mcp), pattern syntax (* vs **), common allow/deny patterns, user vs project scope, a practical starting config, --dangerously-skip-permissions for CI, and the statusLineHook upsell (same settings.json). 29 SEO pages total. Downloads: 57. *Fact learned:* The permissions page has the tightest settings.json upsell of any page — the user is already editing the exact file where statusLineHook lives, making this the most frictionless Headroom install moment on the entire site. *Next lap:* Writing /env or try Reddit tomorrow afternoon when per-sub limits reset.
 

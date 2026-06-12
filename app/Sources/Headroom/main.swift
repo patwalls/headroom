@@ -73,11 +73,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "")
     private var timer: Timer?
     private var notifiedKeys: Set<String> = []
+    private var compactTitle: Bool = true
+    private let displayToggleItem = NSMenuItem(title: "", action: #selector(toggleDisplayMode), keyEquivalent: "")
+    private let updateItem = NSMenuItem(title: "Update Headroom", action: #selector(updateHeadroom), keyEquivalent: "")
 
     private static let titleFont = NSFont.monospacedDigitSystemFont(
         ofSize: NSFont.systemFontSize, weight: .regular)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        UserDefaults.standard.register(defaults: ["compactTitle": true])
+        compactTitle = UserDefaults.standard.bool(forKey: "compactTitle")
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         statusItem.button?.title = "CC —%"
 
@@ -101,6 +106,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: "Refresh Now", action: #selector(refreshNow), keyEquivalent: "r"))
         menu.addItem(NSMenuItem(title: "Copy Stats", action: #selector(copyStats), keyEquivalent: "c"))
+        updateDisplayToggleTitle()
+        menu.addItem(displayToggleItem)
         menu.addItem(NSMenuItem(title: "Repair Live Data", action: #selector(repairLiveData), keyEquivalent: ""))
         // SMAppService only works from a real .app bundle (not a bare swift-build binary).
         if Bundle.main.bundleIdentifier != nil {
@@ -109,6 +116,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         menu.addItem(NSMenuItem(title: "Open Claude Code", action: #selector(openClaudeCode), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Share Headroom…", action: #selector(shareHeadroom), keyEquivalent: ""))
+        menu.addItem(updateItem)
         menu.addItem(NSMenuItem(title: "Quit Headroom", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         menu.items.forEach { $0.target = self }
         statusItem.menu = menu
@@ -129,6 +137,95 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func refreshNow() { refresh() }
+
+    @objc private func toggleDisplayMode() {
+        compactTitle = !compactTitle
+        UserDefaults.standard.set(compactTitle, forKey: "compactTitle")
+        updateDisplayToggleTitle()
+        refresh()
+    }
+
+    private func updateDisplayToggleTitle() {
+        displayToggleItem.title = compactTitle ? "Show All Stats" : "Show Top Stat Only"
+    }
+
+    @objc private func updateHeadroom() {
+        updateItem.title = "Downloading…"
+        updateItem.isEnabled = false
+
+        let url = URL(string: "https://headroom.walls.sh/download")!
+        URLSession.shared.downloadTask(with: url) { [weak self] tempURL, _, error in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                defer {
+                    self.updateItem.title = "Update Headroom"
+                    self.updateItem.isEnabled = true
+                }
+                guard let tempURL, error == nil else {
+                    self.showSimpleAlert(title: "Update failed", message: "Could not download the update. Check your connection.")
+                    return
+                }
+                do {
+                    let fm = FileManager.default
+                    let zipURL   = URL(fileURLWithPath: "/tmp/Headroom-update.zip")
+                    let extractURL = URL(fileURLWithPath: "/tmp/HeadroomUpdate")
+                    try? fm.removeItem(at: zipURL)
+                    try? fm.removeItem(at: extractURL)
+                    try fm.copyItem(at: tempURL, to: zipURL)
+                    try fm.createDirectory(at: extractURL, withIntermediateDirectories: true)
+
+                    let unzip = Process()
+                    unzip.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
+                    unzip.arguments = ["-o", zipURL.path, "-d", extractURL.path]
+                    try unzip.run(); unzip.waitUntilExit()
+                    guard unzip.terminationStatus == 0 else {
+                        self.showSimpleAlert(title: "Update failed", message: "Could not extract the update.")
+                        return
+                    }
+
+                    let newBundle = extractURL.appendingPathComponent("Headroom.app")
+                    let xattr = Process()
+                    xattr.executableURL = URL(fileURLWithPath: "/usr/bin/xattr")
+                    xattr.arguments = ["-rd", "com.apple.quarantine", newBundle.path]
+                    try? xattr.run(); xattr.waitUntilExit()
+
+                    // Try in-place replacement at current bundle path
+                    let currentBundle = Bundle.main.bundleURL
+                    var replacedInPlace = false
+                    do {
+                        try? fm.removeItem(at: currentBundle)
+                        try fm.copyItem(at: newBundle, to: currentBundle)
+                        replacedInPlace = true
+                    } catch {}
+
+                    let launchURL = replacedInPlace ? currentBundle : newBundle
+                    let alert = NSAlert()
+                    alert.messageText = "Headroom updated"
+                    alert.informativeText = replacedInPlace
+                        ? "New version installed. Restart Headroom to use it."
+                        : "Downloaded. Running new version now (old location was read-only)."
+                    alert.addButton(withTitle: "Restart Now")
+                    alert.addButton(withTitle: "Later")
+                    NSApp.activate(ignoringOtherApps: true)
+                    if alert.runModal() == .alertFirstButtonReturn {
+                        NSWorkspace.shared.open(launchURL)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { NSApp.terminate(nil) }
+                    }
+                } catch {
+                    self.showSimpleAlert(title: "Update failed", message: error.localizedDescription)
+                }
+            }
+        }.resume()
+    }
+
+    private func showSimpleAlert(title: String, message: String) {
+        let a = NSAlert()
+        a.messageText = title
+        a.informativeText = message
+        a.addButton(withTitle: "OK")
+        NSApp.activate(ignoringOtherApps: true)
+        a.runModal()
+    }
 
     @objc private func openClaudeCode() {
         // Try bundle ID first (works regardless of install location),
@@ -224,7 +321,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         // One shared display decision (Render.decide) — what --print verifies is
         // exactly what renders here. Rolled-over windows come back nil → "—".
-        let d = Render.decide(usage)
+        let d = Render.decide(usage, compact: compactTitle)
         lastDecision = d
         if let five = d.session { sessionMeter.update(five, windowDuration: Render.sessionWindowDuration) } else { sessionMeter.awaiting("window reset — open Claude Code") }
         if let seven = d.week { weeklyMeter.update(seven, windowDuration: Render.weekWindowDuration) } else { weeklyMeter.awaiting("window reset — open Claude Code") }

@@ -40,16 +40,24 @@ enum Render {
         let sessionCost: Double?    // nil = not available
     }
 
-    static func decide(_ usage: Usage) -> Decision {
+    /// compact=true → show only the higher of session/week (user preference, toggled in menu).
+    /// compact=false → full "CC 6%·85%·83%" (default, used by --print harness).
+    static func decide(_ usage: Usage, compact: Bool = false) -> Decision {
         let five = usage.fiveHour.isLive ? usage.fiveHour : nil
         let seven = usage.sevenDay.isLive ? usage.sevenDay : nil
         let levels = [five, seven].compactMap { $0?.utilization }
-        let fivePct  = five.map  { percent($0.utilization) } ?? "—"
-        let sevenPct = seven.map { percent($0.utilization) } ?? "—"
-        // Append context window % when available: "CC 23%·67%·41%"
-        let ctxSuffix = usage.contextUsed.map { "·\(percent($0))" } ?? ""
+        let title: String
+        if compact {
+            let topPct = levels.max().map { percent($0) } ?? "—"
+            title = "CC \(topPct)"
+        } else {
+            let fivePct  = five.map  { percent($0.utilization) } ?? "—"
+            let sevenPct = seven.map { percent($0.utilization) } ?? "—"
+            let ctxSuffix = usage.contextUsed.map { "·\(percent($0))" } ?? ""
+            title = "CC \(fivePct)·\(sevenPct)\(ctxSuffix)"
+        }
         return Decision(
-            title: "CC \(fivePct)·\(sevenPct)\(ctxSuffix)",
+            title: title,
             tone: levels.isEmpty ? .calm : Tone(utilization: levels.max()!),
             session: five,
             week: seven,
