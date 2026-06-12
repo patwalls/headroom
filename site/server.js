@@ -369,6 +369,7 @@ Headroom's unique property: it makes NO network calls at all. It reads the local
   <url><loc>https://headroom.walls.sh/git</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://headroom.walls.sh/zed</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://headroom.walls.sh/python</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://headroom.walls.sh/typescript</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>`);
   }
 
@@ -6702,6 +6703,135 @@ Write a failing test for it first — it should validate format, reject TLDs sho
 → <a href="/refactor">Refactoring with Claude Code</a><br>
 → <a href="/agent">Agent mode and subagents</a><br>
 → <a href="/session">5-hour session limit explained</a> · <a href="/weekly">7-day weekly cap</a></p>
+
+<footer>
+<a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
+<br>Built in public · <a href="https://walls.sh">walls.sh</a>
+</footer>
+</div></body></html>`);
+  }
+
+  if (url.pathname === "/typescript") {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    return res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code for TypeScript — Types, Migration, tsc, Strict Mode</title>
+<meta name="description" content="Use Claude Code with TypeScript: type checking loops, JS-to-TS migration, strict mode, interface design, utility types, and monitoring session usage during large type migrations.">
+<link rel="canonical" href="https://headroom.walls.sh/typescript">
+<meta property="og:title" content="Claude Code for TypeScript — Types, Migration, tsc, Strict Mode">
+<meta property="og:description" content="TypeScript-specific Claude Code workflows: tsc as verifier, JS-to-TS migration, strict mode, utility types, and session budget tips for large type migrations.">
+<meta property="og:url" content="https://headroom.walls.sh/typescript">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude Code for TypeScript">
+<meta name="twitter:description" content="tsc as the verifier, JS-to-TS migration, strict mode, interface design, and session budget tips for TypeScript work with Claude Code.">
+<style>
+*{box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e4da;font:17px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
+.wrap{max-width:740px;margin:0 auto;padding:48px 24px 80px}
+nav{margin-bottom:40px;font-size:14px}
+nav a{color:#888;text-decoration:none}nav a:hover{color:#e8e4da}
+.tag{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:#888;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.2;margin:0 0 16px;color:#fff}
+.sub{color:#999;font-size:1.05rem;margin:0 0 2.5em;line-height:1.6}
+h2{font-size:1.25rem;font-weight:700;margin:2.4em 0 .6em;color:#fff}
+h3{font-size:1rem;font-weight:600;margin:1.6em 0 .4em;color:#ddd}
+p{color:#c8c4bb;margin:0 0 1em}
+pre{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:16px 18px;font-size:.88rem;overflow-x:auto;color:#c8c4bb;margin:1em 0 1.4em;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#1e1e1e;padding:1px 6px;border-radius:4px;color:#d0cbc3}
+ol,ul{color:#c8c4bb;padding-left:1.4em;margin:0 0 1em}
+li{margin-bottom:.4em}
+.cta-box{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:28px 32px;margin:2.5em 0}
+.cta-box h2{margin-top:0}
+.cta-box p{color:#aaa}
+.brew{background:#0d1a0d;border:1px solid #1e3d1e;border-radius:8px;padding:14px 18px;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;color:#7ec87e;margin:1em 0}
+a{color:#d97757;text-decoration:none}a:hover{text-decoration:underline}
+.tip{background:#141414;border-left:3px solid #5db85d;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+.warn{background:#141414;border-left:3px solid #d9a657;padding:12px 18px;border-radius:0 6px 6px 0;margin:1em 0 1.4em;color:#aaa;font-size:.95rem}
+footer{margin-top:4em;padding-top:1.5em;border-top:1px solid #1e1e1e;color:#666;font-size:.85rem}
+footer a{color:#666}footer a:hover{color:#e8e4da}
+hr{border:none;border-top:1px solid #1e1e1e;margin:2.5em 0}
+</style>
+</head><body><div class="wrap">
+<nav><a href="/">← headroom.walls.sh</a></nav>
+<p class="tag">headroom.walls.sh · typescript</p>
+<h1>Claude Code for TypeScript</h1>
+<p class="sub">Claude Code uses <code>tsc</code> as its verifier — the same way it uses <code>pytest</code> for Python or <code>cargo build</code> for Rust. This makes TypeScript an especially clean fit: types are the spec, the compiler is the test, and Claude Code runs both until it's green. This page covers the patterns that work best.</p>
+
+<h2>CLAUDE.md for TypeScript projects</h2>
+<p>Set up persistent context so Claude Code knows your TypeScript configuration from the first prompt:</p>
+<pre>## Build
+- Type check: npx tsc --noEmit
+- Build: npm run build
+- Test: npm test
+- Lint: npx eslint src/ --ext .ts,.tsx
+
+## Conventions
+- Strict mode enabled — no implicit any, no non-null assertions (!.)
+- Prefer type aliases for unions, interfaces for objects with methods
+- All exported functions need explicit return types
+- No as any casts — model the type properly or use unknown</pre>
+<p>Claude Code reads this at session start and uses <code>npx tsc --noEmit</code> throughout the session as the verification step, matching how your CI pipeline works.</p>
+
+<h2>tsc as the verifier loop</h2>
+<p>The most powerful TypeScript pattern with Claude Code: give it a task and tell it to run <code>tsc</code> after.</p>
+<pre>claude "add types to all functions in src/api/ that currently use any. Run npx tsc --noEmit after each file — fix errors before moving to the next file."</pre>
+<p>Claude Code writes the types, runs the compiler, reads the errors, fixes them, and runs again — until the file is clean. It doesn't move to the next file until the current one compiles. The compiler output is structured enough that it can fix each error precisely.</p>
+<div class="tip">The "fix one file at a time before moving on" instruction matters. TypeScript errors cascade — a type error in a base type propagates to every caller. Fixing file-by-file prevents a wall of cascading errors that make it hard to know what to fix next.</div>
+
+<h2>JavaScript to TypeScript migration</h2>
+<p>Migrating a JS codebase to TypeScript is one of the best uses of Claude Code — it's systematic, tedious, and the compiler tells you exactly what's wrong.</p>
+<pre>claude "migrate src/utils/ from JavaScript to TypeScript. Rename .js to .ts, add type annotations, run tsc after each file. Start with the files that have no imports from other src/ files."</pre>
+<p>The "start with files that have no local imports" instruction is key — it means Claude Code can type-check each file without needing the full graph to compile first. Once leaf files are typed, dependent files have something to work with.</p>
+<p>For a large codebase, do it incrementally:</p>
+<pre>claude "add allowJs: true and checkJs: true to tsconfig.json, then add @ts-check comments to src/utils/auth.js and fix all errors it surfaces"</pre>
+<p>This lets you add TypeScript checking to individual JS files without a full migration — useful when you want incremental typing rather than a big-bang rename.</p>
+
+<h2>Strict mode migration</h2>
+<p>Enabling strict mode on an existing TypeScript project generates errors. Claude Code can work through them systematically:</p>
+<pre>claude "enable strict mode in tsconfig.json. Run tsc, read the errors, fix them file by file. Don't use non-null assertion (!) to suppress errors — model the nullability properly."</pre>
+<p>Common strict errors and what Claude Code does with each:</p>
+<ul>
+<li><strong>Implicit any</strong> — infers the type from usage context and surrounding code</li>
+<li><strong>strictNullChecks</strong> — adds null/undefined guards or propagates optionality through the call chain</li>
+<li><strong>noImplicitReturns</strong> — adds explicit return types and missing return paths</li>
+<li><strong>strictFunctionTypes</strong> — corrects covariant parameter types in callbacks</li>
+</ul>
+
+<h2>Interface and type design</h2>
+<p>Claude Code is good at designing type hierarchies from a description:</p>
+<pre>claude "design TypeScript interfaces for a payment system: a base Payment type, then specific types for CreditCard, BankTransfer, and Crypto payments. Use discriminated unions with a 'method' literal field."</pre>
+<p>Or extracting types from existing runtime shapes:</p>
+<pre>claude "read src/api/responses.ts — the API returns plain objects. Define proper TypeScript interfaces for each response shape, and update the callers to use them."</pre>
+<p>For utility type work:</p>
+<pre>claude "find all places in src/ where we manually pick fields from a type. Replace with Partial, Pick, Omit, or Required where appropriate — run tsc after."</pre>
+
+<h2>Fixing a wall of tsc errors</h2>
+<p>When you inherit a codebase with hundreds of TypeScript errors:</p>
+<pre>claude "run npx tsc --noEmit 2&gt;&amp;1 | head -50. Categorize the errors by type and location. Fix the highest-frequency error category first across all files."</pre>
+<p>Categorizing before fixing is important — often 80% of errors come from one root cause (a missing type, a wrong interface, a changed API shape). Fixing the root cause collapses the error count faster than fixing files one by one.</p>
+
+<h2>React and Next.js TypeScript patterns</h2>
+<pre>claude "add proper TypeScript types to all React components in src/components/ — prop interfaces, event handler types, ref types. Run tsc after each component."</pre>
+<pre>claude "the API routes in pages/api/ use any for req and res. Replace with proper NextApiRequest and NextApiResponse types. Add return type annotations."</pre>
+<pre>claude "add Zod schemas to validate all API route inputs in pages/api/. Generate TypeScript types from the schemas using z.infer."</pre>
+
+<div class="warn"><strong>Session budget note:</strong> a large TypeScript migration — hundreds of files, enabling strict mode from scratch — can run 100+ tool calls. Each tsc run across a large codebase counts as one tool call, but reading and editing multiple files per error cycle adds up. Check your session usage before starting a project-wide migration.</div>
+
+<h2>Monitor session usage during TypeScript migrations</h2>
+<div class="cta-box">
+<h2>Headroom — live session usage for TypeScript work</h2>
+<p>A JS-to-TS migration or a strict mode sweep is exactly the kind of long Claude Code session where you can hit the 5h window mid-task. Headroom shows your session and weekly utilization live in the macOS menu bar — no token, no API key, reads the file Claude Code writes to <code>~/.claude/</code>.</p>
+<p>Install in one line:</p>
+<div class="brew">brew install patwalls/tap/headroom</div>
+<p>Color-coded from calm to amber to red. Know your headroom before you start migrating 200 files.</p>
+</div>
+
+<hr>
+<p>→ <a href="/refactor">Refactoring with Claude Code</a><br>
+→ <a href="/test">Writing tests with Claude Code</a><br>
+→ <a href="/python">Claude Code for Python</a><br>
+→ <a href="/session">5-hour session limit explained</a></p>
 
 <footer>
 <a href="/">headroom.walls.sh</a> · <a href="/limits">Rate limits</a> · <a href="/guide">Guide</a> · <a href="/faq">FAQ</a> · <a href="https://github.com/patwalls/headroom">Source</a>
