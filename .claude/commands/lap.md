@@ -10,6 +10,21 @@ If `~/.claude/LOOPS_PAUSED` exists (`test -f ~/.claude/LOOPS_PAUSED`), Pat has p
 loops (usually: out of credits). Say "loops are paused — not running this lap" and STOP
 immediately. Do no work, schedule no wakeups. Pat resumes with /resume-loops in walls.
 
+## 🔄 Step 0 — SYNC FIRST, ALWAYS (non-negotiable)
+
+**Before any other work — even a lightweight "monitoring" or status check — run this and
+confirm it succeeded:**
+```bash
+git pull --rebase --autostash 2>&1 | tail -3
+```
+Pat ships from other machines mid-loop, constantly. This pull is the FIRST action of EVERY
+firing of this loop, no exceptions — never shortcut a `/loop /lap` into just a status/health
+check and skip the sync. If the pull brings in new commits, **re-read the North Star / spec
+docs before picking the lap** — Pat may have changed the plan. If it reports a conflict or
+error, surface it and stop; do not proceed on a stale tree. (The context block below also runs
+a pull, but that only fires when this skill is actually executed — this step is the guarantee
+that it always runs.)
+
 ## Context (auto-injected)
 
 - Repo: !`pwd` on branch !`git branch --show-current`
