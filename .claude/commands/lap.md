@@ -10,6 +10,16 @@ If `~/.claude/LOOPS_PAUSED` exists (`test -f ~/.claude/LOOPS_PAUSED`), Pat has p
 loops (usually: out of credits). Say "loops are paused — not running this lap" and STOP
 immediately. Do no work, schedule no wakeups. Pat resumes with /resume-loops in walls.
 
+## 🐢 Throttle guard (check right after pause)
+
+If `~/.claude/LOOPS_THROTTLE` exists, Pat is low on credits — run FRUGAL this lap:
+- `cat ~/.claude/LOOPS_THROTTLE` gives a number of seconds. That is the MINIMUM delay
+  before the next lap: when this lap ends and you schedule the next wakeup, set
+  ScheduleWakeup `delaySeconds` to AT LEAST that value.
+- Keep the lap small and cheap: do ONE small thing, do NOT escalate to opus/fable
+  subagents (stay on the cheap session model), skip optional polish.
+Cleared with /unthrottle-loops (or /resume-loops) in walls.
+
 ## 🔄 Step 0 — SYNC FIRST, ALWAYS (non-negotiable)
 
 **Before any other work — even a lightweight "monitoring" or status check — run this and
