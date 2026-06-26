@@ -20,6 +20,25 @@ If `~/.claude/LOOPS_THROTTLE` exists, Pat is low on credits — run FRUGAL this 
   subagents (stay on the cheap session model), skip optional polish.
 Cleared with /unthrottle-loops (or /resume-loops) in walls.
 
+## 💸 Token discipline (every lap, always)
+
+The loop re-reads its whole context each lap, so wasted work compounds fast. Keep every
+lap cheap and bounded:
+- **One thing, one success test.** Before starting, state in ONE line what this lap ships
+  and the exact check that proves it done. Hit that test, then STOP — no second task, no
+  gold-plating, no "while I'm here."
+- **Never spin.** If an approach fails twice the same way, abandon it, log it as a blocker
+  (a registry/VISION note), and end the lap. A third retry of a broken approach is banned —
+  that is the #1 token sink.
+- **Read once, narrowly.** Open only the files this lap needs, once. Do NOT re-read or
+  re-grep what is already in context. Trust VISION.md's loop log as the state of the
+  world instead of re-deriving it from the whole codebase.
+- **Cheap by default, escalate rarely.** Stay on the session model. Spawn AT MOST one
+  subagent per lap, and only for genuinely substantial/critical work — never fan out a
+  swarm for a routine lap.
+- **Hand off small.** End with a 2–3 line loop-log entry (shipped / fact learned / next)
+  so the next lap can act from that summary, not from re-reading everything.
+
 ## 🔄 Step 0 — SYNC FIRST, ALWAYS (non-negotiable)
 
 **Before any other work — even a lightweight "monitoring" or status check — run this and
