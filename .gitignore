@@ -3,3 +3,5 @@ app/.build/
 site/data/
 node_modules/
 app/dist/
+.loop.log
+.loop.pid
